@@ -15,6 +15,8 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { metrics } from '@defra/cdp-metrics'
+import hapiCookie from '@hapi/cookie'
+import { azureAuth } from './plugins/azure-auth.js'
 
 export async function createServer() {
   setupProxy()
@@ -54,6 +56,7 @@ export async function createServer() {
       strictHeader: false
     }
   })
+  await server.register(hapiCookie)
   await server.register([
     requestLogger,
     requestTracing,
@@ -64,6 +67,7 @@ export async function createServer() {
     nunjucksConfig,
     Scooter,
     contentSecurityPolicy,
+    azureAuth,
     router // Register all the controllers/routes defined in src/server/router.js
   ])
 
