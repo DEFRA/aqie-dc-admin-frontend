@@ -213,6 +213,33 @@ export const config = convict({
       default: 'x-cdp-request-id',
       env: 'TRACING_HEADER'
     }
+  },
+  azure: {
+    clientId: {
+      doc: 'Azure AD Application Client ID',
+      format: String,
+      default: '',
+      env: 'AZURE_CLIENT_ID'
+    },
+    clientSecret: {
+      doc: 'Azure AD Application Client Secret',
+      format: String,
+      sensitive: true,
+      default: '',
+      env: 'AZURE_CLIENT_SECRET'
+    },
+    tenantId: {
+      doc: 'Azure AD Tenant ID',
+      format: String,
+      default: '',
+      env: 'AZURE_TENANT_ID'
+    },
+    redirectUri: {
+      doc: 'Application redirect URI after login',
+      format: String,
+      default: 'http://localhost:3000/auth/callback',
+      env: 'AZURE_REDIRECT_URI'
+    }
   }
 })
 
