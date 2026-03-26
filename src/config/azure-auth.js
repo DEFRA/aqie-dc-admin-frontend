@@ -18,4 +18,12 @@ export const msalConfig = {
   }
 }
 
-export const msalClient = new ConfidentialClientApplication(msalConfig)
+//export const msalClient = new ConfidentialClientApplication(msalConfig)
+let _msalClient
+
+export function msalClient() {
+  if (!_msalClient) {
+    _msalClient = new ConfidentialClientApplication(msalConfig)
+  }
+  return _msalClient
+}

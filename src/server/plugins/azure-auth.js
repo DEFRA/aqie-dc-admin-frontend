@@ -20,7 +20,7 @@ export const azureAuth = {
                 responseMode: 'form_post'
               }
 
-              const response = await msalClient.getAuthCodeUrl(
+              const response = await msalClient().getAuthCodeUrl(
                 authCodeUrlParameters
               )
               return h.redirect(response)
@@ -41,7 +41,8 @@ export const azureAuth = {
                 redirectUri: config.get('azure.redirectUri')
               }
 
-              const response = await msalClient.acquireTokenByCode(tokenRequest)
+              const response =
+                await msalClient().acquireTokenByCode(tokenRequest)
 
               request.yar.set('user', {
                 id: response.account.homeAccountId,
