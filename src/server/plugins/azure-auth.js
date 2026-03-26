@@ -1,4 +1,4 @@
-import { msalClient } from '../../config/azure-auth.js'
+import { getMsalClient } from '../../config/azure-auth.js'
 import { config } from '../../config/config.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 
@@ -12,6 +12,9 @@ export const azureAuth = {
         {
           method: 'GET',
           path: '/auth/login',
+          options: {
+            auth: false
+          },
           handler: async (request, h) => {
             try {
               const authCodeUrlParameters = {
@@ -20,7 +23,7 @@ export const azureAuth = {
                 responseMode: 'form_post'
               }
 
-              const response = await msalClient.getAuthCodeUrl(
+              const response = await getMsalClient().getAuthCodeUrl(
                 authCodeUrlParameters
               )
               return h.redirect(response)
@@ -33,6 +36,9 @@ export const azureAuth = {
         {
           method: 'POST',
           path: '/auth/callback',
+          options: {
+            auth: false
+          },
           handler: async (request, h) => {
             try {
               const tokenRequest = {
@@ -41,7 +47,8 @@ export const azureAuth = {
                 redirectUri: config.get('azure.redirectUri')
               }
 
-              const response = await msalClient.acquireTokenByCode(tokenRequest)
+              const response =
+                await getMsalClient().acquireTokenByCode(tokenRequest)
 
               request.yar.set('user', {
                 id: response.account.homeAccountId,
@@ -64,9 +71,12 @@ export const azureAuth = {
         {
           method: 'GET',
           path: '/auth/logout',
+          options: {
+            auth: false
+          },
           handler: async (request, h) => {
             request.cookieAuth.clear()
-            request.yar.clear()
+            request.yar.reset()
 
             const logoutUri = `https://login.microsoftonline.com/${config.get('azure.tenantId')}/oauth2/v2.0/logout`
             return h.redirect(logoutUri)
