@@ -76,7 +76,7 @@ export async function createServer() {
       ttl: config.get('session.cookie.ttl'),
       clearInvalid: true
     },
-    validateFunc: async (request, session) => {
+    validate: async (request, session) => {
       return { valid: !!session.isAuthenticated }
     }
   })
