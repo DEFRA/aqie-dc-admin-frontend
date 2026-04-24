@@ -16,7 +16,6 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { metrics } from '@defra/cdp-metrics'
-import hapiCookie from '@hapi/cookie'
 
 export async function createServer() {
   setupProxy()
