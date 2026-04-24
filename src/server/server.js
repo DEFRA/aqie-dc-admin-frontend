@@ -16,6 +16,7 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { metrics } from '@defra/cdp-metrics'
+import hapiCookie from '@hapi/cookie'
 
 export async function createServer() {
   setupProxy()
@@ -53,6 +54,19 @@ export async function createServer() {
     ],
     state: {
       strictHeader: false
+    }
+  })
+  await server.register(hapiCookie)
+  server.auth.strategy('session', 'cookie', {
+    cookie: {
+      name: 'auth',
+      password: config.get('session.cookie.password'),
+      isSecure: config.get('session.cookie.secure'),
+      ttl: config.get('session.cookie.ttl'),
+      clearInvalid: true
+    },
+    validate: async (request, session) => {
+      return { valid: !!session.isAuthenticated }
     }
   })
   await server.register([
