@@ -1,4 +1,4 @@
-import { getMsalClient } from '../../config/azure-auth.js'
+import { msalClient } from '../../config/azure-auth.js'
 import { config } from '../../config/config.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 
@@ -23,7 +23,7 @@ export const azureAuth = {
                 responseMode: 'form_post'
               }
 
-              const response = await getMsalClient().getAuthCodeUrl(
+              const response = await msalClient().getAuthCodeUrl(
                 authCodeUrlParameters
               )
               return h.redirect(response)
@@ -48,7 +48,7 @@ export const azureAuth = {
               }
 
               const response =
-                await getMsalClient().acquireTokenByCode(tokenRequest)
+                await msalClient().acquireTokenByCode(tokenRequest)
 
               request.yar.set('user', {
                 id: response.account.homeAccountId,
