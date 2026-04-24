@@ -1,7 +1,7 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
-import cookie from '@hapi/cookie'
 import Scooter from '@hapi/scooter'
+import hapiCookie from '@hapi/cookie'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -55,19 +55,6 @@ export async function createServer() {
       strictHeader: false
     }
   })
-  await server.register(hapiCookie)
-  server.auth.strategy('session', 'cookie', {
-    cookie: {
-      name: 'auth',
-      password: config.get('session.cookie.password'),
-      isSecure: config.get('session.cookie.secure'),
-      ttl: config.get('session.cookie.ttl'),
-      clearInvalid: true
-    },
-    validate: async (request, session) => {
-      return { valid: !!session.isAuthenticated }
-    }
-  })
   await server.register([
     requestLogger,
     requestTracing,
@@ -78,9 +65,8 @@ export async function createServer() {
     nunjucksConfig,
     Scooter,
     contentSecurityPolicy,
-    cookie
+    hapiCookie
   ])
-
   server.auth.strategy('session', 'cookie', {
     cookie: {
       name: 'auth',
