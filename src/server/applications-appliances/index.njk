@@ -10,7 +10,7 @@
       <h1 class="govuk-heading-xl">{{ heading }}</h1>
       <div class="govuk-body" data-testid="app-page-body">
         <h2 class="govuk-heading-l">{{ content.sections.notStarted }}</h2>
-        {% if notStarted.length > 0 %}
+        {% if notStartedApplications.length > 0 %}
           <table class="govuk-table" data-testid="appliance-applications-not-started">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
@@ -20,7 +20,7 @@
               </tr>
             </thead>
             <tbody class="govuk-table__body">
-              {% for application in notStarted %}
+              {% for application in notStartedApplications %}
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">
@@ -43,7 +43,7 @@
           <p class="govuk-body">{{ content.emptyState.notStarted }}</p>
         {% endif %}
         <h2 class="govuk-heading-l">{{ content.sections.inProgress }}</h2>
-        {% if inProgress.length > 0 %}
+        {% if inProgressApplications.length > 0 %}
           <table class="govuk-table" data-testid="appliance-applications-in-progress">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
@@ -54,7 +54,7 @@
               </tr>
             </thead>
             <tbody class="govuk-table__body">
-              {% for application in inProgress %}
+              {% for application in inProgressApplications %}
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">

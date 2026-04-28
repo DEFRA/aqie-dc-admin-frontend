@@ -12,8 +12,8 @@ async function handleApplianceApplicationsRequest(_request, h) {
       pageTitle: applianceApplicationsContent.en.heading,
       heading: applianceApplicationsContent.en.heading,
       content: applianceApplicationsContent.en,
-      notStarted,
-      inProgress,
+      notStartedApplications: notStarted,
+      inProgressApplications: inProgress,
       breadcrumbs: [
         {
           text: 'Home',
