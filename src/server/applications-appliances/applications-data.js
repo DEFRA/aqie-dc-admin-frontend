@@ -1,15 +1,13 @@
 const STUB_APPLICATIONS = Object.freeze({
-  notStarted: [
-    {id: 1083,  appliances: [{modelName: 'Twin Heat CS2001'}]}
-  ],
+  notStarted: [{ id: 1083, appliances: [{ modelName: 'Twin Heat CS2001' }] }],
   inProgress: [
     {
       id: '1084',
       appliances: [
-        {modelName: 'Twin Heat M20i'},
-        {modelName: 'Twin Heat M40i'},
-        {modelName: 'Twin Heat M60i'},
-        {modelName: 'Twin Heat M80i'}
+        { modelName: 'Twin Heat M20i' },
+        { modelName: 'Twin Heat M40i' },
+        { modelName: 'Twin Heat M60i' },
+        { modelName: 'Twin Heat M80i' }
       ],
       reviewer: {
         name: 'Sean Keller'
