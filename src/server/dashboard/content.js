@@ -6,13 +6,5 @@ export const dashboardContent = {
       fuels: 'Back to fuels list'
     },
     publishedLabel: 'Published'
-  },
-  cy: {
-    heading: 'Published --CY',
-    headingExample: {
-      appliances: 'Back to appliances list --CY',
-      fuels: 'Back to fuels list --CY'
-    },
-    publishedLabel: 'Published --CY'
   }
 }
