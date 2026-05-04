@@ -1,17 +1,32 @@
 import { dashboardContent } from './content.js'
+import { getCounts } from './dashboard-data.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 
-function handleDashboard(_request, h) {
-  return h.view('dashboard/index', {
-    pageTitle: 'Dashboard',
-    applianceNewCount: 1,
-    fuelNewCount: 2,
-    applianceInProgressCount: 2,
-    fuelInProgressCount: 3,
-    applianceTotalRecordCount: 4,
-    fuelTotalRecordCount: 5,
+const logger = createLogger()
 
-    heading: dashboardContent.en.heading
-  })
+async function handleDashboard(_request, h) {
+  try {
+    const counts = await getCounts()
+
+    return h.view('dashboard/index', {
+      pageTitle: dashboardContent.en.pageTitle,
+      heading: dashboardContent.en.heading,
+      applianceNewCount: counts.appliance.new,
+      fuelNewCount: counts.fuel.new,
+      applianceInProgressCount: counts.appliance.inProgress,
+      fuelInProgressCount: counts.fuel.inProgress,
+      applianceTotalRecordCount: counts.appliance.records,
+      fuelTotalRecordCount: counts.fuel.records
+    })
+  } catch (error) {
+    logger.error(`[dashboard.GET] failed:${error.message}`, error)
+    return h
+      .view('error/index', {
+        message: 'Sorry there is a problem with the service'
+      })
+      .code(statusCodes.internalServerError)
+  }
 }
 
 export const dashboardController = {
