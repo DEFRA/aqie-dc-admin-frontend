@@ -240,6 +240,21 @@ export const config = convict({
       default: 'http://localhost:3000/auth/callback',
       env: 'AZURE_REDIRECT_URI'
     }
+  },
+  backend: {
+    url: {
+      doc: 'Backend URL',
+      format: 'url',
+      default: 'http://localhost:3001',
+      env: 'BACKEND_URL'
+    }
+  },
+  cdpXApiKey: {
+    doc: 'CDP X API Key',
+    format: '*',
+    default: '',
+    sensitive: true,
+    env: 'CDP_X_API_KEY'
   }
 })
 

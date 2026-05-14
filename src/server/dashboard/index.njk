@@ -1,0 +1,56 @@
+{% extends 'layouts/page.njk' %}
+
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+   {# {{ appHeading({
+    text: heading,
+    caption: "aqie-dc-admin-frontend"
+  }) }} #}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+      <div class="govuk-body" data-testid="app-page-body">
+
+        <h2 class="govuk-heading-l">Manage appliances</h2>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ applianceNewCount }}</p>
+            <a href="#" class="govuk-link">New applications</a>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ applianceInProgressCount }}</p>
+            <a href="#" class="govuk-link">In progress applications</a>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ applianceTotalRecordCount }}</p>
+            <a href="#" class="govuk-link">Appliance records</a>
+          </div>
+      </div>
+
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+        <h2 class="govuk-heading-l">Manage fuels</h2>
+
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ fuelNewCount }}</p>
+            <a href="#" class="govuk-link">New applications</a>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ fuelInProgressCount }}</p>
+            <a href="#" class="govuk-link">In progress applications</a>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <p class="govuk-!-font-size-36 govuk-!-font-weight-bold">{{ fuelTotalRecordCount }}</p>
+            <a href="#" class="govuk-link">Fuel records</a>
+          </div>
+      </div>
+
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
