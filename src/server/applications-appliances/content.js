@@ -1,6 +1,7 @@
 export const applianceApplicationsContent = {
   en: {
     heading: 'New and in progress appliance applications',
+    pageTitle: 'Appliance applications',
     sections: {
       notStarted: 'Not started',
       inProgress: 'In progress'

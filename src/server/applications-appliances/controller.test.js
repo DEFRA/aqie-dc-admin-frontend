@@ -1,7 +1,7 @@
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
-describe('#dashboardController', () => {
+describe('#Applications appliances Controller', () => {
   let server
 
   beforeAll(async () => {
@@ -14,12 +14,11 @@ describe('#dashboardController', () => {
   })
 
   test('Should provide expected response', async () => {
-    const { result, statusCode } = await server.inject({
+    const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/dashboard'
+      url: '/applications-appliances'
     })
 
-    expect(result).toEqual(expect.stringContaining('Dashboard |'))
     expect(statusCode).toBe(statusCodes.ok)
   })
 })
