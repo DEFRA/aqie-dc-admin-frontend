@@ -6,14 +6,15 @@ const logger = createLogger()
 
 async function handleApplianceApplicationsRequest(_request, h) {
   try {
-    const { notStarted, inProgress } = await getApplianceApplications()
+        const response = await getApplianceApplications()
+        const applications = response.data
 
     return h.view('applications-appliances/index', {
       pageTitle: applianceApplicationsContent.en.heading,
       heading: applianceApplicationsContent.en.heading,
       content: applianceApplicationsContent.en,
-      notStartedApplications: notStarted,
-      inProgressApplications: inProgress,
+      notStartedApplications: applications.new,
+      inProgressApplications: applications.inProgress,
       breadcrumbs: [
         {
           text: 'Home',
