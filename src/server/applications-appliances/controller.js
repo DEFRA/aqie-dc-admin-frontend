@@ -6,8 +6,8 @@ const logger = createLogger()
 
 async function handleApplianceApplicationsRequest(_request, h) {
   try {
-        const response = await getApplianceApplications()
-        const applications = response.data
+    const response = await getApplianceApplications()
+    const applications = response.data
 
     return h.view('applications-appliances/index', {
       pageTitle: applianceApplicationsContent.en.heading,
