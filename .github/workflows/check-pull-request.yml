@@ -25,6 +25,15 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - run: node -v
+      - run: npm -v
+      - run: git rev-parse HEAD
+      - run: ls -l package-lock.json
+      - run: grep -n '"typescript"' package-lock.json | head
+      - run: grep -n '"keyv"' package-lock.json | head
+      - run: |
+         echo "SHA: $GITHUB_SHA"
+         git log --oneline -5
       - run: |
           npm ci
           npm run build:frontend
