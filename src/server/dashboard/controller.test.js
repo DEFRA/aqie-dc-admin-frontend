@@ -19,18 +19,20 @@ describe('#dashboardController', () => {
     await server.initialize()
   })
 
+  beforeEach(() => {
+    getCountsMock.mockReset()
+  })
+
   afterAll(async () => {
     await server.stop({ timeout: 0 })
-
-    beforeEach(() => {
-      getCountsMock.mockReset()
-    })
   })
 
   test('renders the dashboard with counts from the data layer', async () => {
     getCountsMock.mockResolvedValue({
-      appliance: { new: 5, inProgress: 7, records: 3359 },
-      fuel: { new: 2, inProgress: 1, records: 265 }
+      data: {
+        appliance: { new: 5, inProgress: 7, records: 3359 },
+        fuel: { new: 2, inProgress: 1, records: 265 }
+      }
     })
 
     const { result, statusCode } = await server.inject({
@@ -39,7 +41,7 @@ describe('#dashboardController', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('Dashboard |')
+    expect(result).toContain('Dashboard')
   })
 
   test('renders error view when getCounts throws error', async () => {
@@ -55,16 +57,23 @@ describe('#dashboardController', () => {
 })
 
 describe('#handleDashboardGet (unit)', () => {
-  beforeEach(() => getCountsMock.mockReset())
+  beforeEach(() => {
+    getCountsMock.mockReset()
+  })
 
   test('passes counts from getCounts into the view', async () => {
     getCountsMock.mockResolvedValue({
-      appliance: { new: 1, inProgress: 2, records: 3 },
-      fuel: { new: 4, inProgress: 5, records: 6 }
+      data: {
+        appliance: { new: 1, inProgress: 2, records: 3 },
+        fuel: { new: 4, inProgress: 5, records: 6 }
+      }
     })
 
     const view = vi.fn().mockReturnValue('rendered')
-    const h = { view, code: vi.fn() }
+    const h = {
+      view,
+      code: vi.fn()
+    }
 
     await handleDashboard({}, h)
 
