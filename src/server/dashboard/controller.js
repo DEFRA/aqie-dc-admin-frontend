@@ -7,7 +7,8 @@ const logger = createLogger()
 
 async function handleDashboard(_request, h) {
   try {
-    const counts = await getCounts()
+    const response = await getCounts()
+    const counts = response.data
 
     return h.view('dashboard/index', {
       pageTitle: dashboardContent.en.pageTitle,
