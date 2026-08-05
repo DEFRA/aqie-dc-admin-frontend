@@ -1,0 +1,82 @@
+{% extends 'layouts/page.njk' %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% block content %}
+  {# {{ appHeading({
+                              text: heading,
+                              caption: "aqie-dc-admin-frontend"
+                            }) }} #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+      <div class="govuk-body" data-testid="app-page-body">
+        <h2 class="govuk-heading-l">{{ content.sections.notStarted }}</h2>
+        {% if notStartedApplications.length > 0 %}
+          <table class="govuk-table" data-testid="appliance-applications-not-started">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                <th scope="col" class="govuk-table__header">{{ content.columns.appliances }}</th>
+                <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for application in notStartedApplications %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
+                  <td class="govuk-table__cell">
+                    <ul class="govuk-list govuk-list--bullet">
+                      {% for appliance in application.appliances %}
+                        <li>{{ appliance.modelName }}</li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                  <td class="govuk-table__cell">
+                    <a class="govuk-link" href="">Start review
+                    </a>
+                    {#TODO: pass the correct link #}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="govuk-body">{{ content.emptyState.notStarted }}</p>
+        {% endif %}
+        <h2 class="govuk-heading-l">{{ content.sections.inProgress }}</h2>
+        {% if inProgressApplications.length > 0 %}
+          <table class="govuk-table" data-testid="appliance-applications-in-progress">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                <th scope="col" class="govuk-table__header">{{ content.columns.appliances }}</th>
+                <th scope="col" class="govuk-table__header">{{ content.columns.reviewer }}</th>
+                <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for application in inProgressApplications %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
+                  <td class="govuk-table__cell">
+                    <ul class="govuk-list govuk-list--bullet">
+                      {% for appliance in application.appliances %}
+                        <li>{{ appliance.modelName }}</li>
+                      {% endfor %}
+                    </ul>
+                  </td>
+                  <td class="govuk-table__cell">{{ application.reviewer.name }}</td>
+                  <td class="govuk-table__cell">
+                    <a class="govuk-link" href="">Continue review
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="govuk-body">{{ content.emptyState.inProgress }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
