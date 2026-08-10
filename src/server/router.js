@@ -6,6 +6,7 @@ import { health } from './health/index.js'
 import { dashboard } from './dashboard/index.js'
 import { applicationsAppliances } from './applications-appliances/index.js'
 import { applicationAppliances } from './application-appliances/index.js'
+import { applianceReview } from './appliances/appliance-review/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 
@@ -25,7 +26,8 @@ export const router = {
         azureAuth,
         dashboard,
         applicationsAppliances,
-        applicationAppliances
+        applicationAppliances,
+        applianceReview
       ])
 
       // Static assets

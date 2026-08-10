@@ -1,0 +1,149 @@
+{% extends 'layouts/page.njk' %}
+
+{% block pageTitle %}
+  Example Page - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">
+      Review Twin Heat M60i
+    </h1>
+
+    <h2 class="govuk-heading-l">
+      Review documentation
+    </h2>
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: "Review test reports"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Pass"
+              }
+            ]
+          }
+        },
+        {
+          key: {
+            text: "Review technical drawings"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Pass"
+              }
+            ]
+          }
+        },
+        {
+          key: {
+            text: "Review conformity mark"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Pass"
+              }
+            ]
+          }
+        },
+        {
+          key: {
+            text: "Review instruction manual"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Pass"
+              }
+            ]
+          }
+        }
+      ]
+    }) }}
+
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">
+      Prepare public listing
+    </h2>
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: {
+            text: "Check appliance details"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Completed"
+              }
+            ]
+          }
+        },
+        {
+          key: {
+            text: "Check permitted fuels"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Completed"
+              }
+            ]
+          }
+        },
+        {
+          key: {
+            text: "Enter additional conditions"
+          },
+          actions: {
+            items: [
+              {
+                href: "#",
+                text: "Completed"
+              }
+            ]
+          }
+        }
+      ]
+    }) }}
+
+    <div class="govuk-button-group govuk-!-margin-top-6">
+
+      {{ govukButton({
+        text: "Accept this appliance",
+        href: "#"
+      }) }}
+
+      {{ govukButton({
+        text: "Reject this appliance",
+        href: "#",
+        classes: "govuk-button--secondary"
+      }) }}
+
+    </div>
+
+    <p class="govuk-body">
+      #
+        Come back to this later
+      </a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
