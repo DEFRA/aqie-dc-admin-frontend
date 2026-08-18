@@ -12,15 +12,37 @@
     <h1 class="govuk-heading-l">
       Review appliance application
     </h1>
-    
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">
+          Appliances for review
+        </h2>
+      </div>
 
-    <p class="govuk-body">
-     {# {{applicationId}} #}
-    </p>
+      <div class="govuk-summary-card__content">
+        {{ govukTable({
+        head: [
+          {
+            text: "Appliance Name"
+          },
+          {
+            text: "Status"
+          },
+          {
+            text: "Actions"
+          }
+        ],
+        rows: [
+          [
+            { text: "Twin Heat M20i" },
+            { text: "	Not started" },
+            { html: '<a href="/appliance-review">Start Review</a>' }
+          ]
+        ]
+      }) }}
+      </div>
+    </div>
 
-   <a href="/appliance-review" class="govuk-button">
-      Continue
-    </a>
 
   </div>
 </div>
