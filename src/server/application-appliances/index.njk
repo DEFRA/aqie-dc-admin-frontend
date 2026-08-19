@@ -1,7 +1,7 @@
-{% extends 'layouts/page.njk' %}
+{% extends "layouts/page.njk" %}
 
 {% block pageTitle %}
-  Example Page - GOV.UK
+  {{ pageTitle }} - GOV.UK
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,69 @@
 
     <h1 class="govuk-heading-l">
       Review appliance application
+      <span class="govuk-heading-l govuk-!-display-block">
+        {{ application.id }}
+      </span>
     </h1>
+
+    {{ govukSummaryList({
+      card: {
+        title: {
+            text: "Applicant details"
+        }
+      },
+      rows: [
+        {
+          key: {
+            text: "Company name"
+          },
+          value: {
+            text: application.companyName
+          }
+        },
+        {
+          key: {
+            text: "Company address"
+          },
+          value: {
+            html: companyAddress
+          }
+        },
+        {
+          key: {
+            text: "Main contact name"
+          },
+          value: {
+            text: application.companyContact.name
+          }
+        },
+        {
+          key: {
+            text: "Main contact email"
+          },
+          value: {
+            text: application.companyContact.email
+          }
+        },
+        {
+          key: {
+            text: "Main contact alternative email"
+          },
+          value: {
+            text: application.companyContact.alternativeEmail
+          }
+        },
+        {
+          key: {
+            text: "Main contact telephone number"
+          },
+          value: {
+            text: application.companyContact.phone
+          }
+        }
+      ]
+    }) }}
+
     <div class="govuk-summary-card">
       <div class="govuk-summary-card__title-wrapper">
         <h2 class="govuk-summary-card__title">
@@ -20,6 +82,19 @@
       </div>
 
       <div class="govuk-summary-card__content">
+        {% set applianceRows = [] %}
+        {% for item in appliances %}
+          {% set applianceRows = (applianceRows.push([ 
+            { text: item.modelName },
+            { html: govukTag({
+                text: item.tag.label,
+                classes: item.tag.colour
+                })
+            },
+            { html: item.action}
+          ]), applianceRows) %}
+        {% endfor %}
+
         {{ govukTable({
         head: [
           {
@@ -32,17 +107,21 @@
             text: "Actions"
           }
         ],
-        rows: [
-          [
-            { text: "Twin Heat M20i" },
-            { text: "	Not started" },
-            { html: '<a href="/appliance-review">Start Review</a>' }
-          ]
-        ]
-      }) }}
+        rows: applianceRows
+        }) }}
       </div>
     </div>
 
+    <div class="govuk-button-group govuk-!-margin-top-7">
+     {{ govukButton({
+        text: "Continue",
+        href: "/appliance-review"
+      }) }}
+    </div>
+
+    <p> 
+      <a href="/appliance-review">Come back to this later</a>
+    </p>
 
   </div>
 </div>
