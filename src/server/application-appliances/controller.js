@@ -4,13 +4,12 @@ import { getApplianceApplication } from './application-data.js'
 
 const logger = createLogger()
 
-async function handleAppliancesApplicationRequest(_request, h) {
+async function handleAppliancesApplicationRequest(request, h) {
+  const { applicationId } = request.params
+
   try {
-    const response = await getApplianceApplication(
-      '362a9e68-1678-44b6-b8b6-c8d15b988694'
-    )
+    const response = await getApplianceApplication(applicationId)
     const application = response.data
-    console.log('application', application)
 
     let companyAddress
 

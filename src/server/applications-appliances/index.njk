@@ -31,7 +31,7 @@
                     </ul>
                   </td>
                   <td class="govuk-table__cell">
-                    <a class="govuk-link" href="/application-appliances">Start review
+                    <a class="govuk-link" href="/review-appliance-application/{{ application.id }}">Start review
                     </a>
                     {#TODO: pass the correct link and change status#}
                   </td>
@@ -66,7 +66,7 @@
                   </td>
                   <td class="govuk-table__cell">{{ application.reviewer.name }}</td>
                   <td class="govuk-table__cell">
-                    <a class="govuk-link" href="">Continue review
+                    <a class="govuk-link" href="/review-appliance-application/{{ application.id }}">Continue review
                     </a>
                   </td>
                 </tr>

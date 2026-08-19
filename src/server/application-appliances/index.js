@@ -14,8 +14,7 @@ export const applicationAppliances = {
       server.route([
         {
           method: 'GET',
-          path: '/application-appliances',
-          //{applicationId}
+          path: '/review-appliance-application/{applicationId}',
           ...appliancesApplicationController
         }
       ])
