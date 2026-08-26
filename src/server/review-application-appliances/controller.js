@@ -1,6 +1,7 @@
 import { appliancesApplicationContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceApplication } from './application-data.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 
@@ -19,8 +20,7 @@ async function handleAppliancesApplicationRequest(request, h) {
       companyAddress = [
         application.companyAddress.line1,
         application.companyAddress.line2,
-        application.companyAddress.line3,
-        application.companyAddress.town,
+        application.companyAddress.city,
         application.companyAddress.county,
         application.companyAddress.postcode,
         application.companyAddress.country
@@ -58,7 +58,7 @@ async function handleAppliancesApplicationRequest(request, h) {
       action: `<a href="/appliance-review">${statusMap[item.technicalReview.status].text}</a>`
     }))
 
-    return h.view('application-appliances/index', {
+    return h.view('review-application-appliances/index', {
       pageTitle: appliancesApplicationContent.en.heading,
       heading: appliancesApplicationContent.en.heading,
       application,
@@ -67,7 +67,9 @@ async function handleAppliancesApplicationRequest(request, h) {
     })
   } catch (error) {
     logger.error(`appliance applications get failed: ${error.message}`, error)
-    return h.view('error/index', { message: '', details: error })
+    return h
+      .view('error/index', { message: '', details: error })
+      .code(statusCodes.internalServerError)
   }
 }
 
