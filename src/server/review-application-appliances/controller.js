@@ -52,11 +52,15 @@ async function handleAppliancesApplicationRequest(request, h) {
       }
     }
 
-    const appliances = application.linkedItems.map((item) => ({
-      modelName: item.modelName,
-      tag: statusMap[item.technicalReview.status],
-      action: `<a href="/appliance-review">${statusMap[item.technicalReview.status].text}</a>`
-    }))
+    const appliances = application.linkedItems.map((item) => {
+      const status = item.technicalReview?.status ?? 'new'
+
+      return {
+        modelName: item.modelName,
+        tag: statusMap[status],
+        action: `<a href="/appliance-review">${statusMap[status].text}</a>`
+      }
+    })
 
     return h.view('review-application-appliances/index', {
       pageTitle: appliancesApplicationContent.en.heading,
