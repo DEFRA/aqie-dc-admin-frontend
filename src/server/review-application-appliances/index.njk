@@ -36,7 +36,7 @@
             text: "Company address"
           },
           value: {
-            html: companyAddress
+            html: companyAddress.replaceAll('\n', '<br>')
           }
         },
         {
@@ -91,7 +91,7 @@
                 classes: item.tag.colour
                 })
             },
-            { html: item.action}
+            { html: '<a href="' + item.actionHref + '">' + item.actionText + '</a>'}
           ]), applianceRows) %}
         {% endfor %}
 
@@ -115,9 +115,9 @@
     <div class="govuk-button-group govuk-!-margin-top-7">
      {{ govukButton({
         text: "Continue",
-        href: "/appliance-review/{{ application.id }}"
+        href: ""
       }) }}
-      {# TODO: add correct href #}
+      {# TODO: add correct href and pass application ID #}
     </div>
 
     <p> 

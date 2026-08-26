@@ -1,3 +1,4 @@
+import Joi from 'joi'
 import { appliancesApplicationController } from './controller.js'
 
 /**
@@ -13,7 +14,14 @@ export const reviewApplicationAppliances = {
         {
           method: 'GET',
           path: '/review-appliance-application/{applicationId}',
-          ...appliancesApplicationController
+          ...appliancesApplicationController,
+          options: {
+            validate: {
+              params: Joi.object({
+                applicationId: Joi.string().required().trim().min(1)
+              })
+            }
+          }
         }
       ])
     }

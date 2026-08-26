@@ -158,6 +158,37 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     }
   )
 
+  test('falls back to the new status when technicalReview status is missing', async () => {
+    getApplianceApplicationMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        companyFullAddress: 'Line 1',
+        linkedItems: [{ modelName: 'Boiler 1', technicalReview: {} }]
+      }
+    })
+
+    const view = vi.fn().mockReturnValue('rendered')
+    const h = { view }
+
+    await handleAppliancesApplicationRequest(
+      { params: { applicationId: 'app-1' } },
+      h
+    )
+
+    expect(view).toHaveBeenCalledWith(
+      'review-application-appliances/index',
+      expect.objectContaining({
+        appliances: [
+          expect.objectContaining({
+            modelName: 'Boiler 1',
+            tag: { text: 'Start review', label: 'Not started', colour: 'govuk-tag--grey' },
+            action: '<a href="/appliance-review">Start review</a>'
+          })
+        ]
+      })
+    )
+  })
+
   test('renders error view when getApplianceApplication throws', async () => {
     getApplianceApplicationMock.mockRejectedValue(new Error('backend down'))
 
