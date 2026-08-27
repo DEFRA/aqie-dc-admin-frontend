@@ -79,7 +79,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     expect(view).toHaveBeenCalledWith(
       'review-application-appliances/index',
       expect.objectContaining({
-        companyAddress: 'Line 1<br>Line 2<br>Line 3'
+        companyAddress: 'Line 1\nLine 2\nLine 3'
       })
     )
   })
@@ -110,7 +110,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     expect(view).toHaveBeenCalledWith(
       'review-application-appliances/index',
       expect.objectContaining({
-        companyAddress: '1 High Street<br>London<br>SW1A 1AA<br>UK'
+        companyAddress: '1 High Street\nLondon\nSW1A 1AA\nUK'
       })
     )
   })
@@ -146,7 +146,8 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
             expect.objectContaining({
               modelName: 'Boiler 1',
               tag: { text: actionText, label, colour },
-              action: `<a href="/appliance-review">${actionText}</a>`
+              actionHref: '/review-individual-appliance/app-1',
+              actionText
             })
           ]
         })
@@ -182,7 +183,8 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
               label: 'Not started',
               colour: 'govuk-tag--grey'
             },
-            action: '<a href="/appliance-review">Start review</a>'
+            actionHref: '/review-individual-appliance/app-1',
+            actionText: 'Start review'
           })
         ]
       })
