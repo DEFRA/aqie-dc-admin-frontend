@@ -18,7 +18,7 @@ export const reviewApplicationAppliances = {
           options: {
             validate: {
               params: Joi.object({
-                applicationId: Joi.string().required().trim().min(1)
+                applicationId: Joi.string().required().trim().min(1).max(64)
               })
             }
           }

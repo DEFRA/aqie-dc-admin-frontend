@@ -56,7 +56,6 @@ async function handleAppliancesApplicationRequest(request, h) {
         tag: statusMap[status],
         actionHref: `/review-individual-appliance/${applicationId}`,
         actionText: statusMap[status].text
-        //action: `<a href="/review-individual-appliance/${applicationId}">${statusMap[status].text}</a>`
       }
     })
 
