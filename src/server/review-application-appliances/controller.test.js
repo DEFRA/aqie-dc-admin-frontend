@@ -13,9 +13,7 @@ vi.mock('./application-data.js', () => ({
 const baseApplication = {
   id: 'app-1',
   companyName: 'Acme Ltd',
-  linkedItems: [
-    { modelName: 'Boiler 1', technicalReview: { status: 'new' } }
-  ]
+  linkedItems: [{ modelName: 'Boiler 1', technicalReview: { status: 'new' } }]
 }
 
 describe('#reviewApplicationAppliancesController', () => {
@@ -129,9 +127,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
         data: {
           ...baseApplication,
           companyFullAddress: 'Line 1',
-          linkedItems: [
-            { modelName: 'Boiler 1', technicalReview: { status } }
-          ]
+          linkedItems: [{ modelName: 'Boiler 1', technicalReview: { status } }]
         }
       })
 
@@ -181,7 +177,11 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
         appliances: [
           expect.objectContaining({
             modelName: 'Boiler 1',
-            tag: { text: 'Start review', label: 'Not started', colour: 'govuk-tag--grey' },
+            tag: {
+              text: 'Start review',
+              label: 'Not started',
+              colour: 'govuk-tag--grey'
+            },
             action: '<a href="/appliance-review">Start review</a>'
           })
         ]

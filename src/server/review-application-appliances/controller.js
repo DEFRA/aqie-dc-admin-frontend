@@ -12,17 +12,18 @@ async function handleAppliancesApplicationRequest(request, h) {
     const response = await getApplianceApplication(applicationId)
     const application = response.data
 
-    const companyAddress = application.companyFullAddress ? application.companyFullAddress : [
-      application.companyAddress.line1,
-      application.companyAddress.line2,
-      application.companyAddress.city,
-      application.companyAddress.county,
-      application.companyAddress.postcode,
-      application.companyAddress.country
-    ]
-        .filter(Boolean)
-        .join('\n')
-
+    const companyAddress = application.companyFullAddress
+      ? application.companyFullAddress
+      : [
+          application.companyAddress.line1,
+          application.companyAddress.line2,
+          application.companyAddress.city,
+          application.companyAddress.county,
+          application.companyAddress.postcode,
+          application.companyAddress.country
+        ]
+          .filter(Boolean)
+          .join('\n')
 
     const statusMap = {
       new: {
@@ -54,10 +55,10 @@ async function handleAppliancesApplicationRequest(request, h) {
         modelName: item.modelName,
         tag: statusMap[status],
         actionHref: `/review-individual-appliance/${applicationId}`,
-        actionText: statusMap[status].text,
+        actionText: statusMap[status].text
         //action: `<a href="/review-individual-appliance/${applicationId}">${statusMap[status].text}</a>`
       }
-    }) 
+    })
 
     return h.view('review-application-appliances/index', {
       pageTitle: appliancesApplicationContent.en.heading,
