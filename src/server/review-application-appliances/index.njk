@@ -1,0 +1,139 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">
+      Review appliance application
+      <span class="govuk-heading-l govuk-!-display-block">
+        {{ application.id }}
+      </span>
+    </h1>
+
+    {% set addressHtml %}
+      {% for line in companyAddress %}
+        {{ line}}
+    {% if not loop.last %}
+        <br>
+    {% endif %}
+      {% endfor %}
+    {% endset %}
+
+    {{ govukSummaryList({
+      card: {
+        title: {
+            text: "Applicant details"
+        }
+      },
+      rows: [
+        {
+          key: {
+            text: "Company name"
+          },
+          value: {
+            text: application.companyName
+          }
+        },
+        {
+          key: {
+            text: "Company address"
+          },
+          value: {
+            html: addressHtml
+          }
+        },
+        {
+          key: {
+            text: "Main contact name"
+          },
+          value: {
+            text: application.companyContact.name
+          }
+        },
+        {
+          key: {
+            text: "Main contact email"
+          },
+          value: {
+            text: application.companyContact.email
+          }
+        },
+        {
+          key: {
+            text: "Main contact alternative email"
+          },
+          value: {
+            text: application.companyContact.alternativeEmail | default('Not provided')
+          }
+        },
+        {
+          key: {
+            text: "Main contact telephone number"
+          },
+          value: {
+            text: application.companyContact.phone | default('Not provided')
+          }
+        }
+      ]
+    }) }}
+
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">
+          Appliances for review
+        </h2>
+      </div>
+
+      <div class="govuk-summary-card__content">
+        {% set applianceRows = [] %}
+        {% for item in appliances %}
+          {% set applianceRows = (applianceRows.push([ 
+            { text: item.modelName },
+            { html: govukTag({
+                text: item.tag.label,
+                classes: item.tag.colour
+                })
+            },
+            { html: '<a href="' + item.actionHref + '">' + item.actionText + '</a>'}
+          ]), applianceRows) %}
+        {% endfor %}
+
+        {{ govukTable({
+        head: [
+          {
+            text: "Appliance Name"
+          },
+          {
+            text: "Status"
+          },
+          {
+            text: "Actions"
+          }
+        ],
+        rows: applianceRows
+        }) }}
+      </div>
+    </div>
+
+    <div class="govuk-button-group govuk-!-margin-top-7">
+     {{ govukButton({
+        text: "Continue",
+        href: ""
+      }) }}
+      {# TODO: add correct href and pass application ID #}
+    </div>
+
+    <p> 
+      <a href="/applications-appliances">Come back to this later</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
