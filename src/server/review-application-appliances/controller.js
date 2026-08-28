@@ -49,13 +49,13 @@ async function handleAppliancesApplicationRequest(request, h) {
       }
     }
 
-    const appliances = application.linkedItems.map((item) => {
-      const status = item.technicalReview?.status ?? 'new'
+    const appliances = application.linkedItems.map((appliance) => {
+      const status = appliance.technicalReview?.status ?? 'new'
 
       return {
-        modelName: item.modelName,
+        modelName: appliance.modelName,
         tag: statusMap[status],
-        actionHref: `/review-individual-appliance/${applicationId}`,
+        actionHref: `/review-individual-appliance/${appliance.id}`,
         actionText: statusMap[status].text
       }
     })
