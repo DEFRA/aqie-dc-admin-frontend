@@ -16,6 +16,15 @@
       </span>
     </h1>
 
+    {% set addressHtml %}
+      {% for line in companyAddress %}
+        {{ line}}
+    {% if not loop.last %}
+        <br>
+    {% endif %}
+      {% endfor %}
+    {% endset %}
+
     {{ govukSummaryList({
       card: {
         title: {
@@ -36,7 +45,7 @@
             text: "Company address"
           },
           value: {
-            html: companyAddress.replaceAll('\n', '<br>')
+            html: addressHtml
           }
         },
         {
@@ -60,7 +69,7 @@
             text: "Main contact alternative email"
           },
           value: {
-            text: application.companyContact.alternativeEmail
+            text: application.companyContact.alternativeEmail | default('Not provided')
           }
         },
         {
@@ -68,7 +77,7 @@
             text: "Main contact telephone number"
           },
           value: {
-            text: application.companyContact.phone
+            text: application.companyContact.phone | default('Not provided')
           }
         }
       ]

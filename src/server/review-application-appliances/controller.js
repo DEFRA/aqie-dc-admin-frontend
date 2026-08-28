@@ -14,6 +14,9 @@ async function handleAppliancesApplicationRequest(request, h) {
 
     const companyAddress = application.companyFullAddress
       ? application.companyFullAddress
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
       : [
           application.companyAddress.line1,
           application.companyAddress.line2,
@@ -21,9 +24,7 @@ async function handleAppliancesApplicationRequest(request, h) {
           application.companyAddress.county,
           application.companyAddress.postcode,
           application.companyAddress.country
-        ]
-          .filter(Boolean)
-          .join('\n')
+        ].filter(Boolean)
 
     const statusMap = {
       new: {
