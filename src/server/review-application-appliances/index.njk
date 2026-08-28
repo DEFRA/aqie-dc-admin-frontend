@@ -10,7 +10,7 @@
   <div class="govuk-grid-column-two-thirds">
 
     <h1 class="govuk-heading-l">
-      Review appliance application
+      {{ heading }}
       <span class="govuk-heading-l govuk-!-display-block">
         {{ application.id }}
       </span>
@@ -124,7 +124,7 @@
     <div class="govuk-button-group govuk-!-margin-top-7">
      {{ govukButton({
         text: "Continue",
-        href: ""
+        href: "/complete-appliance-application/{{ applicationId }}"
       }) }}
       {# TODO: add correct href and pass application ID #}
     </div>

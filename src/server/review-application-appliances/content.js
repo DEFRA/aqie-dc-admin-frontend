@@ -1,6 +1,6 @@
 export const appliancesApplicationContent = {
   en: {
-    pageTitle: 'Appliances Application',
-    heading: 'Appliances Application'
+    pageTitle: 'Review appliance application',
+    heading: 'Review appliance application'
   }
 }

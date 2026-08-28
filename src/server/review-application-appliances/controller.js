@@ -65,7 +65,20 @@ async function handleAppliancesApplicationRequest(request, h) {
       heading: appliancesApplicationContent.en.heading,
       application,
       appliances,
-      companyAddress
+      companyAddress,
+      breadcrumbs: [
+        {
+          text: 'Home',
+          href: '/dashboard'
+        },
+        {
+          text: applianceApplicationsContent.en.heading,
+          href: '/applications-appliances'
+        },
+        {
+          text: appliancesApplicationContent.en.heading
+        }
+      ]
     })
   } catch (error) {
     logger.error(`appliance applications get failed: ${error.message}`, error)
