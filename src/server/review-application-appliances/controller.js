@@ -1,7 +1,9 @@
 import { appliancesApplicationContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceApplication } from './application-data.js'
+//updateApplianceApplicationStatus
 import { statusCodes } from '../common/constants/status-codes.js'
+import { applianceApplicationsContent } from '../applications-appliances/content.js'
 
 const logger = createLogger()
 
@@ -11,6 +13,15 @@ async function handleAppliancesApplicationRequest(request, h) {
   try {
     const response = await getApplianceApplication(applicationId)
     const application = response.data
+
+    // // If this is first time arrving on this page for the application, need to assign the reviewer and start teh application review
+    // const isNotStarted = application.linkedItems.every(
+    //   (item) => (item.application?.status ?? 'new') === 'new'
+    // )
+
+    // if (isNotStarted) {
+    //   await updateApplianceApplicationStatus(applicationId, 'in_review')
+    // }
 
     const companyAddress = application.companyFullAddress
       ? application.companyFullAddress
@@ -63,6 +74,7 @@ async function handleAppliancesApplicationRequest(request, h) {
     return h.view('review-application-appliances/index', {
       pageTitle: appliancesApplicationContent.en.heading,
       heading: appliancesApplicationContent.en.heading,
+      applicationId,
       application,
       appliances,
       companyAddress,
