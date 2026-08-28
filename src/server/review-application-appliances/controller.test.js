@@ -13,7 +13,13 @@ vi.mock('./application-data.js', () => ({
 const baseApplication = {
   id: 'app-1',
   companyName: 'Acme Ltd',
-  linkedItems: [{ modelName: 'Boiler 1', technicalReview: { status: 'new' } }]
+  linkedItems: [
+    {
+      id: 'appliance-1',
+      modelName: 'Boiler 1',
+      technicalReview: { status: 'new' }
+    }
+  ]
 }
 
 describe('#reviewApplicationAppliancesController', () => {
@@ -79,7 +85,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     expect(view).toHaveBeenCalledWith(
       'review-application-appliances/index',
       expect.objectContaining({
-        companyAddress: 'Line 1\nLine 2\nLine 3'
+        companyAddress: ['Line 1', 'Line 2', 'Line 3']
       })
     )
   })
@@ -110,7 +116,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     expect(view).toHaveBeenCalledWith(
       'review-application-appliances/index',
       expect.objectContaining({
-        companyAddress: '1 High Street\nLondon\nSW1A 1AA\nUK'
+        companyAddress: ['1 High Street', 'London', 'SW1A 1AA', 'UK']
       })
     )
   })
@@ -127,7 +133,13 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
         data: {
           ...baseApplication,
           companyFullAddress: 'Line 1',
-          linkedItems: [{ modelName: 'Boiler 1', technicalReview: { status } }]
+          linkedItems: [
+            {
+              id: 'appliance-1',
+              modelName: 'Boiler 1',
+              technicalReview: { status }
+            }
+          ]
         }
       })
 
@@ -146,7 +158,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
             expect.objectContaining({
               modelName: 'Boiler 1',
               tag: { text: actionText, label, colour },
-              actionHref: '/review-individual-appliance/app-1',
+              actionHref: '/review-individual-appliance/appliance-1',
               actionText
             })
           ]
@@ -160,7 +172,13 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
       data: {
         ...baseApplication,
         companyFullAddress: 'Line 1',
-        linkedItems: [{ modelName: 'Boiler 1', technicalReview: {} }]
+        linkedItems: [
+          {
+            id: 'appliance-1',
+            modelName: 'Boiler 1',
+            technicalReview: {}
+          }
+        ]
       }
     })
 
@@ -183,7 +201,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
               label: 'Not started',
               colour: 'govuk-tag--grey'
             },
-            actionHref: '/review-individual-appliance/app-1',
+            actionHref: '/review-individual-appliance/appliance-1',
             actionText: 'Start review'
           })
         ]
