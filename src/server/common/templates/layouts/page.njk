@@ -14,15 +14,18 @@
 {% endblock %}
 
 {% block header %}
+{% set accountNavigation = [{ href: "/auth/logout", text:"Sign out" }] if user else [] %}
   {# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
     containerClasses: "govuk-width-container",
-    useTudorCrown: true
+    useTudorCrown: true,
+    navigation: accountNavigation
   }) }}
 
   {{ govukServiceNavigation({
+  navigation: navigation
   }) }}
 {% endblock %}
 

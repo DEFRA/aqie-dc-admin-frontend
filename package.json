@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build:frontend": "cross-env NODE_ENV=production webpack",
-    "dev": "cross-env AWS_EMF_ENVIRONMENT=Local run-p frontend:watch server:watch",
-    "dev:debug": "cross-env AWS_EMF_ENVIRONMENT=Local run-p frontend:watch server:debug",
+    "dev": "cross-env AWS_EMF_ENVIRONMENT=Local SSO_ENABLED=false run-p frontend:watch server:watch",
+    "dev:debug": "cross-env AWS_EMF_ENVIRONMENT=Local SSO_ENABLED=false run-p frontend:watch server:debug",
     "docker:dev": "npm run dev",
     "format": "prettier --write \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
     "format:check": "prettier --check \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",

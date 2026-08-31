@@ -239,6 +239,46 @@ export const config = convict({
       format: String,
       default: 'http://localhost:3000/auth/callback',
       env: 'AZURE_REDIRECT_URI'
+    },
+    postLogoutRedirectUri: {
+      doc: 'Where Microsoft returns the user after sign-out',
+      format: String,
+      default: '',
+      env: 'AZURE_POST_LOGOUT_REDIRECT_URI'
+    },
+    authorityHost: {
+      doc: 'Microsoft Entra authority host',
+      format: String,
+      default: 'https://login.microsoftonline.com',
+      env: 'AZURE_AUTHORITY_HOST'
+    }
+  },
+  auth: {
+    ssoEnabled: {
+      doc: 'Azure SSO. On in all env apart from local. set SSO_ENABLED=false for local',
+      format: Boolean,
+      default: true,
+      env: 'SSO_ENABLED'
+    },
+    devUser: {
+      id: {
+        doc: 'Stub user id used only when SSO is disabled (local dev)',
+        format: String,
+        default: 'local-dev',
+        env: 'DEV_USER_ID'
+      },
+      email: {
+        doc: 'Stub user email used only when SSO is disabled (local dev)',
+        format: String,
+        default: 'dev@yopmail.com',
+        env: 'DEV_USER_EMAIL'
+      },
+      name: {
+        doc: 'Stub user name used only when SSO is disabled (local dev)',
+        format: String,
+        default: 'Local developer',
+        env: 'DEV_USER_NAME'
+      }
     }
   },
   backend: {
