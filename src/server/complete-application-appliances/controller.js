@@ -1,12 +1,26 @@
 import { completeApplicationAppliancesContent } from './content.js'
+import { getApplicationWithTechStatus } from './application-data.js'
 
-function handleCompleteApplicationAppliancesRequest(request, h) {
+async function handleCompleteApplicationAppliancesRequest(request, h) {
   const { applicationId } = request.params
 
+  const applicationData = await getApplicationWithTechStatus(applicationId)
+
+  //check groupedByTechReviewStatus.unreviewed if its empty or not
+  const unreviewedArray =
+    applicationData.groupedByTechReviewStatus?.unreviewed || []
+  const hasPendingReviews = unreviewedArray.length > 0
+  const heading =
+    completeApplicationAppliancesContent.en.getHeading(applicationId)
+  const pageTitle =
+    completeApplicationAppliancesContent.en.getPageTitle(applicationId)
+
   return h.view('complete-application-appliances/index', {
-    pageTitle: completeApplicationAppliancesContent.en.pageTitle,
-    heading: completeApplicationAppliancesContent.en.heading,
-    applicationId
+    pageTitle,
+    heading,
+    applicationId,
+    applicationData,
+    hasPendingReviews
   })
 }
 

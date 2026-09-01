@@ -1,5 +1,5 @@
 {% extends "layouts/page.njk" %}
-
+{# //{% if hasPendingReviews %} #}
 {% block pageTitle %}
   {{ pageTitle }} - GOV.UK
 {% endblock %}
@@ -9,6 +9,13 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
+    <p class="govuk-body">
+    You must make a final decision on each appliance before completing this application review.
+    </p>
+
+    <p> 
+      <a href="/review-appliance-application/{{ applicationId }}">Return to application</a>
+    </p>
   </div>
 </div>
 

@@ -1,6 +1,8 @@
 export const completeApplicationAppliancesContent = {
   en: {
-    heading: 'Complete appliance application',
-    pageTitle: 'Complete appliance application'
+    getHeading: (applicationId) =>
+      `Your review of application ${applicationId} is not complete`,
+    getPageTitle: (applicationId) =>
+      `Your review of application ${applicationId} is not complete`
   }
 }
