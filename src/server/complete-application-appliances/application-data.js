@@ -1,7 +1,4 @@
 import { fetchJson } from '../common/api/api.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-
-const logger = createLogger()
 
 /**
  * Fetches application with appliances grouped by technical review status.
