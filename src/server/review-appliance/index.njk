@@ -1,64 +1,61 @@
 {% extends "layouts/page.njk" %}
 
 {% block pageTitle %}
-  {{ pageTitle }} - GOV.UK
+  {{ pageTitle }} - GOV.UK
 {% endblock %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds">
 
-    <a href="{{ applicationHref }}" class="govuk-back-link">Back</a>
+    {% if incompleteError %}
+      {{ govukErrorSummary({
+        titleText: content.errors.incompleteTitle,
+        errorList: [
+          { text: incompleteError, href: "#review-documents-1" }
+        ]
+      }) }}
+    {% endif %}
 
-    {% if incompleteError %}
-      {{ govukErrorSummary({
-        titleText: content.errors.incompleteTitle,
-        errorList: [
-          { text: incompleteError, href: "#review-documents-1" }
-        ]
-      }) }}
-    {% endif %}
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
-    <h1 class="govuk-heading-l">{{ heading }}</h1>
+    <h2 class="govuk-heading-l">{{ content.documentationHeading }}</h2>
 
-    <h2 class="govuk-heading-m">{{ content.documentationHeading }}</h2>
+    {{ govukTaskList({
+      idPrefix: "review-documents",
+      items: documentationTasks
+    }) }}
 
-    {{ govukTaskList({
-      idPrefix: "review-documents",
-      items: documentationTasks
-    }) }}
+    <h2 class="govuk-heading-l govuk-!-margin-top-7">{{ content.listingHeading }}</h2>
 
-    <h2 class="govuk-heading-m">{{ content.listingHeading }}</h2>
+    {{ govukTaskList({
+      idPrefix: "prepare-listing",
+      items: listingTasks
+    }) }}
 
-    {{ govukTaskList({
-      idPrefix: "prepare-listing",
-      items: listingTasks
-    }) }}
+    <form method="post" action="/review-appliance/{{ appliance.id }}" novalidate class="govuk-!-margin-bottom-0">
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.acceptButton,
+          name: "decision",
+          value: "accept"
+        }) }}
 
-    <form method="post" action="/review-appliance/{{ appliance.id }}" novalidate>
-      <div class="govuk-button-group govuk-!-margin-top-7">
-        {{ govukButton({
-          text: content.acceptButton,
-          name: "decision",
-          value: "accept"
-        }) }}
+        {{ govukButton({
+          text: content.rejectButton,
+          name: "decision",
+          value: "reject",
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </form>
 
-        {{ govukButton({
-          text: content.rejectButton,
-          name: "decision",
-          value: "reject",
-          classes: "govuk-button--secondary"
-        }) }}
-      </div>
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ applicationHref }}">{{ content.saveForLater }}</a>
+    </p>
 
-    </form>
-      <p class="govuk-body">
-        <a class="govuk-link" href="{{applicationHref}}">
-          {{ content.saveForLater }}
-        </a>
-      </p>
-  </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -21,6 +21,7 @@ function buildViewModel(appliance, incompleteError) {
     content,
     appliance,
     applicationHref,
+    backLink: { href: applicationHref },
     incompleteError,
     documentationTasks: buildDocumentationTasks(
       appliance.technicalReview,
