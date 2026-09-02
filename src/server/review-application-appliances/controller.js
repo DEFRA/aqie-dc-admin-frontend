@@ -93,9 +93,14 @@ async function handleAppliancesApplicationRequest(request, h) {
       ]
     })
   } catch (error) {
-    logger.error(`appliance applications get failed: ${error.message}`, error)
+    logger.error(
+      `[review-application-appliances.GET] failed: ${error.message}`,
+      error
+    )
     return h
-      .view('error/index', { message: '', details: error })
+      .view('error/index', {
+        message: 'Sorry there is a problem with the service'
+      })
       .code(statusCodes.internalServerError)
   }
 }
