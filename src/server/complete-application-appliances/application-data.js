@@ -10,12 +10,7 @@ const logger = createLogger()
  */
 export async function getApplicationWithTechStatus(applicationId) {
   const data = await fetchJson(
-    `/applications/${applicationId}?include=groupedByTechReviewStatus`
+    `/applications/${encodeURIComponent(applicationId)}?include=groupedByTechReviewStatus`
   )
-  logger.info(
-    'Complete Application Appliances Data:',
-    JSON.stringify(data, null, 2)
-  )
-  console.log('Complete Application Appliances Data:', data)
   return data
 }
