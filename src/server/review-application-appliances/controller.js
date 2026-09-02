@@ -55,7 +55,7 @@ async function handleAppliancesApplicationRequest(request, h) {
       return {
         modelName: appliance.modelName,
         tag: statusMap[status],
-        actionHref: `/review-individual-appliance/${appliance.id}`,
+        actionHref: `/review-appliance/${appliance.id}`,
         actionText: statusMap[status].text
       }
     })

@@ -32,7 +32,11 @@ async function request(method, path, body) {
     logger.error(
       `[api.${method}] ${path} -> ${response.status}: ${text.slice(0, 200)}`
     )
-    throw new Error(`Backend ${method} ${path} failed: ${response.status}`)
+    const error = new Error(
+      `Backend ${method} ${path} failed: ${response.status}`
+    )
+    error.status = response.status
+    throw error
   }
 
   if (response.status === 204) return null
