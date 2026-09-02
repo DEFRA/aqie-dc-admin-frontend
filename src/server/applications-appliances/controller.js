@@ -1,6 +1,7 @@
 import { applianceApplicationsContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceApplications } from './applications-data.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 
@@ -26,8 +27,15 @@ async function handleApplianceApplicationsRequest(_request, h) {
       ]
     })
   } catch (error) {
-    logger.error(`appliance applications get failed: ${error.message}`, error)
-    return h.view('error/index', { message: '', details: error })
+    logger.error(
+      `[applications-appliances.GET] failed: ${error.message}`,
+      error
+    )
+    return h
+      .view('error/index', {
+        message: 'Sorry there is a problem with the service'
+      })
+      .code(statusCodes.internalServerError)
   }
 }
 
