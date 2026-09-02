@@ -9,18 +9,87 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
     {% if hasPendingReviews %}
+      {# Incomplete application - prompt to go back #}
       <p class="govuk-body">
         You must make a final decision on each appliance before completing this application review.
       </p>
+      <p>
+        <a href="/review-appliance-application/{{ applicationId }}">Return to application and complete reviews</a>
+      </p>
     {% else %}
-      <p class="govuk-body">
-        All appliances have been reviewed successfully. You can now submit your application.
+      {# Complete application - show appliances and statuses #}
+      {# if rejected #}
+      {% if application.appliances.rejected.length > 0 %}
+        {% if containsBoth %}
+        <h2 class="govuk-heading-l">Unsuitable appliances</h2>
+        {% endif %}
+
+        <p class="govuk-body">
+          Following technical review, the following appliance is not considered to be suitable for certification under the Clean Air Act 1993:
+        </p>
+
+        <ul class="govuk-list govuk-list--bullet">
+          {% for appliance in application.appliances.rejected %}
+            <li>{{ appliance.modelName }}</li>
+          {% endfor %}
+        </ul>
+
+        <p class="govuk-body">
+          You must contact the applicant to tell them about this decision.
+        </p>
+        
+        {% if containsBoth %} 
+        {% else %}
+          <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: "Finish Review",
+              href: "/application-review-complete/" + applicationId
+            }) }}
+          </div>
+        {% endif %}
+
+      {% endif %}
+
+      {# if accepted #}
+      {% if application.appliances.accepted.length > 0 %}
+       {# if both add this heading #}
+        {% if containsBoth %} 
+          <h2 class="govuk-heading-l">Suitable appliances</h2>
+        {% endif %}
+
+        <p class="govuk-body">
+          Following technical review, the following appliance is considered to be suitable for certification under the Clean Air Act 1993:
+        </p>
+
+        <ul class="govuk-list govuk-list--bullet">
+          {% for appliance in application.appliances.accepted %}
+            <li>{{ appliance.modelName }}</li>
+          {% endfor %}
+        </ul>
+
+        <p class="govuk-body">
+          This appliance can now be submitted to the governments of England, Scotland, Wales and Northern Ireland for approval.
+        </p>
+
+        <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: "Submit for approval",
+              href: "/application-review-complete/" + applicationId
+            }) }}
+        </div>
+      {% endif %}
+
+    
+
+
+      
+
+      <p>
+        <a href="/review-appliance-application/{{ applicationId }}">Return to application</a>
       </p>
     {% endif %}
-    <p>
-      <a href="/review-appliance-application/{{ applicationId }}">Return to application review</a>
-    </p>
   </div>
 </div>
 

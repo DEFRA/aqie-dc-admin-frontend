@@ -1,10 +1,19 @@
 import Joi from 'joi'
-import { completeApplicationAppliancesController } from './controller.js'
+import {
+  completeApplicationAppliancesController,
+  incompleteApplicationAppliancesController
+} from './controller.js'
 
 /**
- * Sets up the routes used in the /complete-appliance-application page.
+ * Sets up the routes used in the application completion page - checks for pending reviews and redirects accordingly.
  * These routes are registered in src/server/router.js.
  */
+
+const routeValidation = {
+  params: Joi.object({
+    applicationId: Joi.string().required().trim().min(1).max(64)
+  })
+}
 
 export const completeApplicationAppliances = {
   plugin: {
@@ -13,15 +22,19 @@ export const completeApplicationAppliances = {
       server.route([
         {
           method: 'GET',
-          path: '/complete-appliance-application/{applicationId}',
+          path: '/finish-application-review/{applicationId}',
           options: {
-            validate: {
-              params: Joi.object({
-                applicationId: Joi.string().required().trim().min(1).max(64)
-              })
-            }
+            validate: routeValidation
           },
           ...completeApplicationAppliancesController
+        },
+        {
+          method: 'GET',
+          path: '/application-review-incomplete/{applicationId}',
+          options: {
+            validate: routeValidation
+          },
+          ...incompleteApplicationAppliancesController
         }
       ])
     }
