@@ -36,7 +36,7 @@ function toTasks(checks, definitions, toStatus, statuses, applianceId) {
 
 export function buildDocumentationTasks(technicalReview, applianceId) {
   return toTasks(
-    technicalReview?.documentationReviewed,
+    technicalReview?.documentationChecks,
     content.documentationTasks,
     toDocumentationStatus,
     content.documentationStatuses,
@@ -46,7 +46,7 @@ export function buildDocumentationTasks(technicalReview, applianceId) {
 
 export function buildListingTasks(technicalReview, applianceId) {
   return toTasks(
-    technicalReview?.checksCompleted,
+    technicalReview?.listingChecks,
     content.listingTasks,
     toListingStatus,
     content.listingStatuses,
