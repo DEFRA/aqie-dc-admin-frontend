@@ -21,7 +21,7 @@ async function handleDashboard(_request, h) {
       fuelTotalRecordCount: counts.fuel.records
     })
   } catch (error) {
-    logger.error(`[dashboard.GET] failed:${error.message}`, error)
+    logger.error(`[dashboard.GET] failed: ${error.message}`, error)
     return h
       .view('error/index', {
         message: 'Sorry there is a problem with the service'

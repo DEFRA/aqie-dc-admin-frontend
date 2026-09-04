@@ -223,7 +223,9 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
 
     expect(view).toHaveBeenCalledWith(
       'error/index',
-      expect.objectContaining({ message: '' })
+      expect.objectContaining({
+        message: 'Sorry there is a problem with the service'
+      })
     )
     expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
