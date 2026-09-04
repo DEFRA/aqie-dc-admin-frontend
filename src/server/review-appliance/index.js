@@ -15,7 +15,7 @@ const applianceIdSchema = Joi.object({
     .trim()
     .min(1)
     .max(64)
-    .pattern(/^[A-Za-z0-9_\/ -]+$/)
+    .pattern(/^[A-Za-z0-9-]+$/)
 })
 
 export const reviewAppliance = {
