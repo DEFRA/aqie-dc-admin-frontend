@@ -3,7 +3,7 @@ import { buildDocumentationTasks, buildListingTasks } from './review-tasks.js'
 describe('#buildDocumentationTasks', () => {
   test('shows a green Passed tag for a check that has passed', () => {
     const tasks = buildDocumentationTasks(
-      { documentationReviewed: { testReports: true } },
+      { documentationChecks: { testReports: true } },
       'APP-1'
     )
 
@@ -16,7 +16,7 @@ describe('#buildDocumentationTasks', () => {
 
   test('shows a red Failed tag for a check that has failed', () => {
     const tasks = buildDocumentationTasks(
-      { documentationReviewed: { testReports: false } },
+      { documentationChecks: { testReports: false } },
       'APP-1'
     )
 
@@ -35,7 +35,7 @@ describe('#buildDocumentationTasks', () => {
 
   test('shows Not reviewed as plain text when the check is null', () => {
     const tasks = buildDocumentationTasks(
-      { documentationReviewed: { testReports: null } },
+      { documentationChecks: { testReports: null } },
       'APP-1'
     )
 
@@ -84,7 +84,7 @@ describe('#buildListingTasks', () => {
 
   test('shows a blue Completed tag when the check is done', () => {
     const tasks = buildListingTasks(
-      { checksCompleted: { applianceDetails: true } },
+      { listingChecks: { applianceDetails: true } },
       'APP-1'
     )
 
@@ -103,7 +103,7 @@ describe('#buildListingTasks', () => {
 
   test('treats false the same as not done', () => {
     const tasks = buildListingTasks(
-      { checksCompleted: { applianceDetails: false } },
+      { listingChecks: { applianceDetails: false } },
       'APP-1'
     )
 

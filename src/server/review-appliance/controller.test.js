@@ -21,8 +21,8 @@ const baseAppliance = {
   applicationId: '1084',
   technicalReview: {
     status: 'in_review',
-    documentationReviewed: { testReports: true },
-    checksCompleted: {}
+    documentationChecks: { testReports: true },
+    listingChecks: {}
   }
 }
 

@@ -1,6 +1,6 @@
 export const applianceReviewContent = {
   en: {
-    pageTitle: 'Review appliance',
+    heading: (modelName) => `Review ${modelName}`,
     documentationHeading: 'Review documentation',
     listingHeading: 'Prepare public listing',
     acceptButton: 'Accept appliance',

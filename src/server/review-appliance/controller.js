@@ -16,8 +16,8 @@ function buildViewModel(appliance, incompleteError) {
   const applicationHref = `/review-appliance-application/${encodeURIComponent(appliance.applicationId)}`
 
   return {
-    pageTitle: `Review ${appliance.modelName}`,
-    heading: `Review ${appliance.modelName}`,
+    pageTitle: content.heading(appliance.modelName),
+    heading: content.heading(appliance.modelName),
     content,
     appliance,
     applicationHref,
