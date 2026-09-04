@@ -6,6 +6,66 @@ import { statusCodes } from '../common/constants/status-codes.js'
 import { applianceApplicationsContent } from '../applications-appliances/content.js'
 
 const logger = createLogger()
+const content = appliancesApplicationContent.en
+
+/**
+ * Splits the full address string into trimmed, non-empty lines, falling
+ * back to the structured address parts when no full address is available.
+ */
+function buildCompanyAddress(application) {
+  if (application.companyFullAddress) {
+    return application.companyFullAddress
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+  }
+
+  return [
+    application.companyAddress.line1,
+    application.companyAddress.line2,
+    application.companyAddress.city,
+    application.companyAddress.county,
+    application.companyAddress.postcode,
+    application.companyAddress.country
+  ].filter(Boolean)
+}
+
+/**
+ * Maps each linked appliance to the row shown in the appliances table,
+ * including its status tag and review action link.
+ */
+function buildApplianceRows(linkedItems) {
+  return linkedItems.map((appliance) => {
+    const status = appliance.technicalReview?.status ?? 'new'
+    const tag = content.statusTags[status]
+
+    return {
+      modelName: appliance.modelName,
+      tag,
+      actionHref: `/review-appliance/${appliance.id}`,
+      actionText: tag.text
+    }
+  })
+}
+
+function buildViewModel(application, applicationId) {
+  return {
+    pageTitle: content.heading,
+    heading: content.heading,
+    applicationId,
+    application,
+    appliances: buildApplianceRows(application.linkedItems),
+    companyAddress: buildCompanyAddress(application),
+    breadcrumbs: [
+      { text: 'Home', href: '/dashboard' },
+      {
+        text: applianceApplicationsContent.en.heading,
+        href: '/applications-appliances'
+      },
+      { text: content.heading }
+    ]
+  }
+}
 
 async function handleAppliancesApplicationRequest(request, h) {
   const { applicationId } = request.params
@@ -23,84 +83,16 @@ async function handleAppliancesApplicationRequest(request, h) {
     //   await updateApplianceApplicationStatus(applicationId, 'in_review')
     // }
 
-    const companyAddress = application.companyFullAddress
-      ? application.companyFullAddress
-          .split('\n')
-          .map((line) => line.trim())
-          .filter(Boolean)
-      : [
-          application.companyAddress.line1,
-          application.companyAddress.line2,
-          application.companyAddress.city,
-          application.companyAddress.county,
-          application.companyAddress.postcode,
-          application.companyAddress.country
-        ].filter(Boolean)
-
-    const statusMap = {
-      new: {
-        text: 'Start review',
-        label: 'Not started',
-        colour: 'govuk-tag--grey'
-      },
-      in_review: {
-        text: 'Continue review',
-        label: 'In progress',
-        colour: 'govuk-tag--yellow'
-      },
-      accepted: {
-        text: 'Edit review',
-        label: 'Accepted',
-        colour: 'govuk-tag--green'
-      },
-      rejected: {
-        text: 'Edit review',
-        label: 'Rejected',
-        colour: 'govuk-tag--red'
-      }
-    }
-
-    const appliances = application.linkedItems.map((appliance) => {
-      const status = appliance.technicalReview?.status ?? 'new'
-
-      return {
-        modelName: appliance.modelName,
-        tag: statusMap[status],
-        actionHref: `/review-individual-appliance/${appliance.id}`,
-        actionText: statusMap[status].text
-      }
-    })
-
-    return h.view('review-application-appliances/index', {
-      pageTitle: appliancesApplicationContent.en.heading,
-      heading: appliancesApplicationContent.en.heading,
-      applicationId,
-      application,
-      appliances,
-      companyAddress,
-      breadcrumbs: [
-        {
-          text: 'Home',
-          href: '/dashboard'
-        },
-        {
-          text: applianceApplicationsContent.en.heading,
-          href: '/applications-appliances'
-        },
-        {
-          text: appliancesApplicationContent.en.heading
-        }
-      ]
-    })
+    return h.view(
+      'review-application-appliances/index',
+      buildViewModel(application, applicationId)
+    )
   } catch (error) {
     logger.error(
-      `[review-application-appliances.GET] failed: ${error.message}`,
-      error
+      `[reviewApplicationAppliances] failed to load ${applicationId}: ${error.message}`
     )
     return h
-      .view('error/index', {
-        message: 'Sorry there is a problem with the service'
-      })
+      .view('error/index', { message: content.errors.generic })
       .code(statusCodes.internalServerError)
   }
 }
