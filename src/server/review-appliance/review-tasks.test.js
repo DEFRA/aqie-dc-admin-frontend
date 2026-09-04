@@ -56,7 +56,7 @@ describe('#buildDocumentationTasks', () => {
   test('links each task to its own sub-page', () => {
     const tasks = buildDocumentationTasks({}, 'APP-1')
 
-    expect(tasks[0].href).toBe('/review-appliance/APP-1/review-test-reports')
+    expect(tasks[0].href).toBe('/review-appliance/APP-1/test-reports')
     expect(tasks[3].href).toBe('/review-appliance/APP-1/instruction-manual')
   })
 

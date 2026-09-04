@@ -12,7 +12,7 @@ export const applianceReviewContent = {
       {
         key: 'testReports',
         title: 'Review test reports',
-        path: 'review-test-reports'
+        path: 'test-reports'
       },
       {
         key: 'technicalDrawings',
