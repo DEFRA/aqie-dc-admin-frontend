@@ -35,6 +35,7 @@ export const azureAuth = {
                 scopes: SCOPES,
                 redirectUri: config.get('azure.redirectUri'),
                 responseMode: 'query',
+                prompt: 'select_account',
                 state,
                 nonce
               })
@@ -110,10 +111,6 @@ export const azureAuth = {
           path: '/auth/logout',
           options: { auth: false },
           handler: (request, h) => {
-            // Second hop: Microsoft sent the user back after sign-out
-            if (request.query.confirmed === 'true') {
-              return h.redirect('/')
-            }
             request.cookieAuth.clear()
             request.yar.reset()
 

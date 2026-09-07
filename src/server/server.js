@@ -83,7 +83,7 @@ export async function createServer() {
       redirectTo: false, //Redirects handled by onPreResonse
       validate: async (_request, session) => {
         if (session?.isAuthenticated === true && session.user) {
-          return { isValid: true, Credentials: session }
+          return { isValid: true, credentials: session }
         }
         return { isValid: false }
       }
@@ -94,7 +94,7 @@ export async function createServer() {
     )
     server.auth.scheme('dev-bypass', () => ({
       authenticate: (request, h) => {
-        h.authenticated({
+        return h.authenticated({
           credentials: {
             isAuthenticated: true,
             user: {
@@ -128,18 +128,7 @@ export async function createServer() {
       'returnTo',
       request.url.pathname + (request.url.search || '')
     )
-    return h.redirect('auth/login').takeover()
-  })
-
-  //Expose the signed-in user to every view as {{ user }}
-
-  server.ext('onPreResponse', (request, h) => {
-    const { response } = request
-    if (!response?.variety === 'view') {
-      response.source.context = response.source.context || {}
-      response.source.context.user = request.auth?.credentials?.user ?? null
-    }
-    return h.continue
+    return h.redirect('/auth/login').takeover()
   })
 
   server.ext('onPreResponse', catchAll)

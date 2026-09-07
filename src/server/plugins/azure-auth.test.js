@@ -15,7 +15,11 @@ const mockLogger = vi.hoisted(() => ({
   debug: vi.fn()
 }))
 
-vi.mock('@azure/msal-node', () => ({ CryptoProvider: vi.fn(() => mockCrypto) }))
+vi.mock('@azure/msal-node', () => ({
+  CryptoProvider: vi.fn(function () {
+    return mockCrypto
+  })
+}))
 vi.mock('../../config/azure-auth.js', () => ({ msalClient: mockMsalClient }))
 vi.mock('../../config/config.js', () => ({ config: mockConfig }))
 vi.mock('../common/helpers/logging/logger.js', () => ({

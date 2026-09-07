@@ -45,7 +45,14 @@ describe('#reviewApplicationAppliancesController', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/review-appliance-application/app-1'
+      url: '/review-appliance-application/app-1',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -57,7 +64,14 @@ describe('#reviewApplicationAppliancesController', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/review-appliance-application/app-1'
+      url: '/review-appliance-application/app-1',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)
