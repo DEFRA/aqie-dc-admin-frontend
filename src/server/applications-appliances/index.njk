@@ -24,16 +24,19 @@
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">
-                    <ul class="govuk-list govuk-list--bullet">
-                      {% for appliance in application.appliances %}
-                        <li>{{ appliance.modelName }}</li>
-                      {% endfor %}
-                    </ul>
+                    {% if application.appliances.length === 1 %}
+                      {{ application.appliances[0].modelName }}
+                    {% else %}
+                      <ul class="govuk-list govuk-list--bullet">
+                        {% for appliance in application.appliances %}
+                          <li>{{ appliance.modelName }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
                   </td>
                   <td class="govuk-table__cell">
-                    <a class="govuk-link" href="">Start review
+                    <a class="govuk-link" href="/review-appliance-application/{{ application.id }}">Start review
                     </a>
-                    {#TODO: pass the correct link #}
                   </td>
                 </tr>
               {% endfor %}
@@ -58,15 +61,19 @@
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">
-                    <ul class="govuk-list govuk-list--bullet">
-                      {% for appliance in application.appliances %}
-                        <li>{{ appliance.modelName }}</li>
-                      {% endfor %}
-                    </ul>
+                     {% if application.appliances.length === 1 %}
+                      {{ application.appliances[0].modelName }}
+                    {% else %}
+                      <ul class="govuk-list govuk-list--bullet">
+                        {% for appliance in application.appliances %}
+                          <li>{{ appliance.modelName }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
                   </td>
-                  <td class="govuk-table__cell">{{ application.reviewer.name }}</td>
+                  <td class="govuk-table__cell">{{ application.reviewedBy.name }}</td>
                   <td class="govuk-table__cell">
-                    <a class="govuk-link" href="">Continue review
+                    <a class="govuk-link" href="/review-appliance-application/{{ application.id }}">Continue review
                     </a>
                   </td>
                 </tr>
