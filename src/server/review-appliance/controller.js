@@ -63,7 +63,7 @@ async function handleApplianceDecisionRequest(request, h) {
   const status = decisionStatus[request.payload.decision]
   const user = request.auth?.credentials?.user
   const reviewedBy =
-    user?.name && user.email
+    user?.name && user?.email
       ? { name: user.name, email: user.email }
       : undefined
 
