@@ -9,7 +9,7 @@ async function handleApplianceApplicationsRequest(_request, h) {
     const response = await getApplianceApplications()
     const applications = response.data
 
-    return h.view('applications-appliances/index', {
+    return h.view('appliance-applications/index', {
       pageTitle: applianceApplicationsContent.en.heading,
       heading: applianceApplicationsContent.en.heading,
       content: applianceApplicationsContent.en,
@@ -18,7 +18,7 @@ async function handleApplianceApplicationsRequest(_request, h) {
       breadcrumbs: [
         {
           text: 'Home',
-          href: '/dashboard'
+          href: '/manage-certification'
         },
         {
           text: applianceApplicationsContent.en.heading

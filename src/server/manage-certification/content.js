@@ -1,7 +1,7 @@
 export const dashboardContent = {
   en: {
     heading: 'Manage smoke control certification',
-    pageTitle: 'Dashboard',
+    pageTitle: 'Manage Certification',
     headingExample: {
       appliances: 'Back to appliances list',
       fuels: 'Back to fuels list'

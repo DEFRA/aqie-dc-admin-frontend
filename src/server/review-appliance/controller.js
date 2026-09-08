@@ -29,8 +29,8 @@ function buildViewModel(appliance, incompleteError) {
     ),
     listingTasks: buildListingTasks(appliance.technicalReview, appliance.id),
     breadcrumbs: [
-      { text: 'Home', href: '/dashboard' },
-      { text: content.applicationsHeading, href: '/applications-appliances' },
+      { text: 'Home', href: '/manage-certification' },
+      { text: content.applicationsHeading, href: '/appliance-applications' },
       {
         text: `Review appliance application ${appliance.applicationId}`,
         href: applicationHref

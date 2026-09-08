@@ -37,11 +37,11 @@ describe('#dashboardController', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/dashboard'
+      url: '/manage-certification'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('Dashboard')
+    expect(result).toContain('Manage Certification')
   })
 
   test('renders error view when getCounts throws error', async () => {
@@ -49,7 +49,7 @@ describe('#dashboardController', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/dashboard'
+      url: '/manage-certification'
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)
@@ -78,7 +78,7 @@ describe('#handleDashboardGet (unit)', () => {
     await handleDashboard({}, h)
 
     expect(view).toHaveBeenCalledWith(
-      'dashboard/index',
+      'manage-certification/index',
       expect.objectContaining({
         applianceNewCount: 1,
         applianceInProgressCount: 2,
