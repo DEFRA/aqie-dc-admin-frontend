@@ -18,7 +18,7 @@ async function handleApplianceApplicationsRequest(_request, h) {
       breadcrumbs: [
         {
           text: 'Home',
-          href: '/dashboard'
+          href: '/manage-certification'
         },
         {
           text: applianceApplicationsContent.en.heading

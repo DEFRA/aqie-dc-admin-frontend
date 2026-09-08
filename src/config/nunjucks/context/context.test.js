@@ -61,8 +61,8 @@ describe('context and cache', () => {
             },
             {
               current: false,
-              text: 'Dashboard',
-              href: '/dashboard'
+              text: 'Manage Certification',
+              href: '/manage-certification'
             }
           ],
           serviceName: 'aqie-dc-admin-frontend',
@@ -155,8 +155,8 @@ describe('context and cache', () => {
             },
             {
               current: false,
-              text: 'Dashboard',
-              href: '/dashboard'
+              text: 'Manage Certification',
+              href: '/manage-certification'
             }
           ],
           serviceName: 'aqie-dc-admin-frontend',

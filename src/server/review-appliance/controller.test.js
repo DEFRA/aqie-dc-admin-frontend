@@ -73,7 +73,7 @@ describe('#handleApplianceReviewRequest', () => {
     const [, viewModel] = h.view.mock.calls[0]
 
     expect(viewModel.breadcrumbs).toEqual([
-      { text: 'Home', href: '/dashboard' },
+      { text: 'Home', href: '/manage-certification' },
       { text: 'Appliance applications', href: '/applications-appliances' },
       {
         text: 'Review appliance application 1084',
