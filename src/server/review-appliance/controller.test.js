@@ -74,7 +74,7 @@ describe('#handleApplianceReviewRequest', () => {
 
     expect(viewModel.breadcrumbs).toEqual([
       { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance applications', href: '/applications-appliances' },
+      { text: 'Appliance applications', href: '/appliance-applications' },
       {
         text: 'Review appliance application 1084',
         href: '/review-appliance-application/1084'

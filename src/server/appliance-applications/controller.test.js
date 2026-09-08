@@ -16,7 +16,7 @@ describe('#Applications appliances Controller', () => {
   test('Should provide expected response', async () => {
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/applications-appliances'
+      url: '/appliance-applications'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
