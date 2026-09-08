@@ -37,7 +37,14 @@ describe('#dashboardController', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/dashboard'
+      url: '/dashboard',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -49,7 +56,18 @@ describe('#dashboardController', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/dashboard'
+      url: '/dashboard',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: {
+            id: '3',
+            email: 'local.test@yopmail.com',
+            name: 'John doe'
+          }
+        }
+      }
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)

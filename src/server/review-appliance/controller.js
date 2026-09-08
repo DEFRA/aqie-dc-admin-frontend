@@ -61,7 +61,11 @@ async function handleApplianceReviewRequest(request, h) {
 async function handleApplianceDecisionRequest(request, h) {
   const { applianceId } = request.params
   const status = decisionStatus[request.payload.decision]
-  const reviewedBy = request.auth?.credentials?.profile
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
 
   try {
     await saveApplianceReview(applianceId, status, reviewedBy)

@@ -66,7 +66,8 @@ describe('context and cache', () => {
             }
           ],
           serviceName: 'aqie-dc-admin-frontend',
-          serviceUrl: '/'
+          serviceUrl: '/',
+          user: null
         })
       })
 
@@ -160,7 +161,8 @@ describe('context and cache', () => {
             }
           ],
           serviceName: 'aqie-dc-admin-frontend',
-          serviceUrl: '/'
+          serviceUrl: '/',
+          user: null
         })
       })
     })

@@ -16,7 +16,14 @@ describe('#Applications appliances Controller', () => {
   test('Should provide expected response', async () => {
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/applications-appliances'
+      url: '/applications-appliances',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
     expect(statusCode).toBe(statusCodes.ok)

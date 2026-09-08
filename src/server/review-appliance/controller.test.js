@@ -150,7 +150,7 @@ describe('#handleApplianceDecisionRequest', () => {
         payload: { decision: 'accept' },
         auth: {
           credentials: {
-            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+            user: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
           }
         }
       },
