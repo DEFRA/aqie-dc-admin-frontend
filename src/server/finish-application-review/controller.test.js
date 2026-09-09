@@ -2,8 +2,8 @@ import { beforeEach, vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import {
-  handleCompleteApplicationAppliancesRequest,
-  handleIncompleteApplicationAppliances
+  handleFinishApplicationReviewRequest,
+  handleIncompleteApplicationReviewRequest
 } from './controller.js'
 
 const { getApplicationWithTechStatusMock } = vi.hoisted(() => ({
@@ -114,7 +114,7 @@ describe('#Complete application appliances Controller', () => {
   })
 })
 
-describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
+describe('#handleFinishApplicationReviewRequest (unit)', () => {
   beforeEach(() => {
     getApplicationWithTechStatusMock.mockReset()
   })
@@ -130,7 +130,7 @@ describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
     const redirect = vi.fn().mockReturnValue('redirected')
     const h = { redirect, view: vi.fn() }
 
-    const result = await handleCompleteApplicationAppliancesRequest(
+    const result = await handleFinishApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
@@ -153,13 +153,13 @@ describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
     const view = vi.fn().mockReturnValue('rendered')
     const h = { view, redirect: vi.fn() }
 
-    await handleCompleteApplicationAppliancesRequest(
+    await handleFinishApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
 
     expect(view).toHaveBeenCalledWith(
-      'complete-application-appliances/index',
+      'finish-application-review/index',
       expect.objectContaining({
         applicationId: 'app-1',
         hasPendingReviews: false,
@@ -179,13 +179,13 @@ describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
     const view = vi.fn().mockReturnValue('rendered')
     const h = { view, redirect: vi.fn() }
 
-    await handleCompleteApplicationAppliancesRequest(
+    await handleFinishApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
 
     expect(view).toHaveBeenCalledWith(
-      'complete-application-appliances/index',
+      'finish-application-review/index',
       expect.objectContaining({
         containsBoth: false
       })
@@ -201,7 +201,7 @@ describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
     const view = vi.fn().mockReturnValue({ code })
     const h = { view, redirect: vi.fn() }
 
-    await handleCompleteApplicationAppliancesRequest(
+    await handleFinishApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
@@ -216,7 +216,7 @@ describe('#handleCompleteApplicationAppliancesRequest (unit)', () => {
   })
 })
 
-describe('#handleIncompleteApplicationAppliances (unit)', () => {
+describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
   beforeEach(() => {
     getApplicationWithTechStatusMock.mockReset()
   })
@@ -229,13 +229,13 @@ describe('#handleIncompleteApplicationAppliances (unit)', () => {
     const view = vi.fn().mockReturnValue('rendered')
     const h = { view }
 
-    await handleIncompleteApplicationAppliances(
+    await handleIncompleteApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
 
     expect(view).toHaveBeenCalledWith(
-      'complete-application-appliances/index',
+      'finish-application-review/index',
       expect.objectContaining({
         applicationId: 'app-1',
         application: baseApplication,
@@ -255,7 +255,7 @@ describe('#handleIncompleteApplicationAppliances (unit)', () => {
     const view = vi.fn().mockReturnValue({ code })
     const h = { view }
 
-    await handleIncompleteApplicationAppliances(
+    await handleIncompleteApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )

@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import {
-  completeApplicationAppliancesController,
-  incompleteApplicationAppliancesController
+  finishApplicationReviewController,
+  incompleteApplicationReviewController
 } from './controller.js'
 
 /**
@@ -15,9 +15,9 @@ const routeValidation = {
   })
 }
 
-export const completeApplicationAppliances = {
+export const finishApplicationReview = {
   plugin: {
-    name: 'completeApplicationAppliances',
+    name: 'finishApplicationReview',
     register(server) {
       server.route([
         {
@@ -26,7 +26,7 @@ export const completeApplicationAppliances = {
           options: {
             validate: routeValidation
           },
-          ...completeApplicationAppliancesController
+          ...finishApplicationReviewController
         },
         {
           method: 'GET',
@@ -34,7 +34,7 @@ export const completeApplicationAppliances = {
           options: {
             validate: routeValidation
           },
-          ...incompleteApplicationAppliancesController
+          ...incompleteApplicationReviewController
         }
       ])
     }

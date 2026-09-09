@@ -1,11 +1,11 @@
-import { completeApplicationAppliancesContent } from './content.js'
+import { finishApplicationReviewContent } from './content.js'
 import { getApplicationWithTechStatus } from './application-data.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 
-async function handleCompleteApplicationAppliancesRequest(request, h) {
+async function handleFinishApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
 
   try {
@@ -26,12 +26,10 @@ async function handleCompleteApplicationAppliancesRequest(request, h) {
       application.appliances?.accepted?.length > 0
 
     // Render complete application page
-    const heading =
-      completeApplicationAppliancesContent.en.applicationCompleteHeading
-    const pageTitle =
-      completeApplicationAppliancesContent.en.applicationCompletePageTitle
+    const heading = finishApplicationReviewContent.en.applicationCompleteHeading
+    const pageTitle = finishApplicationReviewContent.en.applicationCompletePageTitle
 
-    return h.view('complete-application-appliances/index', {
+    return h.view('finish-application-review/index', {
       pageTitle,
       heading,
       applicationId,
@@ -41,7 +39,7 @@ async function handleCompleteApplicationAppliancesRequest(request, h) {
     })
   } catch (error) {
     logger.error(
-      `[complete-application-appliances.GET] failed: ${error.message}`,
+      `[finish-application-review.GET] failed: ${error.message}`,
       error
     )
     return h
@@ -52,19 +50,17 @@ async function handleCompleteApplicationAppliancesRequest(request, h) {
   }
 }
 
-async function handleIncompleteApplicationAppliances(request, h) {
+async function handleIncompleteApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
 
   try {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
 
-    const heading =
-      completeApplicationAppliancesContent.en.getHeading(applicationId)
-    const pageTitle =
-      completeApplicationAppliancesContent.en.getPageTitle(applicationId)
+    const heading = finishApplicationReviewContent.en.getHeading(applicationId)
+    const pageTitle = finishApplicationReviewContent.en.getPageTitle(applicationId)
 
-    return h.view('complete-application-appliances/index', {
+    return h.view('finish-application-review/index', {
       pageTitle,
       heading,
       applicationId,
@@ -73,7 +69,7 @@ async function handleIncompleteApplicationAppliances(request, h) {
     })
   } catch (error) {
     logger.error(
-      `[incomplete-application-appliances.GET] failed: ${error.message}`,
+      `[application-review-incomplete.GET] failed: ${error.message}`,
       error
     )
     return h
@@ -84,17 +80,17 @@ async function handleIncompleteApplicationAppliances(request, h) {
   }
 }
 
-const completeApplicationAppliancesController = {
-  handler: handleCompleteApplicationAppliancesRequest
+const finishApplicationReviewController = {
+  handler: handleFinishApplicationReviewRequest
 }
 
-const incompleteApplicationAppliancesController = {
-  handler: handleIncompleteApplicationAppliances
+const incompleteApplicationReviewController = {
+  handler: handleIncompleteApplicationReviewRequest
 }
 
 export {
-  handleCompleteApplicationAppliancesRequest,
-  completeApplicationAppliancesController,
-  handleIncompleteApplicationAppliances,
-  incompleteApplicationAppliancesController
+  handleFinishApplicationReviewRequest,
+  finishApplicationReviewController,
+  handleIncompleteApplicationReviewRequest,
+  incompleteApplicationReviewController
 }

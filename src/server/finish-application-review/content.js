@@ -1,4 +1,4 @@
-export const completeApplicationAppliancesContent = {
+export const finishApplicationReviewContent = {
   en: {
     getHeading: (applicationId) =>
       `Your review of application ${applicationId} is not complete`,
