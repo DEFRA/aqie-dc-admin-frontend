@@ -61,10 +61,18 @@ export const applianceReviewContent = {
       notCompleted: { text: 'Not completed' }
     },
 
+    incompleteReview: {
+      heading: 'Incomplete review',
+      intro: (modelName) =>
+        `You cannot accept ${modelName} for government approval until:`,
+      conditions: [
+        'all supporting documents are marked as Passed',
+        'all tasks for preparing the public listing are marked as Completed'
+      ],
+      returnLink: (modelName) => `Return to ${modelName} review`
+    },
+
     errors: {
-      incompleteTitle: 'There is a problem',
-      incomplete:
-        'You cannot accept this appliance until every check has been completed and passed.',
       generic: 'Sorry, there is a problem with the service'
     }
   }

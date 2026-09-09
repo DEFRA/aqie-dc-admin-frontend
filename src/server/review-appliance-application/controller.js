@@ -3,7 +3,7 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceApplication } from './application-data.js'
 //updateApplianceApplicationStatus
 import { statusCodes } from '../common/constants/status-codes.js'
-import { applianceApplicationsContent } from '../applications-appliances/content.js'
+import { applianceApplicationsContent } from '../appliance-applications/content.js'
 
 const logger = createLogger()
 const content = appliancesApplicationContent.en
@@ -57,10 +57,10 @@ function buildViewModel(application, applicationId) {
     appliances: buildApplianceRows(application.linkedItems),
     companyAddress: buildCompanyAddress(application),
     breadcrumbs: [
-      { text: 'Home', href: '/dashboard' },
+      { text: 'Home', href: '/manage-certification' },
       {
         text: applianceApplicationsContent.en.heading,
-        href: '/applications-appliances'
+        href: '/appliance-applications'
       },
       { text: content.heading }
     ]
@@ -84,7 +84,7 @@ async function handleAppliancesApplicationRequest(request, h) {
     // }
 
     return h.view(
-      'review-application-appliances/index',
+      'review-appliance-application/index',
       buildViewModel(application, applicationId)
     )
   } catch (error) {
@@ -92,7 +92,9 @@ async function handleAppliancesApplicationRequest(request, h) {
       `[reviewApplicationAppliances] failed to load ${applicationId}: ${error.message}`
     )
     return h
-      .view('error/index', { message: content.errors.generic })
+      .view('error/index', {
+        message: 'Sorry there is a problem with the service'
+      })
       .code(statusCodes.internalServerError)
   }
 }

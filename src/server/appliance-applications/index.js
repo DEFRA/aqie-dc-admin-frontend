@@ -1,17 +1,17 @@
 import { applianceApplicationsController } from './controller.js'
 
 /**
- * Sets up the routes used in the /applications-appliances page.
+ * Sets up the routes used in the /appliance-applications page.
  * These routes are registered in src/server/router.js.
  */
-export const applicationsAppliances = {
+export const applianceApplications = {
   plugin: {
-    name: 'applicationsAppliances',
+    name: 'applianceApplications',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/applications-appliances',
+          path: '/appliance-applications',
           ...applianceApplicationsController
         }
       ])

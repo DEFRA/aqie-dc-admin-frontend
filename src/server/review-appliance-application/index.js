@@ -15,9 +15,9 @@ const applicationIdSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
-export const reviewApplicationAppliances = {
+export const reviewApplianceApplication = {
   plugin: {
-    name: 'reviewApplicationAppliances',
+    name: 'reviewApplianceApplication',
     register(server) {
       server.route([
         {
