@@ -83,7 +83,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     )
 
     expect(view).toHaveBeenCalledWith(
-      'review-application-appliances/index',
+      'review-appliance-application/index',
       expect.objectContaining({
         companyAddress: ['Line 1', 'Line 2', 'Line 3']
       })
@@ -114,7 +114,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     )
 
     expect(view).toHaveBeenCalledWith(
-      'review-application-appliances/index',
+      'review-appliance-application/index',
       expect.objectContaining({
         companyAddress: ['1 High Street', 'London', 'SW1A 1AA', 'UK']
       })
@@ -152,7 +152,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
       )
 
       expect(view).toHaveBeenCalledWith(
-        'review-application-appliances/index',
+        'review-appliance-application/index',
         expect.objectContaining({
           appliances: [
             expect.objectContaining({
@@ -191,7 +191,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     )
 
     expect(view).toHaveBeenCalledWith(
-      'review-application-appliances/index',
+      'review-appliance-application/index',
       expect.objectContaining({
         appliances: [
           expect.objectContaining({
