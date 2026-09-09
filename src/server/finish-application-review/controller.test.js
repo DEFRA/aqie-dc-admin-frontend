@@ -1,14 +1,20 @@
 import { beforeEach, vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
-import { handleFinishApplicationReviewRequest } from './controller.js'
+import {
+  handleFinishApplicationReviewRequest,
+  handleFinishApplicationReviewSubmitRequest
+} from './controller.js'
 
-const { getApplicationWithTechStatusMock } = vi.hoisted(() => ({
-  getApplicationWithTechStatusMock: vi.fn()
-}))
+const { getApplicationWithTechStatusMock, completeApplicationMock } =
+  vi.hoisted(() => ({
+    getApplicationWithTechStatusMock: vi.fn(),
+    completeApplicationMock: vi.fn()
+  }))
 
 vi.mock('./application-data.js', () => ({
-  getApplicationWithTechStatus: getApplicationWithTechStatusMock
+  getApplicationWithTechStatus: getApplicationWithTechStatusMock,
+  completeApplication: completeApplicationMock
 }))
 
 const baseApplication = {
@@ -204,5 +210,106 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
       })
     )
     expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
+  })
+})
+
+describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
+  beforeEach(() => {
+    completeApplicationMock.mockReset()
+  })
+
+  function toolkit() {
+    const code = vi.fn().mockReturnValue('rendered')
+    const view = vi.fn().mockReturnValue({ code })
+    return { view, redirect: vi.fn(), code }
+  }
+
+  test('passes the signed-in reviewer to the backend and redirects on success', async () => {
+    completeApplicationMock.mockResolvedValue({ success: true })
+    const h = toolkit()
+
+    await handleFinishApplicationReviewSubmitRequest(
+      {
+        params: { applicationId: 'app-1' },
+        auth: {
+          credentials: {
+            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+          }
+        }
+      },
+      h
+    )
+
+    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', {
+      name: 'A Reviewer',
+      email: 'a@defra.gov.uk'
+    })
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/application-review-complete/app-1'
+    )
+  })
+
+  test('falls back to a dummy reviewer when nobody is signed in', async () => {
+    completeApplicationMock.mockResolvedValue({ success: true })
+    const h = toolkit()
+
+    await handleFinishApplicationReviewSubmitRequest(
+      { params: { applicationId: 'app-1' } },
+      h
+    )
+
+    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', {
+      name: 'Dummy Reviewer',
+      email: 'dummy.reviewer@example.com'
+    })
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/application-review-complete/app-1'
+    )
+  })
+
+  test('redirects to the incomplete review page when the backend refuses with a conflict', async () => {
+    const conflict = new Error('Backend PATCH failed: 409')
+    conflict.status = statusCodes.conflict
+    completeApplicationMock.mockRejectedValue(conflict)
+    const h = toolkit()
+
+    await handleFinishApplicationReviewSubmitRequest(
+      {
+        params: { applicationId: 'app-1' },
+        auth: {
+          credentials: {
+            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+          }
+        }
+      },
+      h
+    )
+
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/incomplete-application-review/app-1'
+    )
+    expect(h.view).not.toHaveBeenCalled()
+  })
+
+  test('renders the error view on any other backend failure', async () => {
+    completeApplicationMock.mockRejectedValue(new Error('backend down'))
+    const h = toolkit()
+
+    await handleFinishApplicationReviewSubmitRequest(
+      {
+        params: { applicationId: 'app-1' },
+        auth: {
+          credentials: {
+            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+          }
+        }
+      },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
 })

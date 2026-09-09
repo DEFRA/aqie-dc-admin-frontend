@@ -1,5 +1,8 @@
 import Joi from 'joi'
-import { finishApplicationReviewController } from './controller.js'
+import {
+  finishApplicationReviewController,
+  finishApplicationReviewSubmitController
+} from './controller.js'
 
 /**
  * Sets up the route used in the application completion page - checks whether the review is complete and redirects accordingly.
@@ -8,7 +11,12 @@ import { finishApplicationReviewController } from './controller.js'
 
 const routeValidation = {
   params: Joi.object({
-    applicationId: Joi.string().required().trim().min(1).max(64)
+    applicationId: Joi.string()
+      .required()
+      .trim()
+      .min(1)
+      .max(64)
+      .pattern(/^[A-Za-z0-9-]+$/)
   })
 }
 
@@ -24,6 +32,14 @@ export const finishApplicationReview = {
             validate: routeValidation
           },
           ...finishApplicationReviewController
+        },
+        {
+          method: 'POST',
+          path: '/finish-application-review/{applicationId}',
+          options: {
+            validate: routeValidation
+          },
+          ...finishApplicationReviewSubmitController
         }
       ])
     }

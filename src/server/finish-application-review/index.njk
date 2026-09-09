@@ -32,12 +32,13 @@
       
       {% if containsBoth %} 
       {% else %}
-        <div class="govuk-button-group govuk-!-margin-top-7">
-        {{ govukButton({
-            text: content.finishReviewButton,
-            href: "/application-review-complete/" + applicationId
-          }) }}
-        </div>
+        <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
+          <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: content.finishReviewButton
+            }) }}
+          </div>
+        </form>
       {% endif %}
 
     {% endif %}
@@ -63,12 +64,13 @@
         {{ content.approvalIntro }}
       </p>
 
-      <div class="govuk-button-group govuk-!-margin-top-7">
-        {{ govukButton({
-            text: content.submitForApprovalButton,
-            href: "/application-review-complete/" + applicationId
-          }) }}
-      </div>
+      <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
+        <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: content.submitForApprovalButton
+            }) }}
+        </div>
+      </form>
     {% endif %}
 
     <p>
