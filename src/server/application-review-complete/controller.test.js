@@ -12,5 +12,4 @@ describe('#Application review complete Controller', () => {
   afterAll(async () => {
     await server.stop({ timeout: 0 })
   })
-
 })

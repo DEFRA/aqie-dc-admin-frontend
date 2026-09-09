@@ -19,7 +19,10 @@ export async function getApplicationWithTechStatus(applicationId) {
  * @returns {Promise<object>} The backend response
  */
 export async function completeApplication(applicationId, reviewedBy) {
-  return patchJson(`/applications/${encodeURIComponent(applicationId)}/complete`, {
-    reviewedBy
-  })
+  return patchJson(
+    `/applications/${encodeURIComponent(applicationId)}/complete`,
+    {
+      reviewedBy
+    }
+  )
 }
