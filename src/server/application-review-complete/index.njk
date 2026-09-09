@@ -9,17 +9,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
-
-    <p class="govuk-body">
-     {{ applicationId }}
-    </p>
-
-    <ul class="govuk-list">
-      <li><a href="{{ content.applianceApplicationLink(applicationId) }}" class="govuk-link">{{ content.applianceApplicationLinkText }}</a></li>
-      <li><a href="{{ content.applianceRecordsLink }}" class="govuk-link">{{ content.applianceRecordsLinkText }}</a></li>
-      <li><a href="{{ content.dashboardLink }}" class="govuk-link">{{ content.dashboardLinkText }}</a></li>
-    </ul>
-  </div>
 </div>
 
 {% endblock %}

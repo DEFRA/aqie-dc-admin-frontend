@@ -8,8 +8,7 @@ function handleApplicationReviewCompleteRequest(request, h) {
   return h.view('application-review-complete/index', {
     pageTitle: content.pageTitle,
     heading: content.heading,
-    applicationId,
-    content
+    applicationId
   })
 }
 
