@@ -6,9 +6,9 @@ import { appliancesApplicationController } from './controller.js'
  * These routes are registered in src/server/router.js.
  */
 
-export const reviewApplicationAppliances = {
+export const reviewApplianceApplication = {
   plugin: {
-    name: 'reviewApplicationAppliances',
+    name: 'reviewApplianceApplication',
     register(server) {
       server.route([
         {

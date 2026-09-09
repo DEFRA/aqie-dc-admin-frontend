@@ -5,7 +5,7 @@ import { about } from './about/index.js'
 import { health } from './health/index.js'
 import { manageCertification } from './manage-certification/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
-import { reviewApplicationAppliances } from './review-application-appliances/index.js'
+import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { reviewAppliance } from './review-appliance/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
@@ -27,7 +27,7 @@ export const router = {
         azureAuth,
         manageCertification,
         applianceApplications,
-        reviewApplicationAppliances,
+        reviewApplianceApplication,
         reviewAppliance,
         technicalDrawings
       ])
