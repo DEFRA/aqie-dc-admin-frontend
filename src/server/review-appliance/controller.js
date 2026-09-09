@@ -3,6 +3,12 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceReview, saveApplianceReview } from './appliance-data.js'
 import { buildDocumentationTasks, buildListingTasks } from './review-tasks.js'
 import { statusCodes } from '../common/constants/status-codes.js'
+import {
+  applicationPath,
+  appliancePath,
+  buildApplianceBreadcrumbs,
+  incompleteReviewPath
+} from './navigation.js'
 
 const logger = createLogger()
 const content = applianceReviewContent.en
@@ -12,8 +18,8 @@ const decisionStatus = {
   reject: 'rejected'
 }
 
-function buildViewModel(appliance, incompleteError) {
-  const applicationHref = `/review-appliance-application/${encodeURIComponent(appliance.applicationId)}`
+function buildViewModel(appliance) {
+  const applicationHref = applicationPath(appliance.applicationId)
 
   return {
     pageTitle: content.heading(appliance.modelName),
@@ -21,22 +27,14 @@ function buildViewModel(appliance, incompleteError) {
     content,
     appliance,
     applicationHref,
+    applianceHref: appliancePath(appliance.id),
     backLink: { href: applicationHref },
-    incompleteError,
     documentationTasks: buildDocumentationTasks(
       appliance.technicalReview,
       appliance.id
     ),
     listingTasks: buildListingTasks(appliance.technicalReview, appliance.id),
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: content.applicationsHeading, href: '/appliance-applications' },
-      {
-        text: `Review appliance application ${appliance.applicationId}`,
-        href: applicationHref
-      },
-      { text: `Review ${appliance.modelName}` }
-    ]
+    breadcrumbs: buildApplianceBreadcrumbs(appliance)
   }
 }
 
@@ -68,23 +66,14 @@ async function handleApplianceDecisionRequest(request, h) {
 
     const { data: appliance } = await getApplianceReview(applianceId)
 
-    return h.redirect(
-      `/review-appliance-application/${encodeURIComponent(appliance.applicationId)}`
-    )
+    return h.redirect(applicationPath(appliance.applicationId))
   } catch (error) {
     if (error.status === statusCodes.conflict) {
       logger.warn(
         `[reviewAppliance] accept refused for ${applianceId}: checks outstanding`
       )
 
-      const { data: appliance } = await getApplianceReview(applianceId)
-
-      return h
-        .view(
-          'review-appliance/index',
-          buildViewModel(appliance, content.errors.incomplete)
-        )
-        .code(statusCodes.badRequest)
+      return h.redirect(incompleteReviewPath(applianceId))
     }
 
     logger.error(
