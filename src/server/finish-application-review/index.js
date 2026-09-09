@@ -1,12 +1,9 @@
 import Joi from 'joi'
-import {
-  finishApplicationReviewController,
-  incompleteApplicationReviewController
-} from './controller.js'
+import { finishApplicationReviewController } from './controller.js'
 
 /**
- * Sets up the routes used in the application completion page - checks for pending reviews and redirects accordingly.
- * These routes are registered in src/server/router.js.
+ * Sets up the route used in the application completion page - checks whether the review is complete and redirects accordingly.
+ * This route is registered in src/server/router.js.
  */
 
 const routeValidation = {
@@ -27,14 +24,6 @@ export const finishApplicationReview = {
             validate: routeValidation
           },
           ...finishApplicationReviewController
-        },
-        {
-          method: 'GET',
-          path: '/application-review-incomplete/{applicationId}',
-          options: {
-            validate: routeValidation
-          },
-          ...incompleteApplicationReviewController
         }
       ])
     }

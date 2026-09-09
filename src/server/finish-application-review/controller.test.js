@@ -1,10 +1,7 @@
 import { beforeEach, vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
-import {
-  handleFinishApplicationReviewRequest,
-  handleIncompleteApplicationReviewRequest
-} from './controller.js'
+import { handleFinishApplicationReviewRequest } from './controller.js'
 
 const { getApplicationWithTechStatusMock } = vi.hoisted(() => ({
   getApplicationWithTechStatusMock: vi.fn()
@@ -67,7 +64,7 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(302)
-    expect(headers.location).toBe('/application-review-incomplete/app-1')
+    expect(headers.location).toBe('/incomplete-application-review/app-1')
   })
 
   test('renders error view when getApplicationWithTechStatus throws error', async () => {
@@ -78,36 +75,6 @@ describe('#Complete application appliances Controller', () => {
     const { statusCode } = await server.inject({
       method: 'GET',
       url: '/finish-application-review/app-1'
-    })
-
-    expect(statusCode).toBe(statusCodes.internalServerError)
-  })
-
-  test('renders the incomplete application page', async () => {
-    getApplicationWithTechStatusMock.mockResolvedValue({
-      data: {
-        ...baseApplication,
-        applicationReviewComplete: false
-      }
-    })
-
-    const { result, statusCode } = await server.inject({
-      method: 'GET',
-      url: '/application-review-incomplete/app-1'
-    })
-
-    expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('is not complete')
-  })
-
-  test('renders error view when incomplete page request throws error', async () => {
-    getApplicationWithTechStatusMock.mockRejectedValue(
-      new Error('backend down')
-    )
-
-    const { statusCode } = await server.inject({
-      method: 'GET',
-      url: '/application-review-incomplete/app-1'
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)
@@ -136,7 +103,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     )
 
     expect(redirect).toHaveBeenCalledWith(
-      '/application-review-incomplete/app-1'
+      '/incomplete-application-review/app-1'
     )
     expect(h.view).not.toHaveBeenCalled()
     expect(result).toBe('redirected')
@@ -162,7 +129,6 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
       'finish-application-review/index',
       expect.objectContaining({
         applicationId: 'app-1',
-        hasPendingReviews: false,
         containsBoth: true
       })
     )
@@ -202,60 +168,6 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     const h = { view, redirect: vi.fn() }
 
     await handleFinishApplicationReviewRequest(
-      { params: { applicationId: 'app-1' } },
-      h
-    )
-
-    expect(view).toHaveBeenCalledWith(
-      'error/index',
-      expect.objectContaining({
-        message: 'Sorry there is a problem with the service'
-      })
-    )
-    expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
-  })
-})
-
-describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
-  beforeEach(() => {
-    getApplicationWithTechStatusMock.mockReset()
-  })
-
-  test('renders the incomplete view with hasPendingReviews true', async () => {
-    getApplicationWithTechStatusMock.mockResolvedValue({
-      data: baseApplication
-    })
-
-    const view = vi.fn().mockReturnValue('rendered')
-    const h = { view }
-
-    await handleIncompleteApplicationReviewRequest(
-      { params: { applicationId: 'app-1' } },
-      h
-    )
-
-    expect(view).toHaveBeenCalledWith(
-      'finish-application-review/index',
-      expect.objectContaining({
-        applicationId: 'app-1',
-        application: baseApplication,
-        hasPendingReviews: true,
-        heading: 'Your review of application app-1 is not complete',
-        pageTitle: 'Your review of application app-1 is not complete'
-      })
-    )
-  })
-
-  test('renders error view when getApplicationWithTechStatus throws', async () => {
-    getApplicationWithTechStatusMock.mockRejectedValue(
-      new Error('backend down')
-    )
-
-    const code = vi.fn().mockReturnValue('rendered')
-    const view = vi.fn().mockReturnValue({ code })
-    const h = { view }
-
-    await handleIncompleteApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )

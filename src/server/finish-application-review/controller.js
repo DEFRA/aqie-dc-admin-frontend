@@ -14,7 +14,7 @@ async function handleFinishApplicationReviewRequest(request, h) {
 
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
-      return h.redirect(`/application-review-incomplete/${applicationId}`)
+      return h.redirect(`/incomplete-application-review/${applicationId}`)
     }
     //screen to display both accepted and rejected
     const containsBoth =
@@ -22,16 +22,14 @@ async function handleFinishApplicationReviewRequest(request, h) {
       application.linkedItems?.accepted?.length > 0
 
     // Render complete application page
-    const heading = finishApplicationReviewContent.en.applicationCompleteHeading
-    const pageTitle =
-      finishApplicationReviewContent.en.applicationCompletePageTitle
+    const heading = finishApplicationReviewContent.en.heading
+    const pageTitle = finishApplicationReviewContent.en.pageTitle
 
     return h.view('finish-application-review/index', {
       pageTitle,
       heading,
       applicationId,
       application,
-      hasPendingReviews: false,
       containsBoth
     })
   } catch (error) {
@@ -47,48 +45,11 @@ async function handleFinishApplicationReviewRequest(request, h) {
   }
 }
 
-async function handleIncompleteApplicationReviewRequest(request, h) {
-  const { applicationId } = request.params
-
-  try {
-    const response = await getApplicationWithTechStatus(applicationId)
-    const application = response.data
-
-    const heading = finishApplicationReviewContent.en.getHeading(applicationId)
-    const pageTitle =
-      finishApplicationReviewContent.en.getPageTitle(applicationId)
-
-    return h.view('finish-application-review/index', {
-      pageTitle,
-      heading,
-      applicationId,
-      application,
-      hasPendingReviews: true
-    })
-  } catch (error) {
-    logger.error(
-      `[application-review-incomplete.GET] failed: ${error.message}`,
-      error
-    )
-    return h
-      .view('error/index', {
-        message: 'Sorry there is a problem with the service'
-      })
-      .code(statusCodes.internalServerError)
-  }
-}
-
 const finishApplicationReviewController = {
   handler: handleFinishApplicationReviewRequest
 }
 
-const incompleteApplicationReviewController = {
-  handler: handleIncompleteApplicationReviewRequest
-}
-
 export {
   handleFinishApplicationReviewRequest,
-  finishApplicationReviewController,
-  handleIncompleteApplicationReviewRequest,
-  incompleteApplicationReviewController
+  finishApplicationReviewController
 }

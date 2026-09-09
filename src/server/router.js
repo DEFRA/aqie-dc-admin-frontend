@@ -7,6 +7,7 @@ import { manageCertification } from './manage-certification/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
 import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { finishApplicationReview } from './finish-application-review/index.js'
+import { incompleteApplicationReview } from './incomplete-application-review/index.js'
 import { reviewAppliance } from './review-appliance/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
@@ -30,6 +31,7 @@ export const router = {
         applianceApplications,
         reviewApplianceApplication,
         finishApplicationReview,
+        incompleteApplicationReview,
         reviewAppliance,
         technicalDrawings
       ])
