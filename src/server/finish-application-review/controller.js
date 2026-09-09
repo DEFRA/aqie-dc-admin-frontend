@@ -12,22 +12,19 @@ async function handleFinishApplicationReviewRequest(request, h) {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
 
-    // check appliances.unreviewed if its empty or not
-    const unreviewedArray = application.appliances?.unreviewed || []
-    const hasPendingReviews = unreviewedArray.length > 0
-
-    // If pending reviews, redirect to incomplete application page
-    if (hasPendingReviews) {
+    // If review not complete, redirect to incomplete application page
+    if (!application.applicationReviewComplete) {
       return h.redirect(`/application-review-incomplete/${applicationId}`)
     }
     //screen to display both accepted and rejected
     const containsBoth =
-      application.appliances?.rejected?.length > 0 &&
-      application.appliances?.accepted?.length > 0
+      application.linkedItems?.rejected?.length > 0 &&
+      application.linkedItems?.accepted?.length > 0
 
     // Render complete application page
     const heading = finishApplicationReviewContent.en.applicationCompleteHeading
-    const pageTitle = finishApplicationReviewContent.en.applicationCompletePageTitle
+    const pageTitle =
+      finishApplicationReviewContent.en.applicationCompletePageTitle
 
     return h.view('finish-application-review/index', {
       pageTitle,
@@ -58,7 +55,8 @@ async function handleIncompleteApplicationReviewRequest(request, h) {
     const application = response.data
 
     const heading = finishApplicationReviewContent.en.getHeading(applicationId)
-    const pageTitle = finishApplicationReviewContent.en.getPageTitle(applicationId)
+    const pageTitle =
+      finishApplicationReviewContent.en.getPageTitle(applicationId)
 
     return h.view('finish-application-review/index', {
       pageTitle,

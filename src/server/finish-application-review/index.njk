@@ -21,7 +21,7 @@
     {% else %}
       {# Complete application - show appliances and statuses #}
       {# if rejected #}
-      {% if application.appliances.rejected.length > 0 %}
+      {% if application.linkedItems.rejected.length > 0 %}
         {% if containsBoth %}
         <h2 class="govuk-heading-l">Unsuitable appliances</h2>
         {% endif %}
@@ -31,7 +31,7 @@
         </p>
 
         <ul class="govuk-list govuk-list--bullet">
-          {% for appliance in application.appliances.rejected %}
+          {% for appliance in application.linkedItems.rejected %}
             <li>{{ appliance.modelName }}</li>
           {% endfor %}
         </ul>
@@ -53,7 +53,7 @@
       {% endif %}
 
       {# if accepted #}
-      {% if application.appliances.accepted.length > 0 %}
+      {% if application.linkedItems.accepted.length > 0 %}
        {# if both add this heading #}
         {% if containsBoth %} 
           <h2 class="govuk-heading-l">Suitable appliances</h2>
@@ -64,7 +64,7 @@
         </p>
 
         <ul class="govuk-list govuk-list--bullet">
-          {% for appliance in application.appliances.accepted %}
+          {% for appliance in application.linkedItems.accepted %}
             <li>{{ appliance.modelName }}</li>
           {% endfor %}
         </ul>

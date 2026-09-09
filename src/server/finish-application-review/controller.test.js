@@ -16,8 +16,8 @@ vi.mock('./application-data.js', () => ({
 
 const baseApplication = {
   id: 'app-1',
-  appliances: {
-    unreviewed: [],
+  applicationReviewComplete: true,
+  linkedItems: {
     accepted: [],
     rejected: []
   }
@@ -57,7 +57,7 @@ describe('#Complete application appliances Controller', () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        appliances: { ...baseApplication.appliances, unreviewed: ['a1'] }
+        applicationReviewComplete: false
       }
     })
 
@@ -87,7 +87,7 @@ describe('#Complete application appliances Controller', () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        appliances: { ...baseApplication.appliances, unreviewed: ['a1'] }
+        applicationReviewComplete: false
       }
     })
 
@@ -119,11 +119,11 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     getApplicationWithTechStatusMock.mockReset()
   })
 
-  test('redirects when there are unreviewed appliances', async () => {
+  test('redirects when the application review is not complete', async () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        appliances: { ...baseApplication.appliances, unreviewed: ['a1'] }
+        applicationReviewComplete: false
       }
     })
 
@@ -146,7 +146,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        appliances: { unreviewed: [], accepted: ['a1'], rejected: ['a2'] }
+        linkedItems: { accepted: ['a1'], rejected: ['a2'] }
       }
     })
 
@@ -172,7 +172,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        appliances: { unreviewed: [], accepted: ['a1'], rejected: [] }
+        linkedItems: { accepted: ['a1'], rejected: [] }
       }
     })
 
