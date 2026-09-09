@@ -82,13 +82,6 @@ async function handleAppliancesApplicationRequest(request, h) {
     // if (isNotStarted) {
     //   await updateApplianceApplicationStatus(applicationId, 'in_review')
     // }
-      return {
-        modelName: appliance.modelName,
-        tag: statusMap[status],
-        actionHref: `/review-appliance/${appliance.id}`,
-        actionText: statusMap[status].text
-      }
-    })
 
     return h.view(
       'review-application-appliances/index',
