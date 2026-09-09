@@ -12,14 +12,18 @@ async function handleIncompleteApplicationReviewRequest(request, h) {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
 
-    const heading = content.en.getHeading(applicationId)
-    const pageTitle = content.en.getPageTitle(applicationId)
+    const pageContent = content.en
+    const heading = pageContent.getHeading(applicationId)
+    const pageTitle = pageContent.getPageTitle(applicationId)
 
     return h.view('incomplete-application-review/index', {
       pageTitle,
       heading,
       applicationId,
-      application
+      application,
+      introText: pageContent.introText,
+      returnLinkText: pageContent.returnLinkText,
+      returnLink: pageContent.getReturnLink(applicationId)
     })
   } catch (error) {
     logger.error(

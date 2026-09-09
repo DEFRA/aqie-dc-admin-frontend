@@ -158,6 +158,31 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     )
   })
 
+  test('passes the content copy through the view model', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: baseApplication
+    })
+
+    const view = vi.fn().mockReturnValue('rendered')
+    const h = { view, redirect: vi.fn() }
+
+    await handleFinishApplicationReviewRequest(
+      { params: { applicationId: 'app-1' } },
+      h
+    )
+
+    expect(view).toHaveBeenCalledWith(
+      'finish-application-review/index',
+      expect.objectContaining({
+        content: expect.objectContaining({
+          unsuitableAppliancesHeading: 'Unsuitable appliances',
+          finishReviewButton: 'Finish Review',
+          submitForApprovalButton: 'Submit for approval'
+        })
+      })
+    )
+  })
+
   test('renders error view when getApplicationWithTechStatus throws', async () => {
     getApplicationWithTechStatusMock.mockRejectedValue(
       new Error('backend down')

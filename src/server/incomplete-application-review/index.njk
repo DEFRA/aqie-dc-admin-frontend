@@ -11,10 +11,10 @@
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
     <p class="govuk-body">
-      You must make a final decision on each appliance before completing this application review.
+      {{ introText }}
     </p>
     <p>
-      <a href="/review-appliance-application/{{ applicationId }}">Return to application and complete reviews</a>
+      <a href="{{ returnLink }}">{{ returnLinkText }}</a>
     </p>
   </div>
 </div>

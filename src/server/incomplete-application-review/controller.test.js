@@ -88,7 +88,11 @@ describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
         applicationId: 'app-1',
         application: baseApplication,
         heading: 'Your review of application app-1 is not complete',
-        pageTitle: 'Your review of application app-1 is not complete'
+        pageTitle: 'Your review of application app-1 is not complete',
+        introText:
+          'You must make a final decision on each appliance before completing this application review.',
+        returnLink: '/review-appliance-application/app-1',
+        returnLinkText: 'Return to application and complete reviews'
       })
     )
   })

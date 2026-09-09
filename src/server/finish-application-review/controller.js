@@ -21,16 +21,16 @@ async function handleFinishApplicationReviewRequest(request, h) {
       application.linkedItems?.rejected?.length > 0 &&
       application.linkedItems?.accepted?.length > 0
 
-    // Render complete application page
-    const heading = finishApplicationReviewContent.en.heading
-    const pageTitle = finishApplicationReviewContent.en.pageTitle
+    const content = finishApplicationReviewContent.en
 
     return h.view('finish-application-review/index', {
-      pageTitle,
-      heading,
+      pageTitle: content.pageTitle,
+      heading: content.heading,
       applicationId,
       application,
-      containsBoth
+      containsBoth,
+      content,
+      returnLink: content.returnLink(applicationId)
     })
   } catch (error) {
     logger.error(
