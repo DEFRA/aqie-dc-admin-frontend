@@ -56,16 +56,14 @@ describe('#buildDocumentationTasks', () => {
   test('links each task to its own sub-page', () => {
     const tasks = buildDocumentationTasks({}, 'APP-1')
 
-    expect(tasks[0].href).toBe('/review-appliance/APP-1/review-test-reports')
-    expect(tasks[3].href).toBe(
-      '/review-appliance/APP-1/review-instruction-manual'
-    )
+    expect(tasks[0].href).toBe('/review-appliance/APP-1/test-reports')
+    expect(tasks[3].href).toBe('/review-appliance/APP-1/instruction-manual')
   })
 
   test('encodes the appliance id in task links', () => {
     const tasks = buildDocumentationTasks({}, 'APP/1')
 
-    expect(tasks[0].href).toBe('/review-appliance/APP%2F1/review-test-reports')
+    expect(tasks[0].href).toBe('/review-appliance/APP%2F1/test-reports')
   })
 
   test('handles a missing technicalReview without throwing', () => {

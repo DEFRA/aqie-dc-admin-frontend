@@ -3,11 +3,12 @@ import inert from '@hapi/inert'
 import { home } from './home/index.js'
 import { about } from './about/index.js'
 import { health } from './health/index.js'
-import { dashboard } from './dashboard/index.js'
-import { applicationsAppliances } from './applications-appliances/index.js'
+import { manageCertification } from './manage-certification/index.js'
+import { applianceApplications } from './appliance-applications/index.js'
 import { reviewApplicationAppliances } from './review-application-appliances/index.js'
 import { reviewAppliance } from './review-appliance/index.js'
 import { reviewConformityMark } from './review-conformity-mark/index.js'
+import { technicalDrawings } from './technical-drawings/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 
@@ -25,11 +26,12 @@ export const router = {
         home,
         about,
         azureAuth,
-        dashboard,
-        applicationsAppliances,
+        manageCertification,
+        applianceApplications,
         reviewApplicationAppliances,
         reviewAppliance,
-        reviewConformityMark
+        reviewConformityMark,
+        technicalDrawings
       ])
 
       // Static assets

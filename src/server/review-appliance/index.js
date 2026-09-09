@@ -3,6 +3,7 @@ import {
   applianceReviewController,
   applianceDecisionController
 } from './controller.js'
+import { incompleteReviewController } from './incomplete-review-controller.js'
 
 /**
  * Sets up the routes used in the /review-appliance page.
@@ -27,6 +28,14 @@ export const reviewAppliance = {
           method: 'GET',
           path: '/review-appliance/{applianceId}',
           ...applianceReviewController,
+          options: {
+            validate: { params: applianceIdSchema }
+          }
+        },
+        {
+          method: 'GET',
+          path: '/review-appliance/{applianceId}/incomplete-review',
+          ...incompleteReviewController,
           options: {
             validate: { params: applianceIdSchema }
           }

@@ -1,0 +1,42 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    <p>{{ content.description }}</p>
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/technical-drawings"
+          novalidate class="govuk-!-margin-bottom-0">
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.passButton,
+          name: "decision",
+          value: "pass"
+        }) }}
+
+        {{ govukButton({
+          text: content.failButton,
+          name: "decision",
+          value: "fail",
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </form>
+
+    <p>
+      <a class="govuk-link" href="{{ reviewHref }}">{{ content.cancel }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

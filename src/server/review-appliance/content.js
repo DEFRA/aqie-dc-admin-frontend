@@ -12,22 +12,22 @@ export const applianceReviewContent = {
       {
         key: 'testReports',
         title: 'Review test reports',
-        path: 'review-test-reports'
+        path: 'test-reports'
       },
       {
         key: 'technicalDrawings',
         title: 'Review technical drawings',
-        path: 'review-technical-drawings'
+        path: 'technical-drawings'
       },
       {
         key: 'conformityMark',
         title: 'Review conformity mark',
-        path: 'review-conformity-mark'
+        path: 'conformity-mark'
       },
       {
         key: 'instructionManual',
         title: 'Review instruction manual',
-        path: 'review-instruction-manual'
+        path: 'instruction-manual'
       }
     ],
 
@@ -61,10 +61,18 @@ export const applianceReviewContent = {
       notCompleted: { text: 'Not completed' }
     },
 
+    incompleteReview: {
+      heading: 'Incomplete review',
+      intro: (modelName) =>
+        `You cannot accept ${modelName} for government approval until:`,
+      conditions: [
+        'all supporting documents are marked as Passed',
+        'all tasks for preparing the public listing are marked as Completed'
+      ],
+      returnLink: (modelName) => `Return to ${modelName} review`
+    },
+
     errors: {
-      incompleteTitle: 'There is a problem',
-      incomplete:
-        'You cannot accept this appliance until every check has been completed and passed.',
       generic: 'Sorry, there is a problem with the service'
     }
   }

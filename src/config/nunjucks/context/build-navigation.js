@@ -11,9 +11,9 @@ export function buildNavigation(request) {
       current: request?.path === '/about'
     },
     {
-      text: 'Dashboard',
-      href: '/dashboard',
-      current: request?.path === '/dashboard'
+      text: 'Manage Certification',
+      href: '/manage-certification',
+      current: request?.path === '/manage-certification'
     }
   ]
 }
