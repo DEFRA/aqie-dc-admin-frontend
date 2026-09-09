@@ -14,7 +14,7 @@
 
     <p class="govuk-body">{{ intro }}</p>
 
-    <form method="post" novalidate>
+    <form method="post" action="/review-appliance/{{ appliance.id }}/conformity-mark" novalidate>
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
           text: 'Mark as passed',

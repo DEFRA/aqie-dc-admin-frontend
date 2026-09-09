@@ -1,19 +1,20 @@
 import { vi } from 'vitest'
+import { conformityMarkController as controller } from './controller.js'
 
-const { getApplianceReviewMock, patchJsonMock } = vi.hoisted(() => ({
-  getApplianceReviewMock: vi.fn(),
-  patchJsonMock: vi.fn()
-}))
+const { getApplianceReviewMock, saveConformityMarkResultMock } = vi.hoisted(
+  () => ({
+    getApplianceReviewMock: vi.fn(),
+    saveConformityMarkResultMock: vi.fn()
+  })
+)
 
 vi.mock('../review-appliance/appliance-data.js', () => ({
   getApplianceReview: getApplianceReviewMock
 }))
 
-vi.mock('../common/api/api.js', () => ({
-  patchJson: patchJsonMock
+vi.mock('./conformity-mark-data.js', () => ({
+  saveConformityMarkResult: saveConformityMarkResultMock
 }))
-
-import { reviewConformityController as controller } from './controller.js'
 
 function toolkit() {
   const code = vi.fn().mockReturnValue('rendered')
@@ -35,7 +36,7 @@ const baseAppliance = {
 describe('review-conformity controller', () => {
   beforeEach(() => {
     getApplianceReviewMock.mockReset()
-    patchJsonMock.mockReset()
+    saveConformityMarkResultMock.mockReset()
   })
 
   test('GET renders the page', async () => {
@@ -45,7 +46,7 @@ describe('review-conformity controller', () => {
     await controller.get({ params: { applianceId: 'APP-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith(
-      'review-conformity-mark/index',
+      'conformity-mark/index',
       expect.objectContaining({
         heading: 'Review conformity mark details for Twin Heat CS200i'
       })
@@ -63,8 +64,8 @@ describe('review-conformity controller', () => {
     })
   })
 
-  test('POST patches the backend and redirects to review page (pass)', async () => {
-    patchJsonMock.mockResolvedValue({})
+  test('POST records the pass result and redirects to review page (pass)', async () => {
+    saveConformityMarkResultMock.mockResolvedValue({})
     const h = toolkit()
 
     await controller.post(
@@ -72,17 +73,14 @@ describe('review-conformity controller', () => {
       h
     )
 
-    expect(patchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP-1/technical-review',
-      { documentationChecks: { conformityMark: true } }
-    )
+    expect(saveConformityMarkResultMock).toHaveBeenCalledWith('APP-1', true)
     expect(h.redirect).toHaveBeenCalledWith(
       '/review-appliance/APP-1?confstatusCS=pass'
     )
   })
 
-  test('POST patches the backend and redirects to review page (fail)', async () => {
-    patchJsonMock.mockResolvedValue({})
+  test('POST records the fail result and redirects to review page (fail)', async () => {
+    saveConformityMarkResultMock.mockResolvedValue({})
     const h = toolkit()
 
     await controller.post(
@@ -90,17 +88,14 @@ describe('review-conformity controller', () => {
       h
     )
 
-    expect(patchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP-1/technical-review',
-      { documentationChecks: { conformityMark: false } }
-    )
+    expect(saveConformityMarkResultMock).toHaveBeenCalledWith('APP-1', false)
     expect(h.redirect).toHaveBeenCalledWith(
       '/review-appliance/APP-1?confstatusCS=fail'
     )
   })
 
   test('POST returns error view on backend failure', async () => {
-    patchJsonMock.mockRejectedValue(new Error('boom'))
+    saveConformityMarkResultMock.mockRejectedValue(new Error('boom'))
     const h = toolkit()
 
     await controller.post(

@@ -7,7 +7,7 @@ import { manageCertification } from './manage-certification/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
 import { reviewApplicationAppliances } from './review-application-appliances/index.js'
 import { reviewAppliance } from './review-appliance/index.js'
-import { reviewConformityMark } from './review-conformity-mark/index.js'
+import { conformityMark } from './conformity-mark/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
@@ -30,7 +30,7 @@ export const router = {
         applianceApplications,
         reviewApplicationAppliances,
         reviewAppliance,
-        reviewConformityMark,
+        conformityMark,
         technicalDrawings
       ])
 

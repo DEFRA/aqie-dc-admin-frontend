@@ -1,3 +1,7 @@
+/**
+ * Copy text used by the conformity-mark review page.
+ * Kept in one place so route handlers and templates stay consistent.
+ */
 export const conformityContent = {
   en: {
     heading: (modelName) => `Review conformity mark details for ${modelName}`,

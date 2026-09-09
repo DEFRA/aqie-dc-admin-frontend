@@ -1,5 +1,10 @@
 import Joi from 'joi'
-import { reviewConformityController } from './controller.js'
+import { conformityMarkController } from './controller.js'
+
+/**
+ * Routes for the conformity-mark technical review screen.
+ * Registered from src/server/router.js and validated by a strict appliance ID schema.
+ */
 
 const applianceIdSchema = Joi.object({
   applianceId: Joi.string()
@@ -10,21 +15,21 @@ const applianceIdSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
-export const reviewConformityMark = {
+export const conformityMark = {
   plugin: {
-    name: 'reviewConformityMark',
+    name: 'conformityMark',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/review-appliance/{applianceId}/review-conformity-mark',
-          handler: reviewConformityController.get,
+          path: '/review-appliance/{applianceId}/conformity-mark',
+          handler: conformityMarkController.get,
           options: { validate: { params: applianceIdSchema } }
         },
         {
           method: 'POST',
-          path: '/review-appliance/{applianceId}/review-conformity-mark',
-          handler: reviewConformityController.post,
+          path: '/review-appliance/{applianceId}/conformity-mark',
+          handler: conformityMarkController.post,
           options: {
             validate: {
               params: applianceIdSchema,
