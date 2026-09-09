@@ -1,0 +1,41 @@
+
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    <p class="govuk-body">{{ intro }}</p>
+
+    <form method="post" novalidate>
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: 'Mark as passed',
+          name: 'decision',
+          value: 'pass'
+        }) }}
+
+        {{ govukButton({
+          text: 'Mark as failed',
+          name: 'decision',
+          value: 'fail',
+          classes: 'govuk-button--secondary'
+        }) }}
+      </div>
+    </form>
+
+    <p class="govuk-body govuk-!-margin-top-6">
+      <a class="govuk-link" href="/review-appliance/{{ appliance.id }}">{{ 'Cancel' }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
