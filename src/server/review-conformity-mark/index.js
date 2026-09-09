@@ -28,7 +28,9 @@ export const reviewConformityMark = {
           options: {
             validate: {
               params: applianceIdSchema,
-              payload: Joi.object({ decision: Joi.string().valid('pass', 'fail').required() })
+              payload: Joi.object({
+                decision: Joi.string().valid('pass', 'fail').required()
+              })
             }
           }
         }

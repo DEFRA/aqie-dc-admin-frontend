@@ -20,9 +20,13 @@ async function handleGetRequest(request, h) {
       appliance
     })
   } catch (error) {
-    logger.error(`[reviewConformity] failed to load ${applianceId}: ${error.message}`)
+    logger.error(
+      `[reviewConformity] failed to load ${applianceId}: ${error.message}`
+    )
     return h
-      .view('error/index', { message: 'Sorry, there is a problem with the service' })
+      .view('error/index', {
+        message: 'Sorry, there is a problem with the service'
+      })
       .code(statusCodes.internalServerError)
   }
 }
@@ -41,9 +45,13 @@ async function handlePostRequest(request, h) {
       `/review-appliance/${encodeURIComponent(applianceId)}?confstatusCS=${pass ? 'pass' : 'fail'}`
     )
   } catch (error) {
-    logger.error(`[reviewConformity] failed to save ${applianceId}: ${error.message}`)
+    logger.error(
+      `[reviewConformity] failed to save ${applianceId}: ${error.message}`
+    )
     return h
-      .view('error/index', { message: 'Sorry, there is a problem with the service' })
+      .view('error/index', {
+        message: 'Sorry, there is a problem with the service'
+      })
       .code(statusCodes.internalServerError)
   }
 }

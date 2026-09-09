@@ -28,8 +28,8 @@ export const router = {
         dashboard,
         applicationsAppliances,
         reviewApplicationAppliances,
-        reviewAppliance
-        ,reviewConformityMark
+        reviewAppliance,
+        reviewConformityMark
       ])
 
       // Static assets

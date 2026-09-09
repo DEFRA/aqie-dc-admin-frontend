@@ -44,8 +44,11 @@ describe('review-conformity controller', () => {
 
     await controller.get({ params: { applianceId: 'APP-1' } }, h)
 
-    expect(h.view).toHaveBeenCalledWith('review-conformity-mark/index',
-      expect.objectContaining({ heading: 'Review conformity mark details for Twin Heat CS200i' })
+    expect(h.view).toHaveBeenCalledWith(
+      'review-conformity-mark/index',
+      expect.objectContaining({
+        heading: 'Review conformity mark details for Twin Heat CS200i'
+      })
     )
   })
 
@@ -55,35 +58,58 @@ describe('review-conformity controller', () => {
 
     await controller.get({ params: { applianceId: 'APP-1' } }, h)
 
-    expect(h.view).toHaveBeenCalledWith('error/index', { message: 'Sorry, there is a problem with the service' })
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
   })
 
   test('POST patches the backend and redirects to review page (pass)', async () => {
     patchJsonMock.mockResolvedValue({})
     const h = toolkit()
 
-    await controller.post({ params: { applianceId: 'APP-1' }, payload: { decision: 'pass' } }, h)
+    await controller.post(
+      { params: { applianceId: 'APP-1' }, payload: { decision: 'pass' } },
+      h
+    )
 
-    expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1/technical-review', { documentationChecks: { conformityMark: true } })
-    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1?confstatusCS=pass')
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-1/technical-review',
+      { documentationChecks: { conformityMark: true } }
+    )
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/review-appliance/APP-1?confstatusCS=pass'
+    )
   })
 
   test('POST patches the backend and redirects to review page (fail)', async () => {
     patchJsonMock.mockResolvedValue({})
     const h = toolkit()
 
-    await controller.post({ params: { applianceId: 'APP-1' }, payload: { decision: 'fail' } }, h)
+    await controller.post(
+      { params: { applianceId: 'APP-1' }, payload: { decision: 'fail' } },
+      h
+    )
 
-    expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1/technical-review', { documentationChecks: { conformityMark: false } })
-    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1?confstatusCS=fail')
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-1/technical-review',
+      { documentationChecks: { conformityMark: false } }
+    )
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/review-appliance/APP-1?confstatusCS=fail'
+    )
   })
 
   test('POST returns error view on backend failure', async () => {
     patchJsonMock.mockRejectedValue(new Error('boom'))
     const h = toolkit()
 
-    await controller.post({ params: { applianceId: 'APP-1' }, payload: { decision: 'pass' } }, h)
+    await controller.post(
+      { params: { applianceId: 'APP-1' }, payload: { decision: 'pass' } },
+      h
+    )
 
-    expect(h.view).toHaveBeenCalledWith('error/index', { message: 'Sorry, there is a problem with the service' })
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
   })
 })
