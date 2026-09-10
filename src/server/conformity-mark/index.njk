@@ -17,13 +17,13 @@
     <form method="post" action="/review-appliance/{{ appliance.id }}/conformity-mark" novalidate>
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
-          text: 'Mark as passed',
+          text: passButtonText,
           name: 'decision',
           value: 'pass'
         }) }}
 
         {{ govukButton({
-          text: 'Mark as failed',
+          text: failButtonText,
           name: 'decision',
           value: 'fail',
           classes: 'govuk-button--secondary'
@@ -32,7 +32,7 @@
     </form>
 
     <p class="govuk-body govuk-!-margin-top-6">
-      <a class="govuk-link" href="/review-appliance/{{ appliance.id }}">{{ 'Cancel' }}</a>
+      <a class="govuk-link" href="/review-appliance/{{ appliance.id }}">{{ cancelText }}</a>
     </p>
 
   </div>

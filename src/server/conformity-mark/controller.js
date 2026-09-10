@@ -6,9 +6,23 @@ import { saveConformityMarkResult } from './conformity-mark-data.js'
 
 const logger = createLogger()
 const content = conformityContent.en
+const checkResult = {
+  pass: true,
+  fail: false
+}
 
 function buildReviewHref(applianceId) {
   return `/review-appliance/${encodeURIComponent(applianceId)}`
+}
+
+function resolveCheckResult(decision) {
+  const result = checkResult[decision]
+
+  if (typeof result !== 'boolean') {
+    throw new Error(`Invalid conformity-mark decision: ${String(decision)}`)
+  }
+
+  return result
 }
 
 function renderServiceError(h) {
@@ -32,6 +46,9 @@ async function loadConformityMarkPage(request, h) {
       pageTitle: content.heading(appliance.modelName),
       heading: content.heading(appliance.modelName),
       intro: content.intro,
+      passButtonText: content.markPassed,
+      failButtonText: content.markFailed,
+      cancelText: content.cancel,
       appliance,
       reviewHref: buildReviewHref(applianceId)
     })
@@ -48,9 +65,9 @@ async function loadConformityMarkPage(request, h) {
  */
 async function submitConformityMarkDecision(request, h) {
   const { applianceId } = request.params
-  const pass = request.payload.decision === 'pass'
 
   try {
+    const pass = resolveCheckResult(request.payload.decision)
     await saveConformityMarkResult(applianceId, pass)
 
     return h.redirect(
