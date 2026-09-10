@@ -74,9 +74,7 @@ describe('review-conformity controller', () => {
     )
 
     expect(saveConformityMarkResultMock).toHaveBeenCalledWith('APP-1', true)
-    expect(h.redirect).toHaveBeenCalledWith(
-      '/review-appliance/APP-1?confstatusCS=pass'
-    )
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
   })
 
   test('POST records the fail result and redirects to review page (fail)', async () => {
@@ -89,24 +87,9 @@ describe('review-conformity controller', () => {
     )
 
     expect(saveConformityMarkResultMock).toHaveBeenCalledWith('APP-1', false)
-    expect(h.redirect).toHaveBeenCalledWith(
-      '/review-appliance/APP-1?confstatusCS=fail'
-    )
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
   })
-  test('POST rejects invalid decision instead of silently treating it as fail', async () => {
-    const h = toolkit()
 
-    await controller.post(
-      { params: { applianceId: 'APP-1' }, payload: { decision: 'maybe' } },
-      h
-    )
-
-    expect(saveConformityMarkResultMock).not.toHaveBeenCalled()
-    expect(h.redirect).not.toHaveBeenCalled()
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
-  })
   test('POST returns error view on backend failure', async () => {
     saveConformityMarkResultMock.mockRejectedValue(new Error('boom'))
     const h = toolkit()

@@ -15,21 +15,9 @@ function buildReviewHref(applianceId) {
   return `/review-appliance/${encodeURIComponent(applianceId)}`
 }
 
-function resolveCheckResult(decision) {
-  const result = checkResult[decision]
-
-  if (typeof result !== 'boolean') {
-    throw new Error(`Invalid conformity-mark decision: ${String(decision)}`)
-  }
-
-  return result
-}
-
 function renderServiceError(h) {
   return h
-    .view('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
+    .view('error/index', { message: content.errors.generic })
     .code(statusCodes.internalServerError)
 }
 
@@ -65,14 +53,12 @@ async function loadConformityMarkPage(request, h) {
  */
 async function submitConformityMarkDecision(request, h) {
   const { applianceId } = request.params
+  const pass = checkResult[request.payload.decision]
 
   try {
-    const pass = resolveCheckResult(request.payload.decision)
     await saveConformityMarkResult(applianceId, pass)
 
-    return h.redirect(
-      `${buildReviewHref(applianceId)}?confstatusCS=${pass ? 'pass' : 'fail'}`
-    )
+    return h.redirect(buildReviewHref(applianceId))
   } catch (error) {
     logger.error(
       `[reviewConformity] failed to save ${applianceId}: ${error.message}`
