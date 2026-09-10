@@ -56,7 +56,7 @@ async function handleCheckPermittedFuelsRequest(request, h) {
       applianceId,
       appliance,
       {
-        permFuelsCS: appliance.allowedFuels ?? '',
+        permFuelsCS: appliance.permittedFuels ?? '',
         woodCS: toYesNo(appliance.isPermittedToBurnWood)
       },
       null
@@ -107,7 +107,7 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
         applianceId,
         appliance,
         {
-          permFuelsCS: permFuelsCS ?? appliance.allowedFuels ?? '',
+          permFuelsCS: permFuelsCS ?? appliance.permittedFuels ?? '',
           woodCS: undefined
         },
         {

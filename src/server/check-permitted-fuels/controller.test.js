@@ -20,7 +20,7 @@ const appliance = {
   id: 'APP-1',
   modelName: 'Twin Heat CS200i',
   applicationId: '1084',
-  allowedFuels:
+  permittedFuels:
     'Gozney manufactured wood logs, length 280-310mm, diameter 95mm',
   isPermittedToBurnWood: true,
   technicalReview: {

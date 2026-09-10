@@ -10,7 +10,7 @@ export async function getApplianceForPermittedFuels(applianceId) {
 
 export async function savePermittedFuels(applianceId, permittedFuels, wood) {
   await patchJson(`/appliances/${encodeURIComponent(applianceId)}`, {
-    allowedFuels: permittedFuels,
+    permittedFuels,
     isPermittedToBurnWood: wood
   })
 
