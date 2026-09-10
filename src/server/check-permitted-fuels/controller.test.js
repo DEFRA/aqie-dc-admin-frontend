@@ -184,12 +184,44 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
       expect.objectContaining({
         pageTitle: 'Error: Permitted fuels for Twin Heat CS200i',
         error: {
+          field: 'woodCS',
           message: 'Select if the appliance is cerified to burn wood',
           href: '#woodCS'
         },
         formValues: {
           permFuelsCS: 'Updated fuels',
           woodCS: undefined
+        }
+      })
+    )
+    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
+  })
+
+  test('re-renders with validation error when permitted fuels has no letters', async () => {
+    getApplianceForPermittedFuelsMock.mockResolvedValue({ data: appliance })
+    const h = toolkit()
+
+    await handleCheckPermittedFuelsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: { permFuelsCS: '  1234 / - ', woodCS: 'Yes' }
+      },
+      h
+    )
+
+    expect(savePermittedFuelsMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'check-permitted-fuels/index',
+      expect.objectContaining({
+        pageTitle: 'Error: Permitted fuels for Twin Heat CS200i',
+        error: {
+          field: 'permFuelsCS',
+          message: 'Enter which fuels the appliance is permitted to burn',
+          href: '#perm-fuels'
+        },
+        formValues: {
+          permFuelsCS: '  1234 / - ',
+          woodCS: 'Yes'
         }
       })
     )

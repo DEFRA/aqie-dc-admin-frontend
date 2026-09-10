@@ -8,7 +8,10 @@ import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = checkPermittedFuelsContent.en
-const WOOD_SELECTION_ERROR = 'Select if the appliance is cerified to burn wood'
+
+function hasAnyLetter(value = '') {
+  return /[A-Za-z]/.test(value)
+}
 
 function toYesNo(value) {
   if (value === true) {
@@ -75,6 +78,26 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
   const { permFuelsCS, woodCS } = request.payload
 
   try {
+    if (!hasAnyLetter(permFuelsCS)) {
+      const { data: appliance } =
+        await getApplianceForPermittedFuels(applianceId)
+
+      return renderCheckPermittedFuelsPage(
+        h,
+        applianceId,
+        appliance,
+        {
+          permFuelsCS: permFuelsCS ?? '',
+          woodCS: woodCS ?? toYesNo(appliance.isPermittedToBurnWood)
+        },
+        {
+          field: 'permFuelsCS',
+          message: content.errors.permittedFuelsRequired,
+          href: '#perm-fuels'
+        }
+      ).code(statusCodes.badRequest)
+    }
+
     if (!woodCS) {
       const { data: appliance } =
         await getApplianceForPermittedFuels(applianceId)
@@ -88,7 +111,8 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
           woodCS: undefined
         },
         {
-          message: WOOD_SELECTION_ERROR,
+          field: 'woodCS',
+          message: content.errors.woodSelectionRequired,
           href: '#woodCS'
         }
       ).code(statusCodes.badRequest)

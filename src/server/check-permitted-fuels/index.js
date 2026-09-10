@@ -38,7 +38,7 @@ export const checkPermittedFuels = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                permFuelsCS: Joi.string().trim().min(1).required(),
+                permFuelsCS: Joi.string().allow('').required(),
                 woodCS: Joi.string().valid('Yes', 'No').optional()
               })
             }
@@ -52,7 +52,7 @@ export const checkPermittedFuels = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                permFuelsCS: Joi.string().trim().min(1).required(),
+                permFuelsCS: Joi.string().allow('').required(),
                 woodCS: Joi.string().valid('Yes', 'No').optional()
               })
             }

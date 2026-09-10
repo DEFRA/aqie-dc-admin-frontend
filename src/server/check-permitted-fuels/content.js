@@ -12,7 +12,10 @@ export const checkPermittedFuelsContent = {
     errors: {
       generic: 'Sorry, there is a problem with the service',
       summaryTitle: 'There is a problem',
-      prefix: 'Error:'
+      prefix: 'Error:',
+      permittedFuelsRequired:
+        'Enter which fuels the appliance is permitted to burn',
+      woodSelectionRequired: 'Select if the appliance is cerified to burn wood'
     }
   }
 }
