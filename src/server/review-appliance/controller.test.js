@@ -73,8 +73,8 @@ describe('#handleApplianceReviewRequest', () => {
     const [, viewModel] = h.view.mock.calls[0]
 
     expect(viewModel.breadcrumbs).toEqual([
-      { text: 'Home', href: '/dashboard' },
-      { text: 'Appliance applications', href: '/applications-appliances' },
+      { text: 'Home', href: '/manage-certifications' },
+      { text: 'Appliance applications', href: '/appliance-applications' },
       {
         text: 'Review appliance application 1084',
         href: '/review-appliance-application/1084'
@@ -163,11 +163,10 @@ describe('#handleApplianceDecisionRequest', () => {
     })
   })
 
-  test('re-renders with an error when checks are outstanding', async () => {
+  test('redirects to the incomplete review page when checks are outstanding', async () => {
     const conflict = new Error('Backend PATCH failed: 409')
     conflict.status = statusCodes.conflict
     saveApplianceReviewMock.mockRejectedValue(conflict)
-    getApplianceReviewMock.mockResolvedValue({ data: baseAppliance })
     const h = toolkit()
 
     await handleApplianceDecisionRequest(
@@ -175,15 +174,10 @@ describe('#handleApplianceDecisionRequest', () => {
       h
     )
 
-    expect(h.view).toHaveBeenCalledWith(
-      'review-appliance/index',
-      expect.objectContaining({
-        incompleteError:
-          'You cannot accept this appliance until every check has been completed and passed.'
-      })
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/review-appliance/APP-1/incomplete-review'
     )
-    expect(h.redirect).not.toHaveBeenCalled()
-    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
+    expect(h.view).not.toHaveBeenCalled()
   })
 
   test('renders the error view on any other backend failure', async () => {

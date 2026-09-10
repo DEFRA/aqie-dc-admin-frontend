@@ -10,7 +10,7 @@ async function handleDashboard(_request, h) {
     const response = await getCounts()
     const counts = response.data
 
-    return h.view('dashboard/index', {
+    return h.view('manage-certification/index', {
       pageTitle: dashboardContent.en.pageTitle,
       heading: dashboardContent.en.heading,
       applianceNewCount: counts.appliance.new,
@@ -21,7 +21,7 @@ async function handleDashboard(_request, h) {
       fuelTotalRecordCount: counts.fuel.records
     })
   } catch (error) {
-    logger.error(`[dashboard.GET] failed:${error.message}`, error)
+    logger.error(`[manage-certification.GET] failed:${error.message}`, error)
     return h
       .view('error/index', {
         message: 'Sorry there is a problem with the service'

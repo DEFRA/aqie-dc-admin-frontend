@@ -4,14 +4,14 @@ import { dashboardController } from './controller.js'
  * Sets up the routes used in the /dashboard page.
  * These routes are registered in src/server/router.js.
  */
-export const dashboard = {
+export const manageCertification = {
   plugin: {
-    name: 'dashboard',
+    name: 'manage-certification',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/dashboard',
+          path: '/manage-certification',
           ...dashboardController
         }
       ])
