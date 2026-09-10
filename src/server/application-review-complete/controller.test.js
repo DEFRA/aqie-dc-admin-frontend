@@ -1,5 +1,7 @@
+import { beforeEach, vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
+import { handleApplicationReviewCompleteRequest } from './controller.js'
 
 describe('#Application review complete Controller', () => {
   let server
@@ -20,7 +22,39 @@ describe('#Application review complete Controller', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('Application review complete')
+    expect(result).toContain('Review complete')
+    expect(result).toContain('Your review of application app-1 is complete.')
     expect(result).toContain('app-1')
+  })
+})
+
+describe('#handleApplicationReviewCompleteRequest (unit)', () => {
+  beforeEach(() => {
+    // no-op: keeps the unit test structure consistent with other controller specs
+  })
+
+  test('renders the review complete view with the expected content', async () => {
+    const view = vi.fn().mockReturnValue('rendered')
+    const h = { view }
+
+    await handleApplicationReviewCompleteRequest(
+      { params: { applicationId: 'app-1' } },
+      h
+    )
+
+    expect(view).toHaveBeenCalledWith(
+      'application-review-complete/index',
+      expect.objectContaining({
+        pageTitle: 'Review complete',
+        heading: 'Review complete',
+        applicationId: 'app-1',
+        description: 'Your review of application app-1 is complete.',
+        content: expect.objectContaining({
+          applianceApplicationsLinkText: 'Return to appliance applications',
+          applianceRecordsLinkText: 'Go to appliance records',
+          dashboardLinkText: 'Return to dashboard'
+        })
+      })
+    )
   })
 })
