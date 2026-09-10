@@ -1,0 +1,95 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/permitted-fuels"
+          novalidate>
+      <div class="govuk-form-group govuk-!-margin-bottom-9">
+        <label class="govuk-label govuk-label--l" for="perm-fuels">
+          {{ content.permittedFuelsLabel }}
+        </label>
+        <textarea class="govuk-textarea"
+                  id="perm-fuels"
+                  name="permFuelsCS"
+                  rows="5">{{ formValues.permFuelsCS }}</textarea>
+      </div>
+
+      <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            {{ content.woodQuestion }}
+          </legend>
+
+          {% if error %}
+            <p id="woodCS-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">{{ content.errors.prefix }}</span> {{ error.message }}
+            </p>
+          {% endif %}
+
+          <div id="woodCS-hint" class="govuk-hint">
+            {{ content.woodHint }}
+          </div>
+
+          <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input"
+                     id="woodCS"
+                     name="woodCS"
+                     type="radio"
+                     value="{{ content.yes }}"
+                     {% if formValues.woodCS == content.yes %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="woodCS">
+                {{ content.yes }}
+              </label>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input"
+                     id="woodCS-2"
+                     name="woodCS"
+                     type="radio"
+                     value="{{ content.no }}"
+                     {% if formValues.woodCS == content.no %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="woodCS-2">
+                {{ content.no }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.markAsCompleted
+        }) }}
+      </div>
+
+      <p><a class="govuk-link" href="{{ reviewHref }}">{{ content.cancel }}</a></p>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

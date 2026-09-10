@@ -12,22 +12,22 @@ export const applianceReviewContent = {
       {
         key: 'testReports',
         title: 'Review test reports',
-        path: 'test-reports'
+        path: 'review-test-reports'
       },
       {
         key: 'technicalDrawings',
         title: 'Review technical drawings',
-        path: 'technical-drawings'
+        path: 'review-technical-drawings'
       },
       {
         key: 'conformityMark',
         title: 'Review conformity mark',
-        path: 'conformity-mark'
+        path: 'review-conformity-mark'
       },
       {
         key: 'instructionManual',
         title: 'Review instruction manual',
-        path: 'instruction-manual'
+        path: 'review-instruction-manual'
       }
     ],
 
@@ -40,7 +40,7 @@ export const applianceReviewContent = {
       {
         key: 'permittedFuels',
         title: 'Check permitted fuels',
-        path: 'check-permitted-fuels'
+        path: 'permitted-fuels'
       },
       {
         key: 'additionalConditions',
