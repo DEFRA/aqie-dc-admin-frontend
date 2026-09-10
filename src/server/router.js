@@ -7,6 +7,7 @@ import { manageCertification } from './manage-certification/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
 import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { reviewAppliance } from './review-appliance/index.js'
+import { conformityMark } from './conformity-mark/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
 import { checkPermittedFuels } from './check-permitted-fuels/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
@@ -31,7 +32,9 @@ export const router = {
         reviewApplianceApplication,
         reviewAppliance,
         technicalDrawings,
-        checkPermittedFuels
+        checkPermittedFuels,
+        conformityMark,
+        technicalDrawings
       ])
 
       // Static assets
