@@ -31,7 +31,6 @@ export const router = {
         applianceApplications,
         reviewApplianceApplication,
         reviewAppliance,
-        technicalDrawings,
         checkPermittedFuels,
         conformityMark,
         technicalDrawings
