@@ -60,7 +60,7 @@ async function handleAppliancesApplicationRequest(request, h) {
       }
     })
 
-    return h.view('review-application-appliances/index', {
+    return h.view('review-appliance-application/index', {
       pageTitle: appliancesApplicationContent.en.heading,
       heading: appliancesApplicationContent.en.heading,
       application,
