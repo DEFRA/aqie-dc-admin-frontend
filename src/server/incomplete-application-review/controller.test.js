@@ -23,6 +23,11 @@ describe('#Incomplete application review Controller', () => {
 
     expect(statusCode).toBe(statusCodes.ok)
     expect(result).toContain('is not complete')
+    expect(result).toContain(
+      'You must make a final decision on each appliance before completing this application review.'
+    )
+    expect(result).toContain('href="/review-appliance-application/app-1"')
+    expect(result).toContain('Return to application and complete reviews')
   })
 })
 

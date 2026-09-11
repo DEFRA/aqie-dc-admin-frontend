@@ -86,6 +86,103 @@ describe('#Complete application appliances Controller', () => {
 
     expect(statusCode).toBe(statusCodes.internalServerError)
   })
+
+  test('renders the unsuitable appliance section without its heading when only rejected appliances exist', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: {
+          accepted: [],
+          rejected: [{ modelName: 'Rejected Stove' }]
+        }
+      }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/finish-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).not.toContain(
+      finishApplicationReviewContent.en.unsuitableAppliancesHeading
+    )
+    expect(result).toContain(finishApplicationReviewContent.en.unsuitableIntro)
+    expect(result).toContain('Rejected Stove')
+    expect(result).toContain(
+      finishApplicationReviewContent.en.contactApplicantText
+    )
+    expect(result).toContain(
+      finishApplicationReviewContent.en.finishReviewButton
+    )
+    expect(result).not.toContain(
+      finishApplicationReviewContent.en.suitableIntro
+    )
+  })
+
+  test('renders the suitable appliance section without its heading when only accepted appliances exist', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: {
+          accepted: [{ modelName: 'Accepted Stove' }],
+          rejected: []
+        }
+      }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/finish-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).not.toContain(
+      finishApplicationReviewContent.en.suitableAppliancesHeading
+    )
+    expect(result).toContain(finishApplicationReviewContent.en.suitableIntro)
+    expect(result).toContain('Accepted Stove')
+    expect(result).toContain(finishApplicationReviewContent.en.approvalIntro)
+    expect(result).toContain(
+      finishApplicationReviewContent.en.submitForApprovalButton
+    )
+    expect(result).not.toContain(
+      finishApplicationReviewContent.en.unsuitableIntro
+    )
+  })
+
+  test('renders both sections with headings and only the submit for approval button when both accepted and rejected appliances exist', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: {
+          accepted: [{ modelName: 'Accepted Stove' }],
+          rejected: [{ modelName: 'Rejected Stove' }]
+        }
+      }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/finish-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain(
+      finishApplicationReviewContent.en.unsuitableAppliancesHeading
+    )
+    expect(result).toContain(
+      finishApplicationReviewContent.en.suitableAppliancesHeading
+    )
+    expect(result).toContain('Rejected Stove')
+    expect(result).toContain('Accepted Stove')
+    expect(result).toContain(
+      finishApplicationReviewContent.en.submitForApprovalButton
+    )
+    expect(result).not.toContain(
+      finishApplicationReviewContent.en.finishReviewButton
+    )
+  })
 })
 
 describe('#handleFinishApplicationReviewRequest (unit)', () => {

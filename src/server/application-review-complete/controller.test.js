@@ -24,7 +24,12 @@ describe('#Application review complete Controller', () => {
     expect(statusCode).toBe(statusCodes.ok)
     expect(result).toContain('Review complete')
     expect(result).toContain('Your review of application app-1 is complete.')
-    expect(result).toContain('app-1')
+    expect(result).toContain('href="/review-appliance-application/app-1"')
+    expect(result).toContain('href="/appliance-records"')
+    expect(result).toContain('href="/manage-certification"')
+    expect(result).toContain('Return to appliance applications')
+    expect(result).toContain('Go to appliance records')
+    expect(result).toContain('Return to dashboard')
   })
 })
 
