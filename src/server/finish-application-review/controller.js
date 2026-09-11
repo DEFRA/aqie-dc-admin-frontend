@@ -53,11 +53,11 @@ const finishApplicationReviewController = {
 
 async function handleFinishApplicationReviewSubmitRequest(request, h) {
   const { applicationId } = request.params
-  // fallback until SSO ticket wires up request.auth.credentials.profile
-  const reviewedBy = request.auth?.credentials?.profile ?? {
-    name: 'Dummy Reviewer',
-    email: 'dummy.reviewer@example.com'
-  }
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
 
   try {
     await completeApplication(applicationId, reviewedBy)

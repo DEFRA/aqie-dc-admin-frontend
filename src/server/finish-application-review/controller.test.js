@@ -233,7 +233,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
         params: { applicationId: 'app-1' },
         auth: {
           credentials: {
-            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+            user: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
           }
         }
       },
@@ -249,7 +249,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
     )
   })
 
-  test('falls back to a dummy reviewer when nobody is signed in', async () => {
+  test('passes an undefined reviewer to the backend when nobody is signed in', async () => {
     completeApplicationMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -258,10 +258,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
       h
     )
 
-    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', {
-      name: 'Dummy Reviewer',
-      email: 'dummy.reviewer@example.com'
-    })
+    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', undefined)
     expect(h.redirect).toHaveBeenCalledWith(
       '/application-review-complete/app-1'
     )
@@ -278,7 +275,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
         params: { applicationId: 'app-1' },
         auth: {
           credentials: {
-            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+            user: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
           }
         }
       },
@@ -300,7 +297,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
         params: { applicationId: 'app-1' },
         auth: {
           credentials: {
-            profile: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+            user: { name: 'A Reviewer', email: 'a@defra.gov.uk' }
           }
         }
       },
