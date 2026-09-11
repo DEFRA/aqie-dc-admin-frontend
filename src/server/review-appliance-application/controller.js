@@ -56,6 +56,7 @@ function buildViewModel(application, applicationId) {
     application,
     appliances: buildApplianceRows(application.linkedItems),
     companyAddress: buildCompanyAddress(application),
+    finishReviewLink: content.finishReviewLink(applicationId),
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },
       {
@@ -73,15 +74,6 @@ async function handleAppliancesApplicationRequest(request, h) {
   try {
     const response = await getApplianceApplication(applicationId)
     const application = response.data
-
-    // // If this is first time arrving on this page for the application, need to assign the reviewer and start teh application review
-    // const isNotStarted = application.linkedItems.every(
-    //   (item) => (item.application?.status ?? 'new') === 'new'
-    // )
-
-    // if (isNotStarted) {
-    //   await updateApplianceApplicationStatus(applicationId, 'in_review')
-    // }
 
     return h.view(
       'review-appliance-application/index',
