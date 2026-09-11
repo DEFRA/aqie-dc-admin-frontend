@@ -16,6 +16,9 @@ export const finishApplicationReviewContent = {
     submitForApprovalButton: 'Submit for approval',
     returnLinkText: 'Return to application',
     returnLink: (applicationId) =>
-      `/review-appliance-application/${applicationId}`
+      `/review-appliance-application/${applicationId}`,
+    errors: {
+      generic: 'Sorry, there is a problem with the service'
+    }
   }
 }

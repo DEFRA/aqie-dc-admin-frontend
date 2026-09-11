@@ -58,6 +58,7 @@ function buildViewModel(application, applicationId) {
     application,
     appliances: buildApplianceRows(application.linkedItems),
     companyAddress: buildCompanyAddress(application),
+    finishReviewLink: content.finishReviewLink(applicationId),
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },
       {
@@ -86,7 +87,7 @@ async function handleAppliancesApplicationRequest(request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: content.errors.generic
       })
       .code(statusCodes.internalServerError)
   }

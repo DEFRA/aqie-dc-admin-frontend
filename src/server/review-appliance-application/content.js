@@ -28,6 +28,9 @@ export const appliancesApplicationContent = {
 
     errors: {
       generic: 'Sorry, there is a problem with the service'
-    }
+    },
+
+    finishReviewLink: (applicationId) =>
+      `/finish-application-review/${applicationId}`
   }
 }

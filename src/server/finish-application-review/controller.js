@@ -41,7 +41,7 @@ async function handleFinishApplicationReviewRequest(request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: content.errors.generic
       })
       .code(statusCodes.internalServerError)
   }
@@ -53,11 +53,11 @@ const finishApplicationReviewController = {
 
 async function handleFinishApplicationReviewSubmitRequest(request, h) {
   const { applicationId } = request.params
-  // fallback until SSO ticket wires up request.auth.credentials.profile
-  const reviewedBy = request.auth?.credentials?.profile ?? {
-    name: 'Dummy Reviewer',
-    email: 'dummy.reviewer@example.com'
-  }
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
 
   try {
     await completeApplication(applicationId, reviewedBy)
@@ -77,7 +77,7 @@ async function handleFinishApplicationReviewSubmitRequest(request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: content.errors.generic
       })
       .code(statusCodes.internalServerError)
   }

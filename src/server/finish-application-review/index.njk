@@ -30,8 +30,7 @@
         {{ content.contactApplicantText }}
       </p>
       
-      {% if containsBoth %} 
-      {% else %}
+      {% if not containsBoth %}
         <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
           <div class="govuk-button-group govuk-!-margin-top-7">
           {{ govukButton({
@@ -74,7 +73,7 @@
     {% endif %}
 
     <p>
-      <a href="{{ returnLink }}">{{ content.returnLinkText }}</a>
+      <a class="govuk-link" href="{{ returnLink }}">{{ content.returnLinkText }}</a>
     </p>
   </div>
 </div>
