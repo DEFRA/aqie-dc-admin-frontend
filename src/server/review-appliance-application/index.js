@@ -6,6 +6,15 @@ import { appliancesApplicationController } from './controller.js'
  * These routes are registered in src/server/router.js.
  */
 
+const applicationIdSchema = Joi.object({
+  applicationId: Joi.string()
+    .required()
+    .trim()
+    .min(1)
+    .max(64)
+    .pattern(/^[A-Za-z0-9-]+$/)
+})
+
 export const reviewApplianceApplication = {
   plugin: {
     name: 'reviewApplianceApplication',
@@ -16,11 +25,7 @@ export const reviewApplianceApplication = {
           path: '/review-appliance-application/{applicationId}',
           ...appliancesApplicationController,
           options: {
-            validate: {
-              params: Joi.object({
-                applicationId: Joi.string().required().trim().min(1).max(64)
-              })
-            }
+            validate: { params: applicationIdSchema }
           }
         }
       ])

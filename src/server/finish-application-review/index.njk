@@ -1,0 +1,81 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    {# if rejected #}
+    {% if application.linkedItems.rejected.length > 0 %}
+      {% if containsBoth %}
+      <h2 class="govuk-heading-l">{{ content.unsuitableAppliancesHeading }}</h2>
+      {% endif %}
+
+      <p class="govuk-body">
+        {{ content.unsuitableIntro }}
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        {% for appliance in application.linkedItems.rejected %}
+          <li>{{ appliance.modelName }}</li>
+        {% endfor %}
+      </ul>
+
+      <p class="govuk-body">
+        {{ content.contactApplicantText }}
+      </p>
+      
+      {% if not containsBoth %}
+        <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
+          <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: content.finishReviewButton
+            }) }}
+          </div>
+        </form>
+      {% endif %}
+
+    {% endif %}
+
+    {# if accepted #}
+    {% if application.linkedItems.accepted.length > 0 %}
+     {# if both add this heading #}
+      {% if containsBoth %} 
+        <h2 class="govuk-heading-l">{{ content.suitableAppliancesHeading }}</h2>
+      {% endif %}
+
+      <p class="govuk-body">
+        {{ content.suitableIntro }}
+      </p>
+
+      <ul class="govuk-list govuk-list--bullet">
+        {% for appliance in application.linkedItems.accepted %}
+          <li>{{ appliance.modelName }}</li>
+        {% endfor %}
+      </ul>
+
+      <p class="govuk-body">
+        {{ content.approvalIntro }}
+      </p>
+
+      <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
+        <div class="govuk-button-group govuk-!-margin-top-7">
+          {{ govukButton({
+              text: content.submitForApprovalButton
+            }) }}
+        </div>
+      </form>
+    {% endif %}
+
+    <p>
+      <a class="govuk-link" href="{{ returnLink }}">{{ content.returnLinkText }}</a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}

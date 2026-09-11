@@ -36,6 +36,6 @@ describe('#applianceApplicationsController', () => {
       method: 'GET',
       url: '/appliance-applications'
     })
-    expect(statusCode).toBe(statusCodes.ok) // error/index renders 200
+    expect(statusCode).toBe(statusCodes.internalServerError)
   })
 })
