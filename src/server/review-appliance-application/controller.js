@@ -1,7 +1,9 @@
 import { appliancesApplicationContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getApplianceApplication } from './application-data.js'
-//updateApplianceApplicationStatus
+import {
+  getApplianceApplication,
+  startApplicationReview
+} from './application-data.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { applianceApplicationsContent } from '../appliance-applications/content.js'
 
@@ -95,4 +97,45 @@ const appliancesApplicationController = {
   handler: handleAppliancesApplicationRequest
 }
 
-export { handleAppliancesApplicationRequest, appliancesApplicationController }
+/**
+ * Marks the application as in progress before showing the review page - triggered
+ * by the "Start review" button on the appliance applications list.
+ */
+async function handleStartApplicationReviewRequest(request, h) {
+  const { applicationId } = request.params
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
+
+  try {
+    await startApplicationReview(applicationId, reviewedBy)
+
+    return h.redirect(`/review-appliance-application/${applicationId}`)
+  } catch (error) {
+    if (error.status === statusCodes.conflict) {
+      return h.redirect(`/review-appliance-application/${applicationId}`)
+    }
+
+    logger.error(
+      `[reviewApplicationAppliances] failed to start review for ${applicationId}: ${error.message}`
+    )
+    return h
+      .view('error/index', {
+        message: 'Sorry there is a problem with the service'
+      })
+      .code(statusCodes.internalServerError)
+  }
+}
+
+const startApplicationReviewController = {
+  handler: handleStartApplicationReviewRequest
+}
+
+export {
+  handleAppliancesApplicationRequest,
+  appliancesApplicationController,
+  handleStartApplicationReviewRequest,
+  startApplicationReviewController
+}

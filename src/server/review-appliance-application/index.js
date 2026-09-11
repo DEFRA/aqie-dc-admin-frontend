@@ -1,5 +1,8 @@
 import Joi from 'joi'
-import { appliancesApplicationController } from './controller.js'
+import {
+  appliancesApplicationController,
+  startApplicationReviewController
+} from './controller.js'
 
 /**
  * Sets up the routes used in the /review-appliance-application page.
@@ -24,6 +27,14 @@ export const reviewApplianceApplication = {
           method: 'GET',
           path: '/review-appliance-application/{applicationId}',
           ...appliancesApplicationController,
+          options: {
+            validate: { params: applicationIdSchema }
+          }
+        },
+        {
+          method: 'POST',
+          path: '/review-appliance-application/{applicationId}/start',
+          ...startApplicationReviewController,
           options: {
             validate: { params: applicationIdSchema }
           }
