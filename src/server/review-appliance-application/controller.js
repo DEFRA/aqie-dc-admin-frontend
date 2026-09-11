@@ -97,19 +97,17 @@ const appliancesApplicationController = {
   handler: handleAppliancesApplicationRequest
 }
 
-// fallback until SSO ticket wires up request.auth.credentials.profile
-const dummyReviewer = {
-  name: 'Dummy Reviewer',
-  email: 'dummy.reviewer@example.com'
-}
-
 /**
  * Marks the application as in progress before showing the review page - triggered
  * by the "Start review" button on the appliance applications list.
  */
 async function handleStartApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
-  const reviewedBy = request.auth?.credentials?.profile ?? dummyReviewer
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
 
   try {
     await startApplicationReview(applicationId, reviewedBy)
@@ -117,7 +115,6 @@ async function handleStartApplicationReviewRequest(request, h) {
     return h.redirect(`/review-appliance-application/${applicationId}`)
   } catch (error) {
     if (error.status === statusCodes.conflict) {
-      // already in progress (e.g. double submit) - safe to continue to the review page
       return h.redirect(`/review-appliance-application/${applicationId}`)
     }
 
