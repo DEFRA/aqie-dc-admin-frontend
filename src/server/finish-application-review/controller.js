@@ -41,7 +41,7 @@ async function handleFinishApplicationReviewRequest(request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: content.errors.generic
       })
       .code(statusCodes.internalServerError)
   }
@@ -77,7 +77,7 @@ async function handleFinishApplicationReviewSubmitRequest(request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: content.errors.generic
       })
       .code(statusCodes.internalServerError)
   }

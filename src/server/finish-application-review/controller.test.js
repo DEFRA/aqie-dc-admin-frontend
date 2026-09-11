@@ -5,6 +5,7 @@ import {
   handleFinishApplicationReviewRequest,
   handleFinishApplicationReviewSubmitRequest
 } from './controller.js'
+import { finishApplicationReviewContent } from './content.js'
 
 const { getApplicationWithTechStatusMock, completeApplicationMock } =
   vi.hoisted(() => ({
@@ -206,7 +207,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     expect(view).toHaveBeenCalledWith(
       'error/index',
       expect.objectContaining({
-        message: 'Sorry there is a problem with the service'
+        message: finishApplicationReviewContent.en.errors.generic
       })
     )
     expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
@@ -305,7 +306,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
     )
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry there is a problem with the service'
+      message: finishApplicationReviewContent.en.errors.generic
     })
     expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })

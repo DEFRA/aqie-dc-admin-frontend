@@ -33,7 +33,7 @@ async function handleApplianceApplicationsRequest(_request, h) {
     )
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: applianceApplicationsContent.en.errors.generic
       })
       .code(statusCodes.internalServerError)
   }

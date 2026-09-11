@@ -21,7 +21,7 @@ export const applianceApplicationsContent = {
       inProgress: 'There are no in progress applications.'
     },
     errors: {
-      generic: 'Something went wrong'
+      generic: 'Sorry, there is a problem with the service'
     }
   }
 }

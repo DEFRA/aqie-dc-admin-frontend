@@ -6,6 +6,9 @@ export const dashboardContent = {
       appliances: 'Back to appliances list',
       fuels: 'Back to fuels list'
     },
-    publishedLabel: 'Published'
+    publishedLabel: 'Published',
+    errors: {
+      generic: 'Sorry, there is a problem with the service'
+    }
   }
 }
