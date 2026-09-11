@@ -1,4 +1,4 @@
-import { beforeEach, vi } from 'vitest'
+import { vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { handleIncompleteApplicationReviewRequest } from './controller.js'
