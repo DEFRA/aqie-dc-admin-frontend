@@ -25,12 +25,6 @@ export const checkPermittedFuels = {
           options: { validate: { params: paramsSchema } }
         },
         {
-          method: 'GET',
-          path: '/review-appliance/{applianceId}/check-permitted-fuels',
-          ...checkPermittedFuelsController,
-          options: { validate: { params: paramsSchema } }
-        },
-        {
           method: 'POST',
           path: '/review-appliance/{applianceId}/permitted-fuels',
           ...checkPermittedFuelsDecisionController,
@@ -38,22 +32,8 @@ export const checkPermittedFuels = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                permFuelsCS: Joi.string().allow('').required(),
-                woodCS: Joi.string().valid('Yes', 'No').optional()
-              })
-            }
-          }
-        },
-        {
-          method: 'POST',
-          path: '/review-appliance/{applianceId}/check-permitted-fuels',
-          ...checkPermittedFuelsDecisionController,
-          options: {
-            validate: {
-              params: paramsSchema,
-              payload: Joi.object({
-                permFuelsCS: Joi.string().allow('').required(),
-                woodCS: Joi.string().valid('Yes', 'No').optional()
+                permittedFuels: Joi.string().allow('').required(),
+                burnsWood: Joi.string().valid('Yes', 'No').optional()
               })
             }
           }

@@ -36,19 +36,22 @@ describe('#savePermittedFuels', () => {
     patchJsonMock.mockReset()
   })
 
-  test('saves permitted fuels values then marks listing check completed', async () => {
+  test('saves permitted fuels values with a single backend patch', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
     await savePermittedFuels('APP-1', 'Wood logs', true)
 
-    expect(patchJsonMock).toHaveBeenNthCalledWith(1, '/appliances/APP-1', {
-      permittedFuels: 'Wood logs',
-      isPermittedToBurnWood: true
-    })
-    expect(patchJsonMock).toHaveBeenNthCalledWith(
-      2,
+    expect(patchJsonMock).toHaveBeenCalledTimes(1)
+    expect(patchJsonMock).toHaveBeenCalledWith(
       '/appliances/APP-1/technical-review/checks',
-      { check: 'permittedFuels', result: true }
+      {
+        check: 'permittedFuels',
+        result: true,
+        data: {
+          permittedFuels: 'Wood logs',
+          isPermittedToBurnWood: true
+        }
+      }
     )
   })
 
@@ -57,14 +60,17 @@ describe('#savePermittedFuels', () => {
 
     await savePermittedFuels('APP/1', 'Wood logs', false)
 
-    expect(patchJsonMock).toHaveBeenNthCalledWith(1, '/appliances/APP%2F1', {
-      permittedFuels: 'Wood logs',
-      isPermittedToBurnWood: false
-    })
-    expect(patchJsonMock).toHaveBeenNthCalledWith(
-      2,
+    expect(patchJsonMock).toHaveBeenCalledTimes(1)
+    expect(patchJsonMock).toHaveBeenCalledWith(
       '/appliances/APP%2F1/technical-review/checks',
-      { check: 'permittedFuels', result: true }
+      {
+        check: 'permittedFuels',
+        result: true,
+        data: {
+          permittedFuels: 'Wood logs',
+          isPermittedToBurnWood: false
+        }
+      }
     )
   })
 })

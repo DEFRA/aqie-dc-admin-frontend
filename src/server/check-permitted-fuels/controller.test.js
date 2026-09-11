@@ -59,9 +59,9 @@ describe('#handleCheckPermittedFuelsRequest', () => {
       expect.objectContaining({
         heading: 'Permitted fuels for Twin Heat CS200i',
         formValues: {
-          permFuelsCS:
+          permittedFuels:
             'Gozney manufactured wood logs, length 280-310mm, diameter 95mm',
-          woodCS: 'Yes'
+          burnsWood: 'Yes'
         }
       })
     )
@@ -80,7 +80,10 @@ describe('#handleCheckPermittedFuelsRequest', () => {
 
     const [, viewModel] = h.view.mock.calls[0]
 
-    expect(viewModel.formValues).toEqual({ permFuelsCS: '', woodCS: undefined })
+    expect(viewModel.formValues).toEqual({
+      permittedFuels: '',
+      burnsWood: undefined
+    })
   })
 
   test('renders the error view when backend fetch fails', async () => {
@@ -114,7 +117,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     await handleCheckPermittedFuelsDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { permFuelsCS: 'Wood logs', woodCS: 'No' }
+        payload: { permittedFuels: 'Wood logs', burnsWood: 'No' }
       },
       h
     )
@@ -134,7 +137,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     await handleCheckPermittedFuelsDecisionRequest(
       {
         params: { applianceId: 'APP/1' },
-        payload: { permFuelsCS: 'Wood logs', woodCS: 'Yes' }
+        payload: { permittedFuels: 'Wood logs', burnsWood: 'Yes' }
       },
       h
     )
@@ -154,7 +157,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     await handleCheckPermittedFuelsDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { permFuelsCS: 'Wood logs', woodCS: 'Yes' }
+        payload: { permittedFuels: 'Wood logs', burnsWood: 'Yes' }
       },
       h
     )
@@ -173,7 +176,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     await handleCheckPermittedFuelsDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { permFuelsCS: 'Updated fuels' }
+        payload: { permittedFuels: 'Updated fuels' }
       },
       h
     )
@@ -184,13 +187,13 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
       expect.objectContaining({
         pageTitle: 'Error: Permitted fuels for Twin Heat CS200i',
         error: {
-          field: 'woodCS',
+          field: 'burnsWood',
           message: 'Select if the appliance is cerified to burn wood',
-          href: '#woodCS'
+          href: '#burnsWood'
         },
         formValues: {
-          permFuelsCS: 'Updated fuels',
-          woodCS: undefined
+          permittedFuels: 'Updated fuels',
+          burnsWood: undefined
         }
       })
     )
@@ -204,7 +207,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     await handleCheckPermittedFuelsDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { permFuelsCS: '  1234 / - ', woodCS: 'Yes' }
+        payload: { permittedFuels: '  1234 / - ', burnsWood: 'Yes' }
       },
       h
     )
@@ -215,13 +218,13 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
       expect.objectContaining({
         pageTitle: 'Error: Permitted fuels for Twin Heat CS200i',
         error: {
-          field: 'permFuelsCS',
+          field: 'permittedFuels',
           message: 'Enter which fuels the appliance is permitted to burn',
           href: '#perm-fuels'
         },
         formValues: {
-          permFuelsCS: '  1234 / - ',
-          woodCS: 'Yes'
+          permittedFuels: '  1234 / - ',
+          burnsWood: 'Yes'
         }
       })
     )

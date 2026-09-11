@@ -9,13 +9,18 @@ export async function getApplianceForPermittedFuels(applianceId) {
 }
 
 export async function savePermittedFuels(applianceId, permittedFuels, wood) {
-  await patchJson(`/appliances/${encodeURIComponent(applianceId)}`, {
-    permittedFuels,
-    isPermittedToBurnWood: wood
-  })
-
+  // Single backend operation through the existing checks route.
+  // For this check, backend validates and applies both appliance fields and
+  // technical-review status/check updates atomically in one update call.
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/technical-review/checks`,
-    { check: CHECK, result: true }
+    {
+      check: CHECK,
+      result: true,
+      data: {
+        permittedFuels,
+        isPermittedToBurnWood: wood
+      }
+    }
   )
 }

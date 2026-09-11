@@ -56,8 +56,8 @@ async function handleCheckPermittedFuelsRequest(request, h) {
       applianceId,
       appliance,
       {
-        permFuelsCS: appliance.permittedFuels ?? '',
-        woodCS: toYesNo(appliance.isPermittedToBurnWood)
+        permittedFuels: appliance.permittedFuels ?? '',
+        burnsWood: toYesNo(appliance.isPermittedToBurnWood)
       },
       null
     )
@@ -75,10 +75,10 @@ async function handleCheckPermittedFuelsRequest(request, h) {
 async function handleCheckPermittedFuelsDecisionRequest(request, h) {
   const { applianceId } = request.params
   const reviewHref = `/review-appliance/${encodeURIComponent(applianceId)}`
-  const { permFuelsCS, woodCS } = request.payload
+  const { permittedFuels, burnsWood } = request.payload
 
   try {
-    if (!hasAnyLetter(permFuelsCS)) {
+    if (!hasAnyLetter(permittedFuels)) {
       const { data: appliance } =
         await getApplianceForPermittedFuels(applianceId)
 
@@ -87,18 +87,18 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
         applianceId,
         appliance,
         {
-          permFuelsCS: permFuelsCS ?? '',
-          woodCS: woodCS ?? toYesNo(appliance.isPermittedToBurnWood)
+          permittedFuels: permittedFuels ?? '',
+          burnsWood: burnsWood ?? toYesNo(appliance.isPermittedToBurnWood)
         },
         {
-          field: 'permFuelsCS',
+          field: 'permittedFuels',
           message: content.errors.permittedFuelsRequired,
           href: '#perm-fuels'
         }
       ).code(statusCodes.badRequest)
     }
 
-    if (!woodCS) {
+    if (!burnsWood) {
       const { data: appliance } =
         await getApplianceForPermittedFuels(applianceId)
 
@@ -107,18 +107,18 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
         applianceId,
         appliance,
         {
-          permFuelsCS: permFuelsCS ?? appliance.permittedFuels ?? '',
-          woodCS: undefined
+          permittedFuels: permittedFuels ?? appliance.permittedFuels ?? '',
+          burnsWood: undefined
         },
         {
-          field: 'woodCS',
+          field: 'burnsWood',
           message: content.errors.woodSelectionRequired,
-          href: '#woodCS'
+          href: '#burnsWood'
         }
       ).code(statusCodes.badRequest)
     }
 
-    await savePermittedFuels(applianceId, permFuelsCS, woodCS === 'Yes')
+    await savePermittedFuels(applianceId, permittedFuels, burnsWood === 'Yes')
 
     return h.redirect(reviewHref)
   } catch (error) {
