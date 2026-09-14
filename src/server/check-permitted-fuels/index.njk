@@ -1,0 +1,97 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    {% set permittedFuelsError = null %}
+    {% if error and error.field == 'permittedFuels' %}
+      {% set permittedFuelsError = { text: error.message } %}
+    {% endif %}
+
+    {% set burnsWoodError = null %}
+    {% if error and error.field == 'burnsWood' %}
+      {% set burnsWoodError = { text: error.message } %}
+    {% endif %}
+
+    {% set woodYesValue = 'Yes' %}
+    {% set woodNoValue = 'No' %}
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/permitted-fuels"
+          novalidate>
+      {{ govukTextarea({
+        id: "perm-fuels",
+        name: "permittedFuels",
+        rows: 5,
+        value: formValues.permittedFuels,
+        formGroup: {
+          classes: "govuk-!-margin-bottom-9"
+        },
+        label: {
+          text: content.permittedFuelsLabel,
+          classes: "govuk-label--l"
+        },
+        errorMessage: permittedFuelsError
+      }) }}
+
+      {{ govukRadios({
+        idPrefix: "burnsWood",
+        name: "burnsWood",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: {
+            text: content.woodQuestion,
+            classes: "govuk-fieldset__legend--l"
+          }
+        },
+        hint: {
+          text: content.woodHint
+        },
+        errorMessage: burnsWoodError,
+        items: [
+          {
+            value: woodYesValue,
+            text: content.yes,
+            checked: formValues.burnsWood == woodYesValue
+          },
+          {
+            value: woodNoValue,
+            text: content.no,
+            checked: formValues.burnsWood == woodNoValue
+          }
+        ]
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.markAsCompleted
+        }) }}
+      </div>
+
+      <p><a class="govuk-link" href="{{ reviewHref }}">{{ content.cancel }}</a></p>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
