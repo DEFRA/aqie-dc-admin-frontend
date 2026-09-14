@@ -9,6 +9,7 @@ import { reviewApplianceApplication } from './review-appliance-application/index
 import { reviewAppliance } from './review-appliance/index.js'
 import { conformityMark } from './conformity-mark/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
+import { additionalConditions } from './additional-conditions/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 
@@ -31,7 +32,8 @@ export const router = {
         reviewApplianceApplication,
         reviewAppliance,
         conformityMark,
-        technicalDrawings
+        technicalDrawings,
+        additionalConditions
       ])
 
       // Static assets
