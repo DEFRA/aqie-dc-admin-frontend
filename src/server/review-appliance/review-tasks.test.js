@@ -65,9 +65,7 @@ describe('#buildDocumentationTasks', () => {
   test('encodes the appliance id in task links', () => {
     const tasks = buildDocumentationTasks({}, 'APP/1')
 
-    expect(tasks[0].href).toBe(
-      '/review-appliance/APP%2F1/review-test-reports'
-    )
+    expect(tasks[0].href).toBe('/review-appliance/APP%2F1/review-test-reports')
   })
 
   test('handles a missing technicalReview without throwing', () => {
