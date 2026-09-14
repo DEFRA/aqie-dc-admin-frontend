@@ -24,7 +24,7 @@ async function handleDashboard(_request, h) {
     logger.error(`[manage-certification.GET] failed:${error.message}`, error)
     return h
       .view('error/index', {
-        message: 'Sorry there is a problem with the service'
+        message: dashboardContent.en.errors.generic
       })
       .code(statusCodes.internalServerError)
   }
