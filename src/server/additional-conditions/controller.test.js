@@ -56,6 +56,42 @@ describe('#handleAdditionalConditionsRequest', () => {
     )
   })
 
+  test('pre-populates the saved additional conditions from the appliance record', async () => {
+    getApplianceMock.mockResolvedValue({
+      data: { ...appliance, additionalConditions: 'Existing saved condition' }
+    })
+    const h = toolkit()
+
+    await handleAdditionalConditionsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith(
+      'additional-conditions/index',
+      expect.objectContaining({
+        additionalConditionsValue: 'Existing saved condition'
+      })
+    )
+  })
+
+  test('uses an empty string when there is no saved additional conditions value', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
+    const h = toolkit()
+
+    await handleAdditionalConditionsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith(
+      'additional-conditions/index',
+      expect.objectContaining({
+        additionalConditionsValue: ''
+      })
+    )
+  })
+
   test('links cancel back to the review appliance page', async () => {
     getApplianceMock.mockResolvedValue({ data: appliance })
     const h = toolkit()
@@ -165,7 +201,7 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
     saveAdditionalConditionsMock.mockReset()
   })
 
-  test('marks the check as completed and returns to the review page', async () => {
+  test('marks the check as completed and persists the entered text', async () => {
     saveAdditionalConditionsMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -180,7 +216,10 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
       h
     )
 
-    expect(saveAdditionalConditionsMock).toHaveBeenCalledWith('APP-1', true)
+    expect(saveAdditionalConditionsMock).toHaveBeenCalledWith(
+      'APP-1',
+      'Standard additional condition text'
+    )
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
   })
 

@@ -12,11 +12,21 @@ export async function getAppliance(applianceId) {
 }
 
 /**
- * Saves the additional conditions completion state.
+ * Saves the additional conditions text as a completed listing check.
+ * This page always marks the check as complete when the user clicks the save button.
  */
-export async function saveAdditionalConditions(applianceId, result) {
+export async function saveAdditionalConditions(
+  applianceId,
+  additionalConditions
+) {
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/technical-review/checks`,
-    { check: CHECK, result }
+    {
+      check: CHECK,
+      result: true,
+      data: {
+        additionalConditions
+      }
+    }
   )
 }

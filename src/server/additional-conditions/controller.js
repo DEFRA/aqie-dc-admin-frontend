@@ -21,14 +21,28 @@ function buildReviewHref(applianceId) {
 }
 
 /**
+ * Returns the currently saved additional conditions value for an appliance.
+ *
+ * @param {object} appliance - The appliance being reviewed.
+ * @returns {string} The persisted text or an empty string.
+ */
+function getAdditionalConditionsValue(appliance) {
+  return appliance?.additionalConditions ?? ''
+}
+
+/**
  * Builds the Nunjucks view model for the additional-conditions page.
  *
  * @param {object} appliance - The appliance being reviewed.
- * @param {string} [previousValue=''] - The previously entered text value.
+ * @param {string} [previousValue=getAdditionalConditionsValue(appliance)] - The persisted or user-entered text value.
  * @param {object} [errorMessage] - GOV.UK error message payload.
  * @returns {object} The view model used by the template.
  */
-function buildPageViewModel(appliance, previousValue = '', errorMessage) {
+function buildPageViewModel(
+  appliance,
+  previousValue = getAdditionalConditionsValue(appliance),
+  errorMessage
+) {
   return {
     pageTitle: `${content.title} for ${appliance.modelName}`,
     heading: `${content.title} for ${appliance.modelName}`,
@@ -96,7 +110,7 @@ async function handleAdditionalConditionsRequest(request, h) {
 
     return h.view(
       'additional-conditions/index',
-      buildPageViewModel(appliance, '')
+      buildPageViewModel(appliance, getAdditionalConditionsValue(appliance))
     )
   } catch (error) {
     logger.error(
@@ -117,7 +131,6 @@ async function handleAdditionalConditionsRequest(request, h) {
 async function handleAdditionalConditionsDecisionRequest(request, h) {
   const { applianceId } = request.params
   const additionalConditions = request.payload.additionalConditions ?? ''
-  const isComplete = request.payload.decision === 'complete'
 
   try {
     // The field must contain meaningful text, or the user must explicitly enter
@@ -143,7 +156,7 @@ async function handleAdditionalConditionsDecisionRequest(request, h) {
       )
     }
 
-    await saveAdditionalConditions(applianceId, isComplete)
+    await saveAdditionalConditions(applianceId, additionalConditions)
 
     return h.redirect(buildReviewHref(applianceId))
   } catch (error) {
