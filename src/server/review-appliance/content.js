@@ -12,22 +12,22 @@ export const applianceReviewContent = {
       {
         key: 'testReports',
         title: 'Review test reports',
-        path: 'review-test-reports'
+        path: 'test-reports'
       },
       {
         key: 'technicalDrawings',
         title: 'Review technical drawings',
-        path: 'review-technical-drawings'
+        path: 'technical-drawings'
       },
       {
         key: 'conformityMark',
         title: 'Review conformity mark',
-        path: 'review-conformity-mark'
+        path: 'conformity-mark'
       },
       {
         key: 'instructionManual',
         title: 'Review instruction manual',
-        path: 'review-instruction-manual'
+        path: 'instruction-manual'
       }
     ],
 
