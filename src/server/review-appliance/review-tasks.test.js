@@ -114,8 +114,6 @@ describe('#buildListingTasks', () => {
   test('links to the listing sub-pages', () => {
     const tasks = buildListingTasks({}, 'APP-1')
 
-    expect(tasks[0].href).toBe(
-      '/review-appliance/APP-1/check-appliance-details'
-    )
+    expect(tasks[0].href).toBe('/review-appliance/APP-1/appliance-details')
   })
 })

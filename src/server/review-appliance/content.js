@@ -35,7 +35,7 @@ export const applianceReviewContent = {
       {
         key: 'applianceDetails',
         title: 'Check appliance details',
-        path: 'check-appliance-details'
+        path: 'appliance-details'
       },
       {
         key: 'permittedFuels',
