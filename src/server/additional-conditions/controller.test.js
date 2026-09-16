@@ -202,6 +202,7 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
   })
 
   test('marks the check as completed and persists the entered text', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
     saveAdditionalConditionsMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -224,6 +225,7 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
   })
 
   test('encodes the appliance id in the redirect', async () => {
+    getApplianceMock.mockResolvedValue({ data: { ...appliance, id: 'APP/1' } })
     saveAdditionalConditionsMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -241,7 +243,53 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP%2F1')
   })
 
+  test('trims the input before persisting the additional conditions text', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
+    saveAdditionalConditionsMock.mockResolvedValue({ success: true })
+    const h = toolkit()
+
+    await handleAdditionalConditionsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: {
+          decision: 'complete',
+          additionalConditions: '  Standard additional condition text  '
+        }
+      },
+      h
+    )
+
+    expect(saveAdditionalConditionsMock).toHaveBeenCalledWith(
+      'APP-1',
+      'Standard additional condition text'
+    )
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
+  })
+
+  test('returns the service error when the decision is not complete', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
+    const h = toolkit()
+
+    await handleAdditionalConditionsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: {
+          decision: 'accept',
+          additionalConditions: 'Standard additional condition text'
+        }
+      },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
+    expect(saveAdditionalConditionsMock).not.toHaveBeenCalled()
+  })
+
   test('renders the error view when saving fails', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
     saveAdditionalConditionsMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 

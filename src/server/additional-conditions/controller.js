@@ -130,28 +130,37 @@ async function handleAdditionalConditionsRequest(request, h) {
  */
 async function handleAdditionalConditionsDecisionRequest(request, h) {
   const { applianceId } = request.params
-  const additionalConditions = request.payload.additionalConditions ?? ''
+  const submittedValue = request.payload.additionalConditions ?? ''
+  const additionalConditions = submittedValue.trim()
+  const decision = request.payload.decision
 
   try {
+    if (decision !== 'complete') {
+      logger.warn(
+        `[additionalConditions] unexpected decision for ${applianceId}: ${decision}`
+      )
+      return renderServiceError(h)
+    }
+
+    const appliance = await getApplianceForReview(applianceId)
+
     // The field must contain meaningful text, or the user must explicitly enter
     // the permitted wording "No additional conditions for use".
-    if (additionalConditions.trim().length === 0) {
-      const appliance = await getApplianceForReview(applianceId)
+    if (additionalConditions.length === 0) {
       return renderValidationError(
         h,
         appliance,
-        additionalConditions,
+        submittedValue,
         content.characterCount.empty
       )
     }
 
     if (additionalConditions.length > maximumCharacters) {
-      const appliance = await getApplianceForReview(applianceId)
       const overBy = additionalConditions.length - maximumCharacters
       return renderValidationError(
         h,
         appliance,
-        additionalConditions,
+        submittedValue,
         content.characterCount.limitExceeded(overBy)
       )
     }
