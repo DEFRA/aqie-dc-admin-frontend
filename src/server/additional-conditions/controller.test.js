@@ -130,7 +130,6 @@ describe('#handleAdditionalConditionsRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          decision: 'complete',
           additionalConditions: '   '
         }
       },
@@ -160,7 +159,6 @@ describe('#handleAdditionalConditionsRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          decision: 'complete',
           additionalConditions: 'a'.repeat(1001)
         }
       },
@@ -210,7 +208,28 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          decision: 'complete',
+          additionalConditions: 'Standard additional condition text'
+        }
+      },
+      h
+    )
+
+    expect(saveAdditionalConditionsMock).toHaveBeenCalledWith(
+      'APP-1',
+      'Standard additional condition text'
+    )
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
+  })
+
+  test('saves successfully even when no explicit decision value is supplied', async () => {
+    getApplianceMock.mockResolvedValue({ data: appliance })
+    saveAdditionalConditionsMock.mockResolvedValue({ success: true })
+    const h = toolkit()
+
+    await handleAdditionalConditionsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: {
           additionalConditions: 'Standard additional condition text'
         }
       },
@@ -233,7 +252,6 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
       {
         params: { applianceId: 'APP/1' },
         payload: {
-          decision: 'complete',
           additionalConditions: 'Standard additional condition text'
         }
       },
@@ -252,7 +270,6 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          decision: 'complete',
           additionalConditions: '  Standard additional condition text  '
         }
       },
@@ -266,28 +283,6 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
   })
 
-  test('returns the service error when the decision is not complete', async () => {
-    getApplianceMock.mockResolvedValue({ data: appliance })
-    const h = toolkit()
-
-    await handleAdditionalConditionsDecisionRequest(
-      {
-        params: { applianceId: 'APP-1' },
-        payload: {
-          decision: 'accept',
-          additionalConditions: 'Standard additional condition text'
-        }
-      },
-      h
-    )
-
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
-    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
-    expect(saveAdditionalConditionsMock).not.toHaveBeenCalled()
-  })
-
   test('renders the error view when saving fails', async () => {
     getApplianceMock.mockResolvedValue({ data: appliance })
     saveAdditionalConditionsMock.mockRejectedValue(new Error('backend down'))
@@ -297,7 +292,6 @@ describe('#handleAdditionalConditionsDecisionRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          decision: 'complete',
           additionalConditions: 'Standard additional condition text'
         }
       },

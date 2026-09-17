@@ -56,17 +56,6 @@ function buildPageViewModel(
 }
 
 /**
- * Fetches the appliance record required to re-render the form with validation feedback.
- *
- * @param {string} applianceId - The appliance identifier.
- * @returns {Promise<object>} The appliance record.
- */
-async function getApplianceForReview(applianceId) {
-  const { data: appliance } = await getAppliance(applianceId)
-  return appliance
-}
-
-/**
  * Renders the page with a validation error after the user submits an invalid value.
  *
  * @param {object} h - The Hapi response toolkit.
@@ -132,17 +121,9 @@ async function handleAdditionalConditionsDecisionRequest(request, h) {
   const { applianceId } = request.params
   const submittedValue = request.payload.additionalConditions ?? ''
   const additionalConditions = submittedValue.trim()
-  const decision = request.payload.decision
 
   try {
-    if (decision !== 'complete') {
-      logger.warn(
-        `[additionalConditions] unexpected decision for ${applianceId}: ${decision}`
-      )
-      return renderServiceError(h)
-    }
-
-    const appliance = await getApplianceForReview(applianceId)
+    const { data: appliance } = await getAppliance(applianceId)
 
     // The field must contain meaningful text, or the user must explicitly enter
     // the permitted wording "No additional conditions for use".
