@@ -5,6 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true,
+    env: { SSO_ENABLED: 'false' },
     hookTimeout: 30000,
     testTimeout: 30000,
     coverage: {
