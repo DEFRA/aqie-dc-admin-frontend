@@ -38,7 +38,7 @@ describe('#dashboardController', () => {
     const { result, statusCode } = await server.inject({
       method: 'GET',
       url: '/manage-certification',
-       auth: {
+      auth: {
         strategy: 'session',
         credentials: {
           isAuthenticated: true,
