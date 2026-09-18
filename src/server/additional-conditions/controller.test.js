@@ -1,5 +1,6 @@
 import { beforeEach, vi } from 'vitest'
 import { statusCodes } from '../common/constants/status-codes.js'
+import { additionalConditionsContent } from './content.js'
 import {
   handleAdditionalConditionsRequest,
   handleAdditionalConditionsDecisionRequest
@@ -139,8 +140,10 @@ describe('#handleAdditionalConditionsRequest', () => {
     expect(h.view).toHaveBeenCalledWith(
       'additional-conditions/index',
       expect.objectContaining({
-        errorMessage: {
-          text: 'Enter additional conditions for use or enter “No additional conditions for use”'
+        error: {
+          field: 'additionalConditions',
+          message: additionalConditionsContent.en.characterCount.empty,
+          href: '#additionalConditions'
         },
         additionalConditionsValue: '   ',
         reviewHref: '/review-appliance/APP-1'
@@ -168,7 +171,12 @@ describe('#handleAdditionalConditionsRequest', () => {
     expect(h.view).toHaveBeenCalledWith(
       'additional-conditions/index',
       expect.objectContaining({
-        errorMessage: { text: 'You have 1 character too many' },
+        error: {
+          field: 'additionalConditions',
+          message:
+            additionalConditionsContent.en.characterCount.limitExceeded(1),
+          href: '#additionalConditions'
+        },
         additionalConditionsValue: 'a'.repeat(1001),
         reviewHref: '/review-appliance/APP-1'
       })

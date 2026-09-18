@@ -1,6 +1,7 @@
 import {
   createAll,
   Button,
+  CharacterCount,
   Checkboxes,
   ErrorSummary,
   Header,
@@ -8,6 +9,7 @@ import {
   SkipLink
 } from 'govuk-frontend'
 
+createAll(CharacterCount)
 createAll(Button)
 createAll(Checkboxes)
 createAll(ErrorSummary)

@@ -15,7 +15,8 @@ export const additionalConditionsContent = {
         'Enter additional conditions for use or enter “No additional conditions for use”'
     },
     errors: {
-      generic: 'Sorry, there is a problem with the service'
+      generic: 'Sorry, there is a problem with the service',
+      summaryTitle: 'There is a problem'
     }
   }
 }

@@ -35,22 +35,24 @@ function getAdditionalConditionsValue(appliance) {
  *
  * @param {object} appliance - The appliance being reviewed.
  * @param {string} [previousValue=getAdditionalConditionsValue(appliance)] - The persisted or user-entered text value.
- * @param {object} [errorMessage] - GOV.UK error message payload.
+ * @param {object} [error] - Error object with field, message, and href properties.
  * @returns {object} The view model used by the template.
  */
 function buildPageViewModel(
   appliance,
   previousValue = getAdditionalConditionsValue(appliance),
-  errorMessage
+  error
 ) {
   return {
-    pageTitle: `${content.title} for ${appliance.modelName}`,
+    pageTitle: error
+      ? `Error: ${content.title} for ${appliance.modelName}`
+      : `${content.title} for ${appliance.modelName}`,
     heading: `${content.title} for ${appliance.modelName}`,
     content,
     appliance,
     reviewHref: buildReviewHref(appliance.id),
     additionalConditionsValue: previousValue,
-    errorMessage,
+    error,
     maxLength: maximumCharacters
   }
 }
@@ -66,7 +68,9 @@ function buildPageViewModel(
  */
 function renderValidationError(h, appliance, previousValue, errorMessageText) {
   const viewModel = buildPageViewModel(appliance, previousValue, {
-    text: errorMessageText
+    field: 'additionalConditions',
+    message: errorMessageText,
+    href: '#additionalConditions'
   })
 
   return h.view('additional-conditions/index', viewModel).code(400)
