@@ -9,15 +9,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    {% if incompleteError %}
-      {{ govukErrorSummary({
-        titleText: content.errors.incompleteTitle,
-        errorList: [
-          { text: incompleteError, href: "#review-documents-1" }
-        ]
-      }) }}
-    {% endif %}
-
     <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
     <h2 class="govuk-heading-l">{{ content.documentationHeading }}</h2>
@@ -34,7 +25,7 @@
       items: listingTasks
     }) }}
 
-    <form method="post" action="/review-appliance/{{ appliance.id }}" novalidate class="govuk-!-margin-bottom-0">
+    <form method="post" action="{{ applianceHref }}" novalidate class="govuk-!-margin-bottom-0">
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
           text: content.acceptButton,

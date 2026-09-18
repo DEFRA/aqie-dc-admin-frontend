@@ -1,0 +1,29 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    <p class="govuk-body">{{ intro }}</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      {% for condition in conditions %}
+        <li>{{ condition }}</li>
+      {% endfor %}
+    </ul>
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ applianceHref }}">{{ returnLinkText }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+export const dashboardContent = {
+  en: {
+    heading: 'Manage smoke control certification',
+    pageTitle: 'Manage Certification',
+    headingExample: {
+      appliances: 'Back to appliances list',
+      fuels: 'Back to fuels list'
+    },
+    publishedLabel: 'Published',
+    errors: {
+      generic: 'Sorry, there is a problem with the service'
+    }
+  }
+}

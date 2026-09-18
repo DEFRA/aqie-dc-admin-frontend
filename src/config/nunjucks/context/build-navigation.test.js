@@ -21,8 +21,8 @@ describe('#buildNavigation', () => {
       },
       {
         current: false,
-        text: 'Dashboard',
-        href: '/dashboard'
+        text: 'Manage Certification',
+        href: '/manage-certification'
       }
     ])
   })
@@ -41,8 +41,8 @@ describe('#buildNavigation', () => {
       },
       {
         current: false,
-        text: 'Dashboard',
-        href: '/dashboard'
+        text: 'Manage Certification',
+        href: '/manage-certification'
       }
     ])
   })
