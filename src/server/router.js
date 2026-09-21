@@ -14,7 +14,6 @@ import { conformityMark } from './conformity-mark/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
 import { checkPermittedFuels } from './check-permitted-fuels/index.js'
 import { checkApplianceDetails } from './appliance-details/index.js'
-import { modelName } from './model-name/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 
@@ -41,7 +40,6 @@ export const router = {
         reviewAppliance,
         checkApplianceDetails,
         checkPermittedFuels,
-        modelName,
         conformityMark,
         technicalDrawings
       ])
