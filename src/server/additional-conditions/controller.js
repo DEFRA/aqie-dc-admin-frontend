@@ -140,8 +140,8 @@ async function handleAdditionalConditionsDecisionRequest(request, h) {
       )
     }
 
-    if (additionalConditions.length > maximumCharacters) {
-      const overBy = additionalConditions.length - maximumCharacters
+    if (submittedValue.length > maximumCharacters) {
+      const overBy = submittedValue.length - maximumCharacters
       return renderValidationError(
         h,
         appliance,

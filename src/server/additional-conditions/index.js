@@ -33,11 +33,9 @@ export const additionalConditions = {
           options: {
             validate: {
               params: paramsSchema,
-              // Only the completion decision is accepted for this form;
               // the free-text value is optional because null/empty input is
               // handled explicitly as a validation error in the controller.
               payload: Joi.object({
-                decision: Joi.string().valid('complete').required(),
                 additionalConditions: Joi.string().allow('').optional()
               })
             }
