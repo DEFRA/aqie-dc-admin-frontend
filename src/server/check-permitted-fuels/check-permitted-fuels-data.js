@@ -1,11 +1,10 @@
-import { fetchJson, patchJson } from '../common/api/api.js'
+import { patchJson } from '../common/api/api.js'
+import { getApplianceTechnicalReview } from '../common/services/commonService.js'
 
 const CHECK = 'permittedFuels'
 
 export async function getApplianceForPermittedFuels(applianceId) {
-  return fetchJson(
-    `/appliances/${encodeURIComponent(applianceId)}/technical-review`
-  )
+  return getApplianceTechnicalReview(applianceId)
 }
 
 export async function savePermittedFuels(applianceId, permittedFuels, wood) {

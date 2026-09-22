@@ -1,13 +1,16 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-const { fetchJsonMock, patchJsonMock } = vi.hoisted(() => ({
-  fetchJsonMock: vi.fn(),
+const { getApplianceTechnicalReviewMock, patchJsonMock } = vi.hoisted(() => ({
+  getApplianceTechnicalReviewMock: vi.fn(),
   patchJsonMock: vi.fn()
 }))
 
 vi.mock('../common/api/api.js', () => ({
-  fetchJson: fetchJsonMock,
   patchJson: patchJsonMock
+}))
+
+vi.mock('../common/services/commonService.js', () => ({
+  getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
 const { getApplianceForCheckDetails, markApplianceDetailsCompleted } =
@@ -15,24 +18,22 @@ const { getApplianceForCheckDetails, markApplianceDetailsCompleted } =
 
 describe('#getApplianceForCheckDetails', () => {
   beforeEach(() => {
-    fetchJsonMock.mockReset()
+    getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
   test('fetches from /appliances/{id}/technical-review', async () => {
-    fetchJsonMock.mockResolvedValue({ success: true })
+    getApplianceTechnicalReviewMock.mockResolvedValue({ success: true })
 
     await getApplianceForCheckDetails('APP-1')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP-1/technical-review'
-    )
+    expect(getApplianceTechnicalReviewMock).toHaveBeenCalledWith('APP-1')
   })
 })
 
 describe('#markApplianceDetailsCompleted', () => {
   beforeEach(() => {
-    fetchJsonMock.mockReset()
+    getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
