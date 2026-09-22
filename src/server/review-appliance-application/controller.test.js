@@ -2,6 +2,7 @@ import { beforeEach, vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { handleAppliancesApplicationRequest } from './controller.js'
+import { appliancesApplicationContent } from './content.js'
 const { getApplianceApplicationMock } = vi.hoisted(() => ({
   getApplianceApplicationMock: vi.fn()
 }))
@@ -223,7 +224,9 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
 
     expect(view).toHaveBeenCalledWith(
       'error/index',
-      expect.objectContaining({ message: '' })
+      expect.objectContaining({
+        message: appliancesApplicationContent.en.errors.generic
+      })
     )
     expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })

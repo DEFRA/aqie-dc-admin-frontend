@@ -40,7 +40,7 @@ export const applianceReviewContent = {
       {
         key: 'permittedFuels',
         title: 'Check permitted fuels',
-        path: 'check-permitted-fuels'
+        path: 'permitted-fuels'
       },
       {
         key: 'additionalConditions',
