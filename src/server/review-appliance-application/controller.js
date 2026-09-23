@@ -112,7 +112,10 @@ async function handleStartApplicationReviewRequest(request, h) {
     logger.warn(
       `[reviewApplicationAppliances] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
     )
-    reviewedBy = { name: 'Unknown reviewer', email: user?.email ?? 'unknown' }
+    reviewedBy = {
+      name: user?.name ?? 'Unknown reviewer',
+      email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+    }
   }
 
   try {
