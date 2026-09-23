@@ -1,27 +1,24 @@
 @use "govuk-frontend" as govuk;
 
 .app-link-button {
+  // Keep this component aligned with GOV.UK's tested link behaviour.
+  // Do not add `.govuk-link` here because it would duplicate hover/focus rules.
+  @include govuk.govuk-link-common;
+
   background: none;
   border: none;
   padding: 0;
   margin: 0;
-
-  color: govuk.govuk-colour("blue");
-  text-decoration: underline;
   cursor: pointer;
   font: inherit;
   line-height: inherit;
 
-  &:hover {
-    color: govuk.govuk-colour("dark-blue");
-    text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
+  &:link,
+  &:visited {
+    color: govuk.govuk-colour("blue");
   }
 
-  &:focus {
-    outline: 3px solid govuk.govuk-colour("yellow");
-    outline-offset: 0;
-    background-color: govuk.govuk-colour("yellow");
-    color: govuk.govuk-colour("black");
-    text-decoration: none;
+  &:hover {
+    color: govuk.govuk-colour("dark-blue");
   }
 }
