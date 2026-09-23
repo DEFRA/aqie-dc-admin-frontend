@@ -12,6 +12,7 @@ import { incompleteApplicationReview } from './incomplete-application-review/ind
 import { reviewAppliance } from './review-appliance/index.js'
 import { conformityMark } from './conformity-mark/index.js'
 import { technicalDrawings } from './technical-drawings/index.js'
+import { additionalConditions } from './additional-conditions/index.js'
 import { checkPermittedFuels } from './check-permitted-fuels/index.js'
 import { checkApplianceDetails } from './appliance-details/index.js'
 import { modelName } from './model-name/index.js'
@@ -45,7 +46,8 @@ export const router = {
         modelName,
         modelNumber,
         conformityMark,
-        technicalDrawings
+        technicalDrawings,
+        additionalConditions
       ])
 
       // Static assets
