@@ -4,6 +4,9 @@
   // Keep this component aligned with GOV.UK's tested link behaviour.
   // Do not add `.govuk-link` here because it would duplicate hover/focus rules.
   @include govuk.govuk-link-common;
+  @include govuk.govuk-link-style-default;
+
+  color: govuk.$govuk-link-colour;
 
   background: none;
   border: none;
@@ -12,13 +15,4 @@
   cursor: pointer;
   font: inherit;
   line-height: inherit;
-
-  &:link,
-  &:visited {
-    color: govuk.govuk-colour("blue");
-  }
-
-  &:hover {
-    color: govuk.govuk-colour("dark-blue");
-  }
 }
