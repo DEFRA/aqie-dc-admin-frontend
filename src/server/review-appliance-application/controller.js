@@ -104,10 +104,16 @@ const appliancesApplicationController = {
 async function handleStartApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
   const user = request.auth?.credentials?.user
-  const reviewedBy =
-    user?.name && user?.email
-      ? { name: user.name, email: user.email }
-      : undefined
+  let reviewedBy
+
+  if (user?.name && user?.email) {
+    reviewedBy = { name: user.name, email: user.email }
+  } else {
+    logger.warn(
+      `[reviewApplicationAppliances] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
+    )
+    reviewedBy = { name: 'Unknown reviewer', email: user?.email ?? 'unknown' }
+  }
 
   try {
     await startApplicationReview(applicationId, reviewedBy)
