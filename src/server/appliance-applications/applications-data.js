@@ -6,5 +6,5 @@ import { fetchJson } from '../common/api/api.js'
  */
 
 export async function getApplianceApplications() {
-  return fetchJson('/applications/summary')
+  return fetchJson('/applications/summary?type=appliance')
 }

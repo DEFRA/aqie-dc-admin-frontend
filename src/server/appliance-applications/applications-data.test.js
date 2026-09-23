@@ -13,7 +13,9 @@ describe('#getApplianceApplications', () => {
 
     const result = await getApplianceApplications()
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/applications/summary')
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      '/applications/summary?type=appliance'
+    )
     expect(result).toBe(payload)
   })
 })

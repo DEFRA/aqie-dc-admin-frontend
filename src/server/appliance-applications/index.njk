@@ -24,12 +24,12 @@
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">
-                    {% if application.appliances.length === 1 %}
-                      {{ application.appliances[0].modelName }}
+                    {% if application.items.length === 1 %}
+                      {{ application.items[0].name }}
                     {% else %}
                       <ul class="govuk-list govuk-list--bullet">
-                        {% for appliance in application.appliances %}
-                          <li>{{ appliance.modelName }}</li>
+                        {% for item in application.items %}
+                          <li>{{ item.name }}</li>
                         {% endfor %}
                       </ul>
                     {% endif %}
@@ -62,12 +62,12 @@
                 <tr class="govuk-table__row">
                   <td class="govuk-table__cell govuk-!-font-weight-bold">{{ application.id }}</td>
                   <td class="govuk-table__cell">
-                     {% if application.appliances.length === 1 %}
-                      {{ application.appliances[0].modelName }}
+                     {% if application.items.length === 1 %}
+                      {{ application.items[0].name }}
                     {% else %}
                       <ul class="govuk-list govuk-list--bullet">
-                        {% for appliance in application.appliances %}
-                          <li>{{ appliance.modelName }}</li>
+                        {% for item in application.items %}
+                          <li>{{ item.name }}</li>
                         {% endfor %}
                       </ul>
                     {% endif %}
