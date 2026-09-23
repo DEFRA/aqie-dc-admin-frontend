@@ -1,23 +1,5 @@
-// Example SASS helpers
-
 @use "govuk-frontend" as govuk;
 
-@mixin app-link-style {
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  &:focus {
-    text-decoration: none;
-  }
-}
-
-// A <button type="submit"> that needs to look and behave like a govuk-link,
-// used where a state-changing action must be a POST rather than a GET link.
-// `.govuk-link` alone isn't enough here: its colours are set via the `:link`
-// and `:visited` pseudo-classes, which only ever match <a> elements.
 .app-link-button {
   background: none;
   border: none;
