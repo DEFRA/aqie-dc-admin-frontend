@@ -35,7 +35,7 @@ export const applianceReviewContent = {
       {
         key: 'applianceDetails',
         title: 'Check appliance details',
-        path: 'check-appliance-details'
+        path: 'appliance-details'
       },
       {
         key: 'permittedFuels',
@@ -45,7 +45,7 @@ export const applianceReviewContent = {
       {
         key: 'additionalConditions',
         title: 'Enter additional conditions',
-        path: 'enter-additional-conditions'
+        path: 'additional-conditions'
       }
     ], // Ready-made govukTaskList status objects. Documentation checks are
     // tri-state; listing checks are binary.
