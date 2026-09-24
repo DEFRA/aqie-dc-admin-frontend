@@ -1,0 +1,94 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/variant-appliance"
+          novalidate>
+
+      {% set variantDetailsError = null %}
+      {% if error and error.field == 'variantDetailsCS' %}
+        {% set variantDetailsError = { text: error.message } %}
+      {% endif %}
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              {{ heading }}
+            </h1>
+          </legend>
+
+          {{ govukRadios({
+            idPrefix: "isVariantCS",
+            name: "isVariantCS",
+            fieldset: {
+              legend: {
+                text: content.legend,
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            items: [
+              {
+                value: "Yes",
+                text: content.yes,
+                checked: isVariant,
+                conditional: {
+                  html: govukCharacterCount({
+                    id: "variant-details",
+                    name: "variantDetailsCS",
+                    label: {
+                      text: content.detailsLabel,
+                      classes: "govuk-label--m"
+                    },
+                    maxlength: content.characterCount.limit,
+                    value: variantDetailsValue,
+                    errorMessage: variantDetailsError,
+                    rows: "5",
+                    classes: "govuk-textarea"
+                  })
+                }
+              },
+              {
+                value: "No",
+                text: content.no,
+                checked: not isVariant
+              }
+            ]
+          }) }}
+        </fieldset>
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+      </div>
+
+      <p><a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a></p>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
