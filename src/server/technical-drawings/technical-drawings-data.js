@@ -1,4 +1,5 @@
-import { fetchJson, patchJson } from '../common/api/api.js'
+import { patchJson } from '../common/api/api.js'
+import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
 
 const CHECK = 'technicalDrawings'
 
@@ -6,9 +7,7 @@ const CHECK = 'technicalDrawings'
  * Fetches the appliance so the heading can name it.
  */
 export async function getAppliance(applianceId) {
-  return fetchJson(
-    `/appliances/${encodeURIComponent(applianceId)}/technical-review`
-  )
+  return getApplianceTechnicalReview(applianceId)
 }
 
 /**

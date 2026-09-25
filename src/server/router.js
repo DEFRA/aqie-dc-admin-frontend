@@ -15,6 +15,8 @@ import { technicalDrawings } from './technical-drawings/index.js'
 import { additionalConditions } from './additional-conditions/index.js'
 import { checkPermittedFuels } from './check-permitted-fuels/index.js'
 import { checkApplianceDetails } from './appliance-details/index.js'
+import { modelName } from './model-name/index.js'
+import { modelNumber } from './model-number/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 import { testReports } from './test-reports/index.js'
@@ -42,6 +44,8 @@ export const router = {
         reviewAppliance,
         checkApplianceDetails,
         checkPermittedFuels,
+        modelName,
+        modelNumber,
         conformityMark,
         technicalDrawings,
         additionalConditions,
