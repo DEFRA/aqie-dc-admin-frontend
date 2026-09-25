@@ -9,7 +9,7 @@ vi.mock('../common/api/api.js', () => ({
   patchJson: patchJsonMock
 }))
 
-vi.mock('../common/services/commonService.js', () => ({
+vi.mock('../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
