@@ -7,8 +7,9 @@ const logger = createLogger()
 const content = modelNameContent.en
 
 function renderModelNamePage(h, applianceId, appliance, formValue, error) {
-  const heading = content.heading(appliance.modelName)
+  const heading = content.heading
   const applianceDetailsHref = `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`
+  const modelNameAction = `/review-appliance/${encodeURIComponent(applianceId)}/model-name`
 
   return h.view('model-name/index', {
     pageTitle: error ? `Error: ${heading}` : heading,
@@ -17,7 +18,8 @@ function renderModelNamePage(h, applianceId, appliance, formValue, error) {
     appliance,
     formValue,
     error,
-    applianceDetailsHref
+    applianceDetailsHref,
+    modelNameAction
   })
 }
 

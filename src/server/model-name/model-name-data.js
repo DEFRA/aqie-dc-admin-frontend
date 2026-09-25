@@ -1,5 +1,5 @@
 import { patchJson } from '../common/api/api.js'
-import { getApplianceTechnicalReview } from '../common/services/commonService.js'
+import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
 
 export async function getApplianceForModelName(applianceId) {
   return getApplianceTechnicalReview(applianceId)
