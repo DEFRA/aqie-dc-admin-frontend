@@ -1,6 +1,7 @@
 import path from 'path'
 import hapi from '@hapi/hapi'
 import Scooter from '@hapi/scooter'
+import hapiCookie from '@hapi/cookie'
 
 import { router } from './router.js'
 import { config } from '../config/config.js'
@@ -15,7 +16,6 @@ import { getCacheEngine } from './common/helpers/session-cache/cache-engine.js'
 import { secureContext } from '@defra/hapi-secure-context'
 import { contentSecurityPolicy } from './common/helpers/content-security-policy.js'
 import { metrics } from '@defra/cdp-metrics'
-import hapiCookie from '@hapi/cookie'
 
 export async function createServer() {
   setupProxy()
@@ -55,19 +55,6 @@ export async function createServer() {
       strictHeader: false
     }
   })
-  await server.register(hapiCookie)
-  server.auth.strategy('session', 'cookie', {
-    cookie: {
-      name: 'auth',
-      password: config.get('session.cookie.password'),
-      isSecure: config.get('session.cookie.secure'),
-      ttl: config.get('session.cookie.ttl'),
-      clearInvalid: true
-    },
-    validate: async (request, session) => {
-      return { valid: !!session.isAuthenticated }
-    }
-  })
   await server.register([
     requestLogger,
     requestTracing,
@@ -78,8 +65,71 @@ export async function createServer() {
     nunjucksConfig,
     Scooter,
     contentSecurityPolicy,
+    hapiCookie
+  ])
+  if (config.get('auth.ssoEnabled')) {
+    server.auth.strategy('session', 'cookie', {
+      cookie: {
+        name: 'auth',
+        password: config.get('session.cookie.password'),
+        isSecure: config.get('session.cookie.secure'),
+        isSameSite: 'Lax',
+        isHttpOnly: true,
+        path: '/',
+        ttl: config.get('session.cookie.ttl'),
+        clearInvalid: true
+      },
+      keepAlive: true,
+      redirectTo: false, //Redirects handled by onPreResonse
+      validate: async (_request, session) => {
+        if (session?.isAuthenticated === true && session.user) {
+          return { isValid: true, credentials: session }
+        }
+        return { isValid: false }
+      }
+    })
+  } else {
+    server.logger.warn(
+      'SSO DISABLED - dev bypass active; all request authenticated as stub user'
+    )
+    server.auth.scheme('dev-bypass', () => ({
+      authenticate: (request, h) => {
+        return h.authenticated({
+          credentials: {
+            isAuthenticated: true,
+            user: {
+              id: config.get('auth.devUser.id'),
+              email: config.get('auth.devUser.email'),
+              name: config.get('auth.devUser.name')
+            }
+          }
+        })
+      }
+    }))
+    server.auth.strategy('session', 'dev-bypass')
+  }
+
+  //Every route now requires sign-in unless it sets auth:false
+  server.auth.default({ strategy: 'session', mode: 'required' })
+
+  await server.register([
     router // Register all the controllers/routes defined in src/server/router.js
   ])
+
+  server.ext('onPreResponse', (request, h) => {
+    const { response } = request
+    if (!response.isBoom || response.output?.statusCode !== 401) {
+      return h.continue
+    }
+    if (request.path.startsWith('/api/')) {
+      return h.response({ error: 'Unauthorised' }).code(401).takeover()
+    }
+    request.yar.set(
+      'returnTo',
+      request.url.pathname + (request.url.search || '')
+    )
+    return h.redirect('/auth/login').takeover()
+  })
 
   server.ext('onPreResponse', catchAll)
 
