@@ -1,0 +1,51 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/nominal-output"
+          novalidate>
+
+      {{ govukInput({
+        id: "nominal-output",
+        name: "nominalOutput",
+        value: formValue,
+        classes: "govuk-input--width-5",
+        label: {
+          text: heading,
+          classes: "govuk-label--xl",
+          isPageHeading: true
+        },
+        suffix: {
+          text: content.suffix
+        },
+        errorMessage: error and { text: error.message } or null
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: content.saveChanges
+        }) }}
+        <a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
