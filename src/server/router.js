@@ -19,6 +19,7 @@ import { modelName } from './model-name/index.js'
 import { modelNumber } from './model-number/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
+import { testReports } from './test-reports/index.js'
 
 export const router = {
   plugin: {
@@ -47,7 +48,8 @@ export const router = {
         modelNumber,
         conformityMark,
         technicalDrawings,
-        additionalConditions
+        additionalConditions,
+        testReports
       ])
 
       // Static assets
