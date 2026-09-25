@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { postTestReports } from './controller.js'
 
 const {
   getTestReportMock,
@@ -23,8 +24,6 @@ vi.mock('./validation.js', async () => {
     validatePassedTestReport: validatePassedTestReportMock
   }
 })
-
-import { postTestReports } from './controller.js'
 
 describe('postTestReports', () => {
   let request
