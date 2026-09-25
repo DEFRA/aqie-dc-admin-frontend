@@ -13,7 +13,6 @@ function renderModelNamePage(h, applianceId, appliance, formValue, error) {
 
   return h.view('model-name/index', {
     pageTitle: error ? `Error: ${heading}` : heading,
-    heading,
     content,
     appliance,
     formValue,
