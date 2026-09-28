@@ -1,0 +1,55 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    {% set modelNumberError = null %}
+    {% if error and error.field == 'modelNumber' %}
+      {% set modelNumberError = { text: error.message } %}
+    {% endif %}
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/model-number"
+          novalidate>
+      {{ govukInput({
+        id: "model-number",
+        name: "modelNumber",
+        value: formValue,
+        label: {
+          text: content.label,
+          classes: "govuk-label--xl",
+          isPageHeading: true
+        },
+        errorMessage: modelNumberError
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+         <p><a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a></p>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
