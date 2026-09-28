@@ -141,7 +141,7 @@ export function buildSummaryItems(appliance) {
       actions: {
         items: [
           {
-            href: 'thermal-output',
+            href: 'nominal-output',
             text: content.actions.change,
             visuallyHiddenText: 'nominal thermal output'
           }
