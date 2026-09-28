@@ -1,42 +1,60 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchJson, patchJson } from '../common/api/api.js'
-import { getTestReport, updateTestReport } from './test-reports-data.js'
+import { vi } from 'vitest'
 
-vi.mock('../common/api/api.js', () => ({
-  fetchJson: vi.fn(),
-  patchJson: vi.fn()
+const { getApplianceTechnicalReviewMock, patchJsonMock } = vi.hoisted(() => ({
+  getApplianceTechnicalReviewMock: vi.fn(),
+  patchJsonMock: vi.fn()
 }))
 
-describe('review-test-reports-data', () => {
+vi.mock('../common/api/api.js', () => ({
+  patchJson: patchJsonMock
+}))
+
+vi.mock('../common/services/common-appliance-service.js', () => ({
+  getApplianceTechnicalReview: getApplianceTechnicalReviewMock
+}))
+
+const { getAppliance, saveTestReport } = await import('./test-reports-data.js')
+
+describe('#testReportsData', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    getApplianceTechnicalReviewMock.mockReset()
+    patchJsonMock.mockReset()
   })
 
-  it('gets a test report', async () => {
+  test('fetches the appliance technical review', async () => {
     const expected = {
-      reviewStatus: null
+      data: {
+        id: 'APP-123'
+      }
     }
 
-    fetchJson.mockResolvedValue(expected)
+    getApplianceTechnicalReviewMock.mockResolvedValue(expected)
 
-    const result = await getTestReport('APP-123')
+    const result = await getAppliance('APP-123')
 
-    expect(fetchJson).toHaveBeenCalledWith('/appliances/APP-123/test-reports')
+    expect(getApplianceTechnicalReviewMock).toHaveBeenCalledWith('APP-123')
+    expect(result).toEqual(expected)
+  })
+
+  test('returns the appliance data from the shared service', async () => {
+    const expected = {
+      data: {
+        id: 'APP-456',
+        testReports: {
+          result: true
+        }
+      }
+    }
+
+    getApplianceTechnicalReviewMock.mockResolvedValue(expected)
+
+    const result = await getAppliance('APP-456')
 
     expect(result).toEqual(expected)
   })
 
-  it('URL-encodes the appliance identifier when getting a report', async () => {
-    fetchJson.mockResolvedValue({})
-
-    await getTestReport('APP/123')
-
-    expect(fetchJson).toHaveBeenCalledWith('/appliances/APP%2F123/test-reports')
-  })
-
-  it('updates a test report', async () => {
-    const payload = {
-      reviewStatus: true,
+  test('saves a passed test-report check', async () => {
+    const testReport = {
       ratedOutput: 10.5,
       testedOutput: {
         rated: 9.75,
@@ -48,50 +66,120 @@ describe('review-test-reports-data', () => {
       }
     }
 
-    patchJson.mockResolvedValue(payload)
+    patchJsonMock.mockResolvedValue({
+      success: true
+    })
 
-    const result = await updateTestReport('APP-123', payload)
+    const result = await saveTestReport('APP-123', true, testReport)
 
-    expect(patchJson).toHaveBeenCalledWith(
-      '/appliances/APP-123/test-reports',
-      payload
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-123/technical-review/checks',
+      {
+        check: 'testReports',
+        result: true,
+        testReport
+      }
     )
 
-    expect(result).toEqual(payload)
+    expect(result).toEqual({
+      success: true
+    })
   })
 
-  it('URL-encodes the appliance identifier when updating a report', async () => {
-    const payload = {
-      reviewStatus: false,
+  test('saves a failed test-report check', async () => {
+    const testReport = {
+      ratedOutput: 10,
+      testedOutput: {
+        rated: 8,
+        low: 3
+      },
+      smokeEmissionOutput: {
+        rated: 2,
+        low: 1
+      }
+    }
+
+    patchJsonMock.mockResolvedValue({
+      success: true
+    })
+
+    await saveTestReport('APP-123', false, testReport)
+
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-123/technical-review/checks',
+      {
+        check: 'testReports',
+        result: false,
+        testReport
+      }
+    )
+  })
+
+  test('keeps the supplied test-report payload unchanged', async () => {
+    const testReport = {
+      ratedOutput: 12.5,
+      testedOutput: {
+        rated: 11,
+        low: 5
+      },
+      smokeEmissionOutput: {
+        rated: 3,
+        low: 1.5
+      }
+    }
+
+    patchJsonMock.mockResolvedValue({
+      success: true
+    })
+
+    await saveTestReport('APP-123', true, testReport)
+
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-123/technical-review/checks',
+      {
+        check: 'testReports',
+        result: true,
+        testReport
+      }
+    )
+  })
+
+  test('encodes the appliance id when saving', async () => {
+    const testReport = {
       ratedOutput: 10
     }
 
-    patchJson.mockResolvedValue(payload)
+    patchJsonMock.mockResolvedValue({
+      success: true
+    })
 
-    await updateTestReport('APP/123', payload)
+    await saveTestReport('APP/123', true, testReport)
 
-    expect(patchJson).toHaveBeenCalledWith(
-      '/appliances/APP%2F123/test-reports',
-      payload
+    expect(patchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP%2F123/technical-review/checks',
+      {
+        check: 'testReports',
+        result: true,
+        testReport
+      }
     )
   })
 
-  it('propagates errors when getting a report fails', async () => {
-    const error = new Error('GET failed')
-    fetchJson.mockRejectedValue(error)
+  test('propagates errors when fetching the appliance fails', async () => {
+    getApplianceTechnicalReviewMock.mockRejectedValue(new Error('GET failed'))
 
-    await expect(getTestReport('APP-123')).rejects.toThrow('GET failed')
+    await expect(getAppliance('APP-123')).rejects.toThrow('GET failed')
   })
 
-  it('propagates errors when updating a report fails', async () => {
-    const error = new Error('PATCH failed')
-    patchJson.mockRejectedValue(error)
+  test('propagates errors when saving the test report fails', async () => {
+    const testReport = {
+      ratedOutput: 10
+    }
 
-    await expect(
-      updateTestReport('APP-123', {
-        reviewStatus: true,
-        ratedOutput: 10
-      })
-    ).rejects.toThrow('PATCH failed')
+    patchJsonMock.mockRejectedValue(new Error('PATCH failed'))
+
+    await expect(saveTestReport('APP-123', true, testReport)).rejects.toThrow(
+      'PATCH failed'
+    )
   })
 })
