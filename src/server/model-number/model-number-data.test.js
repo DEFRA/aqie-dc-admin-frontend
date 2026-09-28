@@ -13,55 +13,47 @@ vi.mock('../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
-const { getApplianceForCheckDetails, markApplianceDetailsCompleted } =
-  await import('./appliance-details-data.js')
+const { getApplianceForModelNumber, saveModelNumber } =
+  await import('./model-number-data.js')
 
-describe('#getApplianceForCheckDetails', () => {
+describe('#getApplianceForModelNumber', () => {
   beforeEach(() => {
     getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
-  test('uses the shared appliance technical review fetch helper', async () => {
+  test('fetches the appliance from the technical review endpoint', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ success: true })
 
-    await getApplianceForCheckDetails('APP-1')
+    await getApplianceForModelNumber('APP-1')
 
     expect(getApplianceTechnicalReviewMock).toHaveBeenCalledWith('APP-1')
   })
 })
 
-describe('#markApplianceDetailsCompleted', () => {
+describe('#saveModelNumber', () => {
   beforeEach(() => {
     getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
-  test('marks appliance details check as complete', async () => {
+  test('updates the appliance model number', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await markApplianceDetailsCompleted('APP-1')
+    await saveModelNumber('APP-1', 'M40i-2025')
 
-    expect(patchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP-1/technical-review/checks',
-      {
-        check: 'applianceDetails',
-        result: true
-      }
-    )
+    expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1', {
+      modelNumber: 'M40i-2025'
+    })
   })
 
   test('encodes appliance id in patch request', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await markApplianceDetailsCompleted('APP/1')
+    await saveModelNumber('APP/1', 'Variant-2025')
 
-    expect(patchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP%2F1/technical-review/checks',
-      {
-        check: 'applianceDetails',
-        result: true
-      }
-    )
+    expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1', {
+      modelNumber: 'Variant-2025'
+    })
   })
 })
