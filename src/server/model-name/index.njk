@@ -1,8 +1,11 @@
 {% extends "layouts/page.njk" %}
 
-{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
 
 {% block content %}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
@@ -18,34 +21,39 @@
       }) }}
     {% endif %}
 
-    <form method="post"
-          action="{{ formAction }}"
-          novalidate>
+    {% set modelNameError = null %}
+    {% set inputClasses = '' %}
+    {% if error and error.field == 'modelName' %}
+      {% set modelNameError = { text: error.message } %}
+      {% set inputClasses = 'govuk-input--error' %}
+    {% endif %}
 
+    <form method="post"
+          action="{{ modelNameAction }}"
+          novalidate>
       {{ govukInput({
-        id: "nominal-output",
-        name: "nominalOutput",
+        id: "model-name",
+        name: "modelName",
         value: formValue,
-        classes: "govuk-input--width-5",
         label: {
-          text: heading,
+          text: content.label,
           classes: "govuk-label--xl",
           isPageHeading: true
         },
-        suffix: {
-          text: content.suffix
-        },
-        errorMessage: error and { text: error.message } or null
+        errorMessage: modelNameError,
+        classes: inputClasses
       }) }}
 
-      <div class="govuk-button-group">
+      <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
-          text: content.saveChanges
+          text: content.saveButton
         }) }}
+
         <a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a>
       </div>
-
     </form>
+
   </div>
 </div>
+
 {% endblock %}

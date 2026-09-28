@@ -1,12 +1,12 @@
 import { patchJson } from '../common/api/api.js'
 import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
 
-export function getApplianceForNominalOutput(applianceId) {
+export async function getApplianceForModelName(applianceId) {
   return getApplianceTechnicalReview(applianceId)
 }
 
-export function saveNominalOutput(applianceId, nominalOutput) {
+export async function saveModelName(applianceId, modelName) {
   return patchJson(`/appliances/${encodeURIComponent(applianceId)}`, {
-    nominalOutput
+    modelName
   })
 }

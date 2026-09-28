@@ -18,6 +18,7 @@ function renderPage(h, applianceId, appliance, formValue, error) {
     heading,
     content,
     appliance,
+    formAction: `/review-appliance/${encodeURIComponent(applianceId)}/nominal-output`,
     applianceDetailsHref: `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`,
     formValue,
     error
