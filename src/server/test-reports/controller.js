@@ -1,5 +1,6 @@
 import { testReportContent } from './content.js'
 import { getTestReport, updateTestReport } from './test-reports-data.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 import {
   getTestReportValues,
   testReportFields,
@@ -181,11 +182,11 @@ export const postTestReports = async (request, h) => {
   if (!Object.values(ACTIONS).includes(action)) {
     return h
       .response({
-        statusCode: 400,
+        statusCode: statusCodes.badRequest,
         error: 'Bad Request',
         message: 'Select an action'
       })
-      .code(400)
+      .code(statusCodes.badRequest)
   }
 
   /*
@@ -256,7 +257,7 @@ export const postTestReports = async (request, h) => {
           errorList: validation.errorList
         })
       )
-      .code(400)
+      .code(statusCodes.badRequest)
   }
 
   try {
