@@ -9,7 +9,7 @@ vi.mock('../common/api/api.js', () => ({
   patchJson: patchJsonMock
 }))
 
-vi.mock('../common/services/commonService.js', () => ({
+vi.mock('../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
@@ -22,7 +22,7 @@ describe('#getApplianceForPermittedFuels', () => {
     patchJsonMock.mockReset()
   })
 
-  test('fetches from /appliances/{id}/technical-review', async () => {
+  test('uses the shared appliance technical review fetch helper', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ success: true })
 
     await getApplianceForPermittedFuels('APP-1')

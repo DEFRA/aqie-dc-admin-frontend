@@ -1,8 +1,7 @@
 export const modelNumberContent = {
   en: {
-    heading: () => 'What is the model number?',
-    question: 'What is the model number?',
-    label: 'Model number',
+    heading: 'What is the model number?',
+    label: 'What is the model number?',
     saveButton: 'Save changes',
     cancel: 'Cancel',
     guidance: 'Enter the model number for this appliance.',

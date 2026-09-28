@@ -49,13 +49,12 @@ describe('#handleModelNumberRequest', () => {
 
     await handleModelNumberRequest({ params: { applianceId: 'APP-1' } }, h)
 
-    expect(h.view).toHaveBeenCalledWith(
-      'model-number/index',
-      expect.objectContaining({
-        heading: 'What is the model number?',
-        formValue: 'M40i-2024'
-      })
-    )
+    expect(h.view).toHaveBeenCalledTimes(1)
+    expect(h.view.mock.calls[0][0]).toBe('model-number/index')
+    expect(h.view.mock.calls[0][1]).toMatchObject({
+      pageTitle: 'What is the model number?',
+      formValue: 'M40i-2024'
+    })
   })
 
   test('renders error page when backend fetch fails', async () => {
@@ -108,18 +107,17 @@ describe('#handleModelNumberDecisionRequest', () => {
     )
 
     expect(saveModelNumberMock).not.toHaveBeenCalled()
-    expect(h.view).toHaveBeenCalledWith(
-      'model-number/index',
-      expect.objectContaining({
-        pageTitle: 'Error: What is the model number?',
-        error: {
-          field: 'modelNumber',
-          message: 'Enter the model number',
-          href: '#model-number'
-        },
-        formValue: '   '
-      })
-    )
+    expect(h.view).toHaveBeenCalledTimes(1)
+    expect(h.view.mock.calls[0][0]).toBe('model-number/index')
+    expect(h.view.mock.calls[0][1]).toMatchObject({
+      pageTitle: 'Error: What is the model number?',
+      error: {
+        field: 'modelNumber',
+        message: 'Enter the model number',
+        href: '#model-number'
+      },
+      formValue: '   '
+    })
     expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
 
@@ -129,12 +127,11 @@ describe('#handleModelNumberDecisionRequest', () => {
 
     await handleModelNumberRequest({ params: { applianceId: 'APP-1' } }, h)
 
-    expect(h.view).toHaveBeenCalledWith(
-      'model-number/index',
-      expect.objectContaining({
-        applianceDetailsHref: '/review-appliance/APP-1/appliance-details'
-      })
-    )
+    expect(h.view).toHaveBeenCalledTimes(1)
+    expect(h.view.mock.calls[0][0]).toBe('model-number/index')
+    expect(h.view.mock.calls[0][1]).toMatchObject({
+      applianceDetailsHref: '/review-appliance/APP-1/appliance-details'
+    })
   })
 
   test('renders error page when save fails', async () => {

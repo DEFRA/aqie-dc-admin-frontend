@@ -49,7 +49,7 @@ describe('#handleModelNameRequest', () => {
     expect(h.view).toHaveBeenCalledWith(
       'model-name/index',
       expect.objectContaining({
-        heading: 'What is the model name?',
+        pageTitle: 'What is the model name?',
         formValue: 'Twin Heat M40i'
       })
     )
