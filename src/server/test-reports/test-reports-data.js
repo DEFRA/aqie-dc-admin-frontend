@@ -4,31 +4,34 @@ import { getApplianceTechnicalReview } from '../common/services/common-appliance
 const CHECK = 'testReports'
 
 /**
- * Fetches the appliance data needed for the test-reports review screen.
+ * Retrieves appliance data including test-report values.
+ * Uses the technical-review endpoint to load the full review context.
  *
  * @param {string} applianceId Appliance identifier.
- * @returns {Promise<object>} Appliance technical-review data.
+ * @returns {Promise<object>} Appliance data including testResults and technical review status.
  */
-export async function getAppliance(applianceId) {
+export const getTestReport = (applianceId) => {
   return getApplianceTechnicalReview(applianceId)
 }
 
 /**
- * Saves the test-report values and their review result as a completed
- * technical-review check.
+ * Records the test report review status and saves measurement values.
+ * Uses a single atomic backend operation that updates both the testResults data
+ * and marks the testReports check as complete in the technical review workflow.
  *
  * @param {string} applianceId Appliance identifier.
- * @param {boolean} result Whether the test-reports check passed or failed.
- * @param {object} testReport Test-report values entered by the reviewer.
- * @returns {Promise<object>} Updated technical-review check.
+ * @param {object} testReport Object with reviewStatus, ratedOutput, testedOutput, smokeEmissionOutput.
+ * @returns {Promise<object>} Updated appliance data.
  */
-export async function saveTestReport(applianceId, result, testReport) {
+export const updateTestReport = (applianceId, testReport) => {
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/technical-review/checks`,
     {
       check: CHECK,
-      result,
-      testReport
+      result: testReport.reviewStatus,
+      data: {
+        testResults: testReport
+      }
     }
   )
 }

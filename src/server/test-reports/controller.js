@@ -1,6 +1,5 @@
 import { testReportContent } from './content.js'
-import { getAppliance, saveTestReport } from './test-reports-data.js'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { getTestReport, updateTestReport } from './test-reports-data.js'
 import {
   getTestReportValues,
   testReportFields,
@@ -15,7 +14,7 @@ const ACTIONS = Object.freeze({
   failed: 'failed'
 })
 
-const REVIEW_RESULT = Object.freeze({
+const REVIEW_STATUS = Object.freeze({
   passed: true,
   failed: false
 })
@@ -28,68 +27,18 @@ const getPreviousPageUrl = (applianceId) => {
   return `/review-appliance/${encodeURIComponent(applianceId)}`
 }
 
-/**
- * Extracts the appliance data from the supported service response shapes.
- */
-const getApplianceData = (appliance = {}) => {
-  return appliance.data ?? appliance
+const getApplianceName = (testReport = {}) => {
+  const responseData = testReport.data ?? testReport
+
+  return responseData.modelName ?? 'appliance'
 }
 
 /**
- * Extracts the appliance name from the technical-review response.
+ * Extracts test-report values from supported backend response shapes.
  */
-const getApplianceName = (appliance = {}) => {
-  const applianceData = getApplianceData(appliance)
-
-  return applianceData.modelName ?? applianceData.applianceName ?? 'appliance'
-}
-
-/**
- * Extracts the previously saved test-report check.
- *
- * This supports the possible technical-review response shapes:
- *
- * testReports: {
- *   result: true,
- *   data: {}
- * }
- *
- * checks: {
- *   testReports: {
- *     result: true,
- *     data: {}
- *   }
- * }
- *
- * technicalReview: {
- *   checks: {
- *     testReports: {
- *       result: true,
- *       data: {}
- *     }
- *   }
- * }
- */
-const getTestReportCheck = (appliance = {}) => {
-  const applianceData = getApplianceData(appliance)
-
-  return (
-    applianceData.testReports ??
-    applianceData.checks?.testReports ??
-    applianceData.technicalReview?.checks?.testReports ??
-    {}
-  )
-}
-
-/**
- * Extracts existing test-report values from the appliance
- * technical-review response.
- */
-const getExistingValues = (appliance = {}) => {
-  const testReportCheck = getTestReportCheck(appliance)
-  const testReportData = testReportCheck.data ?? testReportCheck
-
-  const testResults = testReportData.testResults ?? testReportData
+const getExistingValues = (testReport = {}) => {
+  const responseData = testReport.data ?? testReport
+  const testResults = responseData.testResults ?? responseData
 
   return getTestReportValues(testResults)
 }
@@ -132,8 +81,16 @@ const toRoundedNumber = (value) => {
 /**
  * Keeps the submitted value when the report is marked as failed.
  *
- * Failed reports do not validate measurement values. The submitted
- * value is retained as a trimmed string.
+ * Failed reports do not validate measurement values.
+ * Therefore the following values are retained:
+ * - empty strings
+ * - alphabetic values
+ * - alphanumeric values
+ * - negative values
+ * - positive numbers
+ *
+ * The value is stored as a string because failed values can contain
+ * non-numeric content.
  */
 const toFailedValue = (value) => {
   if (value === null || value === undefined) {
@@ -144,11 +101,14 @@ const toFailedValue = (value) => {
 }
 
 /**
- * Creates the test-report data for a passed review.
+ * Creates the backend payload for a passed test report.
  *
- * The review result is passed separately to saveTestReport().
+ * All values have already passed frontend validation.
+ * Values are rounded to a maximum of two decimal places.
  */
-const createPassedTestReport = (values) => ({
+const createPassedPayload = (values) => ({
+  reviewStatus: REVIEW_STATUS.passed,
+
   ratedOutput: toRoundedNumber(values.ratedOutput),
 
   testedOutput: {
@@ -163,11 +123,16 @@ const createPassedTestReport = (values) => ({
 })
 
 /**
- * Creates the test-report data for a failed review.
+ * Creates the backend payload for a failed test report.
  *
- * The review result is passed separately to saveTestReport().
+ * No measurement validation is performed when marking as failed.
+ * Every submitted value is retained as a string, including an
+ * empty string, negative value, alphabetic value, or alphanumeric
+ * value.
  */
-const createFailedTestReport = (values) => ({
+const createFailedPayload = (values) => ({
+  reviewStatus: REVIEW_STATUS.failed,
+
   ratedOutput: toFailedValue(values.ratedOutput),
 
   testedOutput: {
@@ -185,14 +150,14 @@ export const getTestReports = async (request, h) => {
   const applianceId = getApplianceId(request)
 
   try {
-    const appliance = await getAppliance(applianceId)
+    const testReport = await getTestReport(applianceId)
 
     return h.view(
       VIEW_NAME,
       createViewModel({
         applianceId,
-        applianceName: getApplianceName(appliance),
-        values: getExistingValues(appliance)
+        applianceName: getApplianceName(testReport),
+        values: getExistingValues(testReport)
       })
     )
   } catch (error) {
@@ -216,25 +181,26 @@ export const postTestReports = async (request, h) => {
   if (!Object.values(ACTIONS).includes(action)) {
     return h
       .response({
-        statusCode: statusCodes.badRequest,
+        statusCode: 400,
         error: 'Bad Request',
         message: 'Select an action'
       })
-      .code(statusCodes.badRequest)
+      .code(400)
   }
 
   /*
-   * Mark as failed.
+   * Mark as failed:
    *
-   * Passed-field validation is not executed.
-   * Every submitted measurement value is retained as a string.
+   * Do not run passed-field validation.
+   * All five measurements are optional.
+   * Valid numbers entered by the user are retained.
+   * Empty or invalid optional values become null.
    */
   if (action === ACTIONS.failed) {
     const values = getTestReportValues(payload)
-    const testReport = createFailedTestReport(values)
 
     try {
-      await saveTestReport(applianceId, REVIEW_RESULT.failed, testReport)
+      await updateTestReport(applianceId, createFailedPayload(values))
 
       return h.redirect(getPreviousPageUrl(applianceId))
     } catch (error) {
@@ -252,23 +218,23 @@ export const postTestReports = async (request, h) => {
   }
 
   /*
-   * Mark as passed.
+   * Mark as passed:
    *
    * All five measurement fields are required.
-   * Each value must be a valid non-negative number.
+   * Each value must be a non-negative whole number or decimal.
    */
   const validation = validatePassedTestReport(payload)
 
   if (!validation.isValid) {
-    let appliance = {}
+    let testReport = {}
 
     try {
       /*
-       * Reload only the appliance display information.
-       * Submitted values are taken from validation.values so that
-       * the user's entries remain visible.
+       * Reload the display information.
+       * The submitted values come from validation.values so the
+       * user's entries remain visible.
        */
-      appliance = await getAppliance(applianceId)
+      testReport = await getTestReport(applianceId)
     } catch (error) {
       request.logger?.warn(
         {
@@ -284,19 +250,17 @@ export const postTestReports = async (request, h) => {
         VIEW_NAME,
         createViewModel({
           applianceId,
-          applianceName: getApplianceName(appliance),
+          applianceName: getApplianceName(testReport),
           values: validation.values,
           errors: validation.errors,
           errorList: validation.errorList
         })
       )
-      .code(statusCodes.badRequest)
+      .code(400)
   }
 
-  const testReport = createPassedTestReport(validation.values)
-
   try {
-    await saveTestReport(applianceId, REVIEW_RESULT.passed, testReport)
+    await updateTestReport(applianceId, createPassedPayload(validation.values))
 
     return h.redirect(getPreviousPageUrl(applianceId))
   } catch (error) {
