@@ -95,7 +95,6 @@ describe('handleInstructionManualRequest', () => {
     const appliance = createAppliance({
       instructionManual: {
         title: 'Saved manual',
-        includeVersion: true,
         version: '3.2',
         publicationDate: '2027-10-05'
       }
@@ -180,7 +179,6 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', true, {
       title: 'Twin Heat CS200i instruction manual',
-      includeVersion: true,
       version: '2.1',
       publicationDate: '2027-09-25'
     })
@@ -211,7 +209,6 @@ describe('handleInstructionManualDecisionRequest', () => {
       'CS200i',
       true,
       expect.objectContaining({
-        includeVersion: false,
         version: ''
       })
     )
@@ -321,7 +318,6 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
       title: '',
-      includeVersion: null,
       version: '',
       publicationDate: null
     })
@@ -351,7 +347,6 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
       title: 'Draft manual',
-      includeVersion: true,
       version: 'Draft 1',
       publicationDate: '2027-09-25'
     })
@@ -398,7 +393,6 @@ describe('getSavedFormValues', () => {
         createAppliance({
           instructionManual: {
             title: 'Manual',
-            includeVersion: false,
             version: '',
             publicationDate: '2027-09-25'
           }

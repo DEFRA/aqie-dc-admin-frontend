@@ -44,7 +44,6 @@ describe('instruction-manual-data', () => {
 
     const instructionManual = {
       title: 'Instruction manual',
-      includeVersion: true,
       version: '2.1',
       publicationDate: '2027-09-25'
     }
@@ -68,7 +67,6 @@ describe('instruction-manual-data', () => {
 
     await saveInstructionManual('CS200i', false, {
       title: '',
-      includeVersion: null,
       version: '',
       publicationDate: null
     })
@@ -81,7 +79,6 @@ describe('instruction-manual-data', () => {
         data: {
           instructionManual: {
             title: '',
-            includeVersion: null,
             version: '',
             publicationDate: null
           }

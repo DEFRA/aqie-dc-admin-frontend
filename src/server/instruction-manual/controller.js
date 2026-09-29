@@ -54,15 +54,16 @@ function getStoredInstructionManual(appliance) {
 function getSavedFormValues(appliance) {
   const saved = getStoredInstructionManual(appliance)
   const dateParts = splitPublicationDate(saved.publicationDate)
+  const hasSavedVersion = Object.keys(saved).length > 0
+  const hasVersion =
+    typeof saved.version === 'string'
+      ? saved.version.trim().length > 0
+      : Boolean(saved.version)
+  const includeVersion = hasVersion ? 'yes' : hasSavedVersion ? 'no' : ''
 
   return {
     title: saved.title ?? '',
-    includeVersion:
-      saved.includeVersion === true
-        ? 'yes'
-        : saved.includeVersion === false
-          ? 'no'
-          : '',
+    includeVersion,
     version: saved.version ?? '',
     ...dateParts
   }
@@ -139,15 +140,11 @@ function renderServiceError(h) {
  * @returns {object} Persisted instruction-manual data.
  */
 function buildInstructionManualData(values, includePublicationDate = true) {
+  const version = values.includeVersion === 'yes' ? values.version : ''
+
   return {
     title: values.title,
-    includeVersion:
-      values.includeVersion === 'yes'
-        ? true
-        : values.includeVersion === 'no'
-          ? false
-          : null,
-    version: values.includeVersion === 'yes' ? values.version : '',
+    version,
     publicationDate: includePublicationDate
       ? buildPublicationDate(values)
       : null
