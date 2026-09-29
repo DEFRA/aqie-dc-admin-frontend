@@ -1,4 +1,5 @@
 import { fetchJson, patchJson } from '../common/api/api.js'
+import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
 
 const CHECK = 'instructionManual'
 
@@ -9,9 +10,7 @@ const CHECK = 'instructionManual'
  * @returns {Promise<object>} API response.
  */
 export async function getAppliance(applianceId) {
-  return fetchJson(
-    `/appliances/${encodeURIComponent(applianceId)}/technical-review`
-  )
+  return getApplianceTechnicalReview(applianceId)
 }
 
 /**

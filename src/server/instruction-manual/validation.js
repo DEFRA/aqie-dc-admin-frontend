@@ -1,13 +1,14 @@
 import { instructionManualContent } from './content.js'
+import {
+  MINIMUM_PUBLICATION_YEAR,
+  MAXIMUM_PUBLICATION_YEAR
+} from '../common/constants/constants.js'
 
 const content = instructionManualContent.en
 
 export const TITLE_MAX_LENGTH = content.fields.title.maximumCharacters
 
 export const VERSION_MAX_LENGTH = content.fields.version.maximumCharacters
-
-export const MINIMUM_PUBLICATION_YEAR = 1900
-export const MAXIMUM_PUBLICATION_YEAR = 9999
 
 /**
  * Converts a value to a trimmed string.
@@ -126,7 +127,7 @@ function validatePublicationDate(values, errors) {
   const containsOnlyNumbers =
     /^\d{1,2}$/.test(values.publicationDay) &&
     /^\d{1,2}$/.test(values.publicationMonth) &&
-    /^\d{4}$/.test(values.publicationYear)
+    /^\d+$/.test(values.publicationYear)
 
   if (!containsOnlyNumbers) {
     errors.push(
@@ -147,7 +148,7 @@ function validatePublicationDate(values, errors) {
     errors.push(
       createError(
         'publicationDate',
-        content.errors.publicationDateYearRange,
+        content.errors.publicationDateYearRange(),
         '#publicationYear'
       )
     )

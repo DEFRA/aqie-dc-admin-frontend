@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
   getSavedFormValues,
-  handleInstructionManualRequest,
-  handleInstructionManualDecisionRequest
+  handleInstructionManualDecisionRequest,
+  handleInstructionManualRequest
 } from './controller.js'
 import {
   getAppliance,
@@ -56,6 +56,19 @@ function createValidPayload(overrides = {}) {
   }
 }
 
+function createFailedPayload(overrides = {}) {
+  return {
+    action: 'failed',
+    title: '',
+    includeVersion: '',
+    version: '',
+    publicationDay: '',
+    publicationMonth: '',
+    publicationYear: '',
+    ...overrides
+  }
+}
+
 describe('handleInstructionManualRequest', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -78,6 +91,7 @@ describe('handleInstructionManualRequest', () => {
 
     await handleInstructionManualRequest(request, h)
 
+    expect(getAppliance).toHaveBeenCalledTimes(1)
     expect(getAppliance).toHaveBeenCalledWith('CS200i')
 
     expect(h.view).toHaveBeenCalledWith(
@@ -115,6 +129,8 @@ describe('handleInstructionManualRequest', () => {
       h
     )
 
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
+
     expect(h.view).toHaveBeenCalledWith(
       'instruction-manual/index',
       expect.objectContaining({
@@ -143,6 +159,9 @@ describe('handleInstructionManualRequest', () => {
       },
       h
     )
+
+    expect(getAppliance).toHaveBeenCalledTimes(1)
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
@@ -177,6 +196,10 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     const response = await handleInstructionManualDecisionRequest(request, h)
 
+    expect(getAppliance).toHaveBeenCalledTimes(1)
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
+
+    expect(saveInstructionManual).toHaveBeenCalledTimes(1)
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', true, {
       title: 'Twin Heat CS200i instruction manual',
       version: '2.1',
@@ -204,6 +227,8 @@ describe('handleInstructionManualDecisionRequest', () => {
     const h = createResponseToolkit()
 
     await handleInstructionManualDecisionRequest(request, h)
+
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
 
     expect(saveInstructionManual).toHaveBeenCalledWith(
       'CS200i',
@@ -234,6 +259,8 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     const response = await handleInstructionManualDecisionRequest(request, h)
 
+    expect(getAppliance).toHaveBeenCalledTimes(1)
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
     expect(saveInstructionManual).not.toHaveBeenCalled()
 
     expect(h.view).toHaveBeenCalledWith(
@@ -281,6 +308,9 @@ describe('handleInstructionManualDecisionRequest', () => {
 
     await handleInstructionManualDecisionRequest(request, h)
 
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
+    expect(saveInstructionManual).not.toHaveBeenCalled()
+
     expect(h.view).toHaveBeenCalledWith(
       'instruction-manual/index',
       expect.objectContaining({
@@ -296,26 +326,21 @@ describe('handleInstructionManualDecisionRequest', () => {
     )
   })
 
-  test('mark as failed skips validation and redirects', async () => {
+  test('mark as failed skips validation and does not fetch appliance', async () => {
     const request = {
       params: {
         applianceId: 'CS200i'
       },
-      payload: {
-        action: 'failed',
-        title: '',
-        includeVersion: '',
-        version: '',
-        publicationDay: '',
-        publicationMonth: '',
-        publicationYear: ''
-      }
+      payload: createFailedPayload()
     }
 
     const h = createResponseToolkit()
 
-    await handleInstructionManualDecisionRequest(request, h)
+    const response = await handleInstructionManualDecisionRequest(request, h)
 
+    expect(getAppliance).not.toHaveBeenCalled()
+
+    expect(saveInstructionManual).toHaveBeenCalledTimes(1)
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
       title: '',
       version: '',
@@ -323,36 +348,101 @@ describe('handleInstructionManualDecisionRequest', () => {
     })
 
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/CS200i')
+
+    expect(response).toEqual({
+      location: '/review-appliance/CS200i'
+    })
   })
 
-  test('mark as failed retains a complete valid date', async () => {
+  test('mark as failed retains a complete valid date without fetching appliance', async () => {
     const request = {
       params: {
         applianceId: 'CS200i'
       },
-      payload: {
-        action: 'failed',
+      payload: createFailedPayload({
         title: 'Draft manual',
         includeVersion: 'yes',
         version: 'Draft 1',
         publicationDay: '25',
         publicationMonth: '9',
         publicationYear: '2027'
-      }
+      })
+    }
+
+    const h = createResponseToolkit()
+
+    const response = await handleInstructionManualDecisionRequest(request, h)
+
+    expect(getAppliance).not.toHaveBeenCalled()
+
+    expect(saveInstructionManual).toHaveBeenCalledTimes(1)
+    expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
+      title: 'Draft manual',
+      version: 'Draft 1',
+      publicationDate: '2027-09-25'
+    })
+
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/CS200i')
+
+    expect(response).toEqual({
+      location: '/review-appliance/CS200i'
+    })
+  })
+
+  test('mark as failed stores an invalid date as null', async () => {
+    const request = {
+      params: {
+        applianceId: 'CS200i'
+      },
+      payload: createFailedPayload({
+        title: 'Draft manual',
+        includeVersion: 'no',
+        publicationDay: '31',
+        publicationMonth: '2',
+        publicationYear: '2027'
+      })
     }
 
     const h = createResponseToolkit()
 
     await handleInstructionManualDecisionRequest(request, h)
 
+    expect(getAppliance).not.toHaveBeenCalled()
+
     expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
       title: 'Draft manual',
-      version: 'Draft 1',
-      publicationDate: '2027-09-25'
+      version: '',
+      publicationDate: null
     })
   })
 
-  test('renders service error when saving fails', async () => {
+  test('renders service error when appliance loading fails on passed path', async () => {
+    getAppliance.mockRejectedValue(new Error('API unavailable'))
+
+    const h = createResponseToolkit()
+
+    const response = await handleInstructionManualDecisionRequest(
+      {
+        params: {
+          applianceId: 'CS200i'
+        },
+        payload: createValidPayload()
+      },
+      h
+    )
+
+    expect(getAppliance).toHaveBeenCalledTimes(1)
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
+    expect(saveInstructionManual).not.toHaveBeenCalled()
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+
+    expect(response.code).toHaveBeenCalledWith(500)
+  })
+
+  test('renders service error when saving passed data fails', async () => {
     saveInstructionManual.mockRejectedValue(new Error('Database unavailable'))
 
     const h = createResponseToolkit()
@@ -367,6 +457,54 @@ describe('handleInstructionManualDecisionRequest', () => {
       h
     )
 
+    expect(getAppliance).toHaveBeenCalledTimes(1)
+    expect(getAppliance).toHaveBeenCalledWith('CS200i')
+
+    expect(saveInstructionManual).toHaveBeenCalledWith(
+      'CS200i',
+      true,
+      expect.objectContaining({
+        title: 'Twin Heat CS200i instruction manual',
+        version: '2.1',
+        publicationDate: '2027-09-25'
+      })
+    )
+
+    expect(h.redirect).not.toHaveBeenCalled()
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+
+    expect(response.code).toHaveBeenCalledWith(500)
+  })
+
+  test('renders service error when saving failed data fails without fetching appliance', async () => {
+    saveInstructionManual.mockRejectedValue(new Error('Database unavailable'))
+
+    const h = createResponseToolkit()
+
+    const response = await handleInstructionManualDecisionRequest(
+      {
+        params: {
+          applianceId: 'CS200i'
+        },
+        payload: createFailedPayload()
+      },
+      h
+    )
+
+    expect(getAppliance).not.toHaveBeenCalled()
+
+    expect(saveInstructionManual).toHaveBeenCalledTimes(1)
+    expect(saveInstructionManual).toHaveBeenCalledWith('CS200i', false, {
+      title: '',
+      version: '',
+      publicationDate: null
+    })
+
+    expect(h.redirect).not.toHaveBeenCalled()
+
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
     })
@@ -376,6 +514,10 @@ describe('handleInstructionManualDecisionRequest', () => {
 })
 
 describe('getSavedFormValues', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   test('returns empty fields when no saved data exists', () => {
     expect(getSavedFormValues(createAppliance())).toEqual({
       title: '',
@@ -387,7 +529,28 @@ describe('getSavedFormValues', () => {
     })
   })
 
-  test('populates no radio selection correctly', () => {
+  test('populates yes radio selection when a saved version exists', () => {
+    expect(
+      getSavedFormValues(
+        createAppliance({
+          instructionManual: {
+            title: 'Manual',
+            version: '3.2',
+            publicationDate: '2027-09-25'
+          }
+        })
+      )
+    ).toEqual({
+      title: 'Manual',
+      includeVersion: 'yes',
+      version: '3.2',
+      publicationDay: '25',
+      publicationMonth: '9',
+      publicationYear: '2027'
+    })
+  })
+
+  test('populates no radio selection when saved data has no version', () => {
     expect(
       getSavedFormValues(
         createAppliance({
@@ -405,6 +568,27 @@ describe('getSavedFormValues', () => {
       publicationDay: '25',
       publicationMonth: '9',
       publicationYear: '2027'
+    })
+  })
+
+  test('returns empty date fields when saved publication date is missing', () => {
+    expect(
+      getSavedFormValues(
+        createAppliance({
+          instructionManual: {
+            title: 'Manual',
+            version: '',
+            publicationDate: null
+          }
+        })
+      )
+    ).toEqual({
+      title: 'Manual',
+      includeVersion: 'no',
+      version: '',
+      publicationDay: '',
+      publicationMonth: '',
+      publicationYear: ''
     })
   })
 })

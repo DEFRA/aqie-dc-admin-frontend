@@ -5,6 +5,10 @@ import {
   splitPublicationDate,
   validateInstructionManual
 } from './validation.js'
+import {
+  MINIMUM_PUBLICATION_YEAR,
+  MAXIMUM_PUBLICATION_YEAR
+} from '../common/constants/constants.js'
 
 function createValidPayload(overrides = {}) {
   return {
@@ -220,16 +224,56 @@ describe('validateInstructionManual', () => {
     })
   })
 
-  test('rejects a publication year before 1900', () => {
+  test('rejects a publication year below the minimum allowed year', () => {
+    const yearBelowMinimum = String(MINIMUM_PUBLICATION_YEAR - 1)
+
     const result = validateInstructionManual(
       createValidPayload({
-        publicationYear: '1899'
+        publicationYear: yearBelowMinimum
       })
     )
 
     expect(result.errors).toContainEqual({
       field: 'publicationDate',
-      message: 'Publication date year must be between 1900 and 9999',
+      message: `Publication date year must be between ${MINIMUM_PUBLICATION_YEAR} and ${MAXIMUM_PUBLICATION_YEAR}`,
+      href: '#publicationYear'
+    })
+  })
+
+  test('accepts the minimum allowed publication year', () => {
+    const result = validateInstructionManual(
+      createValidPayload({
+        publicationDay: '1',
+        publicationMonth: '1',
+        publicationYear: String(MINIMUM_PUBLICATION_YEAR)
+      })
+    )
+
+    expect(result.errors).toEqual([])
+  })
+
+  test('accepts the maximum allowed publication year', () => {
+    const result = validateInstructionManual(
+      createValidPayload({
+        publicationDay: '31',
+        publicationMonth: '12',
+        publicationYear: String(MAXIMUM_PUBLICATION_YEAR)
+      })
+    )
+
+    expect(result.errors).toEqual([])
+  })
+
+  test('rejects a publication year above the maximum allowed year', () => {
+    const result = validateInstructionManual(
+      createValidPayload({
+        publicationYear: String(MAXIMUM_PUBLICATION_YEAR + 1)
+      })
+    )
+
+    expect(result.errors).toContainEqual({
+      field: 'publicationDate',
+      message: `Publication date year must be between ${MINIMUM_PUBLICATION_YEAR} and ${MAXIMUM_PUBLICATION_YEAR}`,
       href: '#publicationYear'
     })
   })

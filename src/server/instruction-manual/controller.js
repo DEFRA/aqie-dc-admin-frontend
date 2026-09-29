@@ -217,13 +217,6 @@ export async function handleInstructionManualDecisionRequest(request, h) {
   const values = normaliseInstructionManualPayload(request.payload)
 
   try {
-    const { data } = await getAppliance(applianceId)
-
-    const appliance = {
-      ...data,
-      id: data?.id ?? data?.applianceId ?? applianceId
-    }
-
     if (values.action === 'failed') {
       await saveInstructionManual(
         applianceId,
@@ -232,6 +225,13 @@ export async function handleInstructionManualDecisionRequest(request, h) {
       )
 
       return h.redirect(buildReviewHref(applianceId))
+    }
+
+    const { data } = await getAppliance(applianceId)
+
+    const appliance = {
+      ...data,
+      id: data?.id ?? data?.applianceId ?? applianceId
     }
 
     const validation = validateInstructionManual(values)

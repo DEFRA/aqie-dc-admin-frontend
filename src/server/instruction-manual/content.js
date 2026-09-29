@@ -1,3 +1,7 @@
+import {
+  MINIMUM_PUBLICATION_YEAR,
+  MAXIMUM_PUBLICATION_YEAR
+} from '../common/constants/constants.js'
 export const instructionManualContent = {
   en: {
     pageTitle: 'Review instruction manuals',
@@ -55,8 +59,8 @@ export const instructionManualContent = {
       publicationDateMonthEmpty: 'Publication date must include a month',
       publicationDateYearEmpty: 'Publication date must include a year',
       publicationDateInvalid: 'Publication date must be a real date',
-      publicationDateYearRange:
-        'Publication date year must be between 1900 and 9999'
+      publicationDateYearRange: () =>
+        `Publication date year must be between ${MINIMUM_PUBLICATION_YEAR} and ${MAXIMUM_PUBLICATION_YEAR}`
     }
   }
 }
