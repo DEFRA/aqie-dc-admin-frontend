@@ -87,8 +87,8 @@ describe('#handleVariantApplianceDecisionRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          isVariantCS: 'Yes',
-          variantDetailsCS: '  Updated variant details  '
+          isVariant: 'Yes',
+          variantDetails: '  Updated variant details  '
         }
       },
       h
@@ -129,7 +129,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { isVariantCS: 'Yes', variantDetailsCS: '   ' }
+        payload: { isVariant: 'Yes', variantDetails: '   ' }
       },
       h
     )
@@ -139,7 +139,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
       'variant-appliance/index',
       expect.objectContaining({
         error: {
-          field: 'variantDetailsCS',
+          field: 'variantDetails',
           message: 'Enter details of the certified variant appliance',
           href: '#variant-details'
         }
@@ -156,7 +156,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { isVariantCS: 'Yes', variantDetailsCS: longText }
+        payload: { isVariant: 'Yes', variantDetails: longText }
       },
       h
     )
@@ -166,7 +166,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
       'variant-appliance/index',
       expect.objectContaining({
         error: expect.objectContaining({
-          field: 'variantDetailsCS'
+          field: 'variantDetails'
         })
       })
     )
@@ -194,7 +194,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { isVariantCS: 'Yes', variantDetailsCS: 'Some details' }
+        payload: { isVariant: 'Yes', variantDetails: 'Some details' }
       },
       h
     )
@@ -232,7 +232,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { isVariantCS: 'No', variantDetailsCS: null }
+        payload: { isVariant: 'No', variantDetails: null }
       },
       h
     )
@@ -250,7 +250,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP/001' },
-        payload: { isVariantCS: 'No', variantDetailsCS: '' }
+        payload: { isVariant: 'No', variantDetails: '' }
       },
       h
     )
@@ -268,7 +268,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
     await handleVariantApplianceDecisionRequest(
       {
         params: { applianceId: 'APP-1' },
-        payload: { isVariantCS: 'Yes', variantDetailsCS: longText }
+        payload: { isVariant: 'Yes', variantDetails: longText }
       },
       h
     )
@@ -278,7 +278,7 @@ describe('#handleVariantApplianceDecisionRequest', () => {
       expect.objectContaining({
         error: expect.objectContaining({
           message: expect.stringContaining('1000 characters'),
-          field: 'variantDetailsCS'
+          field: 'variantDetails'
         })
       })
     )
@@ -292,8 +292,8 @@ describe('#handleVariantApplianceDecisionRequest', () => {
       {
         params: { applianceId: 'APP-1' },
         payload: {
-          isVariantCS: 'Yes',
-          variantDetailsCS: '  \n\t  Details here  \n\t  '
+          isVariant: 'Yes',
+          variantDetails: '  \n\t  Details here  \n\t  '
         }
       },
       h

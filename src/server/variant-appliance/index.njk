@@ -26,7 +26,7 @@
           novalidate>
 
       {% set variantDetailsError = null %}
-      {% if error and error.field == 'variantDetailsCS' %}
+      {% if error and error.field == 'variantDetails' %}
         {% set variantDetailsError = { text: error.message } %}
       {% endif %}
 
@@ -39,8 +39,8 @@
           </legend>
 
           {{ govukRadios({
-            idPrefix: "isVariantCS",
-            name: "isVariantCS",
+            idPrefix: "isVariant",
+            name: "isVariant",
             fieldset: {
               legend: {
                 text: content.legend,
@@ -56,7 +56,7 @@
                 conditional: {
                   html: govukCharacterCount({
                     id: "variant-details",
-                    name: "variantDetailsCS",
+                    name: "variantDetails",
                     label: {
                       text: content.detailsLabel,
                       classes: "govuk-label--m"

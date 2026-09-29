@@ -32,8 +32,8 @@ export const variantAppliance = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                isVariantCS: Joi.string().valid('Yes', 'No').required(),
-                variantDetailsCS: Joi.string().allow('').optional()
+                isVariant: Joi.string().valid('Yes', 'No').required(),
+                variantDetails: Joi.string().allow('').optional()
               })
             }
           }

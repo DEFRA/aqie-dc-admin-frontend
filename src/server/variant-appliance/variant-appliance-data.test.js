@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-const { getApplianceTechnicalReviewMock, patchJsonMock } = vi.hoisted(() => ({
-  getApplianceTechnicalReviewMock: vi.fn(),
-  patchJsonMock: vi.fn()
-}))
+const { getApplianceTechnicalReviewMock, patchJsonMock, fetchJsonMock } =
+  vi.hoisted(() => ({
+    getApplianceTechnicalReviewMock: vi.fn(),
+    patchJsonMock: vi.fn(),
+    fetchJsonMock: vi.fn()
+  }))
 
 vi.mock('../common/api/api.js', () => ({
-  patchJson: patchJsonMock
+  patchJson: patchJsonMock,
+  fetchJson: fetchJsonMock
 }))
 
-vi.mock('../common/services/commonService.js', () => ({
+vi.mock('../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 

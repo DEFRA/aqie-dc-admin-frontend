@@ -21,10 +21,10 @@ function renderVariantAppliancePage(
   const applianceDetailsHref = `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`
 
   const isVariant =
-    formData?.isVariantCS === 'Yes' ||
-    (formData?.isVariantCS === undefined && appliance.isVariant === true)
+    formData?.isVariant === 'Yes' ||
+    (formData?.isVariant === undefined && appliance.isVariant === true)
   const variantDetailsValue =
-    formData?.variantDetailsCS ?? appliance.existingAuthorisedAppliance ?? ''
+    formData?.variantDetails ?? appliance.existingAuthorisedAppliance ?? ''
 
   return h.view('variant-appliance/index', {
     pageTitle: error ? `Error: ${heading}` : heading,
@@ -59,9 +59,9 @@ async function handleVariantApplianceRequest(request, h) {
 async function handleVariantApplianceDecisionRequest(request, h) {
   const { applianceId } = request.params
   const detailsHref = `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`
-  const { isVariantCS, variantDetailsCS } = request.payload
-  const isVariant = isVariantCS === 'Yes'
-  const variantDetailsValue = variantDetailsCS ?? ''
+  const { isVariant: isVariantValue, variantDetails } = request.payload
+  const isVariant = isVariantValue === 'Yes'
+  const variantDetailsValue = variantDetails ?? ''
   const trimmed = variantDetailsValue.trim()
 
   try {
@@ -72,9 +72,9 @@ async function handleVariantApplianceDecisionRequest(request, h) {
         h,
         applianceId,
         appliance,
-        { isVariantCS, variantDetailsCS },
+        { isVariant: isVariantValue, variantDetails },
         {
-          field: 'variantDetailsCS',
+          field: 'variantDetails',
           message: content.errors.detailsRequired,
           href: '#variant-details'
         }
@@ -89,9 +89,9 @@ async function handleVariantApplianceDecisionRequest(request, h) {
         h,
         applianceId,
         appliance,
-        { isVariantCS, variantDetailsCS },
+        { isVariant: isVariantValue, variantDetails },
         {
-          field: 'variantDetailsCS',
+          field: 'variantDetails',
           message: content.errors.detailsMaxLength(charsOver),
           href: '#variant-details'
         }
