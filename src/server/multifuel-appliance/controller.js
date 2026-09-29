@@ -15,7 +15,14 @@ function toYesNo(value) {
   return undefined
 }
 
-function renderPage(h, applianceId, appliance, formValue, error) {
+function renderPage(
+  h,
+  appliance,
+  formAction,
+  applianceDetailsHref,
+  formValue,
+  error
+) {
   const heading = content.heading(appliance.modelName)
 
   return h.view('multifuel-appliance/index', {
@@ -23,8 +30,8 @@ function renderPage(h, applianceId, appliance, formValue, error) {
     heading,
     content,
     appliance,
-    formAction: `/review-appliance/${encodeURIComponent(applianceId)}/multifuel-appliance`,
-    applianceDetailsHref: `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`,
+    formAction,
+    applianceDetailsHref,
     formValue,
     error
   })
@@ -32,14 +39,17 @@ function renderPage(h, applianceId, appliance, formValue, error) {
 
 async function handleGet(request, h) {
   const { applianceId } = request.params
+  const formAction = `/review-appliance/${encodeURIComponent(applianceId)}/multifuel-appliance`
+  const applianceDetailsHref = `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`
 
   try {
     const { data: appliance } = await getApplianceForMultifuel(applianceId)
 
     return renderPage(
       h,
-      applianceId,
       appliance,
+      formAction,
+      applianceDetailsHref,
       toYesNo(appliance.multifuelAppliance),
       null
     )
@@ -57,17 +67,25 @@ async function handleGet(request, h) {
 async function handlePost(request, h) {
   const { applianceId } = request.params
   const { multifuelAppliance } = request.payload
+  const formAction = `/review-appliance/${encodeURIComponent(applianceId)}/multifuel-appliance`
   const applianceDetailsHref = `/review-appliance/${encodeURIComponent(applianceId)}/appliance-details`
 
   if (!multifuelAppliance) {
     try {
       const { data: appliance } = await getApplianceForMultifuel(applianceId)
 
-      return renderPage(h, applianceId, appliance, undefined, {
-        field: 'multifuelAppliance',
-        message: content.errors.selectionRequired,
-        href: '#multifuelAppliance'
-      }).code(statusCodes.badRequest)
+      return renderPage(
+        h,
+        appliance,
+        formAction,
+        applianceDetailsHref,
+        undefined,
+        {
+          field: 'multifuelAppliance',
+          message: content.errors.selectionRequired,
+          href: '#multifuelAppliance'
+        }
+      ).code(statusCodes.badRequest)
     } catch (error) {
       logger.error(
         `[multifuelAppliance] POST fetch failed for ${applianceId}: ${error.message}`
