@@ -154,7 +154,7 @@ export function buildSummaryItems(appliance) {
       actions: {
         items: [
           {
-            href: 'multi-fuel',
+            href: 'multifuel-appliance',
             text: content.actions.change,
             visuallyHiddenText: 'if the appliance is multifuel'
           }
