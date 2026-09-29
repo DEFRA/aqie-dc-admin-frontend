@@ -1,4 +1,4 @@
-import { fetchJson, patchJson } from '../common/api/api.js'
+import { patchJson } from '../common/api/api.js'
 import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
 
 const CHECK = 'instructionManual'
