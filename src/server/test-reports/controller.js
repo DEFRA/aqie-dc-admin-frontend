@@ -1,3 +1,4 @@
+import { createLogger } from '../common/helpers/logging/logger.js'
 import { testReportContent } from './content.js'
 import { getTestReport, updateTestReport } from './test-reports-data.js'
 import { statusCodes } from '../common/constants/status-codes.js'
@@ -7,6 +8,7 @@ import {
   validatePassedTestReport
 } from './validation.js'
 
+const logger = createLogger()
 const VIEW_NAME = 'test-reports/index'
 const content = testReportContent.en
 
@@ -170,7 +172,9 @@ export const getTestReports = async (request, h) => {
       `[reviewTestReports] Failed to load review test reports for ${applianceId}: ${error.message}`
     )
 
-    throw error
+    return h
+      .view('error/index', { message: content.errors.generic })
+      .code(statusCodes.internalServerError)
   }
 }
 
@@ -214,7 +218,9 @@ export const postTestReports = async (request, h) => {
         `[reviewTestReports] Failed to mark review test reports for ${applianceId}: ${error.message}`
       )
 
-      throw error
+      return h
+        .view('error/index', { message: content.errors.generic })
+        .code(statusCodes.internalServerError)
     }
   }
 
@@ -274,6 +280,8 @@ export const postTestReports = async (request, h) => {
       `[reviewTestReports] Failed to mark review test reports as passed for ${applianceId}: ${error.message}`
     )
 
-    throw error
+    return h
+      .view('error/index', { message: content.errors.generic })
+      .code(statusCodes.internalServerError)
   }
 }

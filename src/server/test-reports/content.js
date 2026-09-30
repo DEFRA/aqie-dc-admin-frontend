@@ -9,6 +9,9 @@ export const testReportContent = {
     passedButton: 'Mark as passed',
     failedButton: 'Mark as failed',
     cancel: 'Cancel',
-    backLink: 'Back'
+    backLink: 'Back',
+    errors: {
+      generic: 'Sorry, there is a problem with the service'
+    }
   }
 }
