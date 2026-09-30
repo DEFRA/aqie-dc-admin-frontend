@@ -1,7 +1,6 @@
 export const applianceTypeContent = {
   en: {
     heading: (modelName) => `What type of appliance is ${modelName}?`,
-    legend: 'What type of appliance is it?',
     saveButton: 'Save changes',
     cancel: 'Cancel',
     errors: {

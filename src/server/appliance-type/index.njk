@@ -41,13 +41,6 @@
           {{ govukRadios({
             idPrefix: "applianceType",
             name: "applianceType",
-            fieldset: {
-              legend: {
-                text: content.legend,
-                isPageHeading: false,
-                classes: "govuk-fieldset__legend--m"
-              }
-            },
             items: applianceTypeItems,
             errorMessage: applianceTypeError
           }) }}
