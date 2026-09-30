@@ -83,18 +83,21 @@ const toRoundedNumber = (value) => {
 }
 
 /**
- * Keeps the submitted value when the report is marked as failed.
+ * Keeps the submitted value as a string when the report is marked as failed.
  *
  * Failed reports do not validate measurement values.
- * Therefore the following values are retained:
+ * All values are retained in their submitted form (as strings) to preserve
+ * user input, including:
  * - empty strings
- * - alphabetic values
- * - alphanumeric values
- * - negative values
- * - positive numbers
+ * - numeric strings (e.g., '10.5', '-1', '0')
+ * - alphabetic strings (e.g., 'abc', 'N/A')
+ * - alphanumeric strings (e.g., '1abc')
+ * - null/undefined (converted to empty string '')
+ *
+ * Surrounding spaces are trimmed from all values.
  *
  * The value is stored as a string because failed values can contain
- * non-numeric content.
+ * non-numeric content that should not be validated or coerced.
  */
 const toFailedValue = (value) => {
   if (value === null || value === undefined) {
@@ -165,8 +168,8 @@ export const postTestReports = async (request, h) => {
    *
    * Do not run passed-field validation.
    * All five measurements are optional.
-   * Valid numbers entered by the user are retained.
-   * Empty or invalid optional values become null.
+   * All submitted values are retained as strings (empty strings for empty values).
+   * Surrounding spaces are trimmed from all values.
    */
   if (action === ACTIONS.failed) {
     const values = getTestReportValues(payload)
