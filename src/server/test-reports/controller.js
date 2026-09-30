@@ -1,3 +1,4 @@
+import Boom from '@hapi/boom'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { testReportContent } from './content.js'
 import { getTestReport, updateTestReport } from './test-reports-data.js'
@@ -104,50 +105,26 @@ const toFailedValue = (value) => {
 }
 
 /**
- * Creates the backend payload for a passed test report.
+ * Creates the test results data for the backend payload.
  *
- * All values have already passed frontend validation.
- * Values are rounded to a maximum of two decimal places.
+ * For passed reports: all values are numbers rounded to two decimal places.
+ * For failed reports: all values are retained as submitted (empty strings, alphabetic, etc).
  */
-const createPassedPayload = (values) => ({
-  reviewStatus: REVIEW_STATUS.passed,
+const createTestResults = (values, isPassed) => {
+  const valueConverter = isPassed ? toRoundedNumber : toFailedValue
 
-  ratedOutput: toRoundedNumber(values.ratedOutput),
-
-  testedOutput: {
-    rated: toRoundedNumber(values.testedOutputRated),
-    low: toRoundedNumber(values.testedOutputLow)
-  },
-
-  smokeEmissionOutput: {
-    rated: toRoundedNumber(values.smokeEmissionOutputRated),
-    low: toRoundedNumber(values.smokeEmissionOutputLow)
+  return {
+    ratedOutput: valueConverter(values.ratedOutput),
+    testedOutput: {
+      rated: valueConverter(values.testedOutputRated),
+      low: valueConverter(values.testedOutputLow)
+    },
+    smokeEmissionOutput: {
+      rated: valueConverter(values.smokeEmissionOutputRated),
+      low: valueConverter(values.smokeEmissionOutputLow)
+    }
   }
-})
-
-/**
- * Creates the backend payload for a failed test report.
- *
- * No measurement validation is performed when marking as failed.
- * Every submitted value is retained as a string, including an
- * empty string, negative value, alphabetic value, or alphanumeric
- * value.
- */
-const createFailedPayload = (values) => ({
-  reviewStatus: REVIEW_STATUS.failed,
-
-  ratedOutput: toFailedValue(values.ratedOutput),
-
-  testedOutput: {
-    rated: toFailedValue(values.testedOutputRated),
-    low: toFailedValue(values.testedOutputLow)
-  },
-
-  smokeEmissionOutput: {
-    rated: toFailedValue(values.smokeEmissionOutputRated),
-    low: toFailedValue(values.smokeEmissionOutputLow)
-  }
-})
+}
 
 export const getTestReports = async (request, h) => {
   const applianceId = getApplianceId(request)
@@ -184,13 +161,7 @@ export const postTestReports = async (request, h) => {
   const action = payload.action
 
   if (!Object.values(ACTIONS).includes(action)) {
-    return h
-      .response({
-        statusCode: statusCodes.badRequest,
-        error: 'Bad Request',
-        message: 'Select an action'
-      })
-      .code(statusCodes.badRequest)
+    throw Boom.badRequest('Select an action')
   }
 
   /*
@@ -205,7 +176,11 @@ export const postTestReports = async (request, h) => {
     const values = getTestReportValues(payload)
 
     try {
-      await updateTestReport(applianceId, createFailedPayload(values))
+      await updateTestReport(
+        applianceId,
+        REVIEW_STATUS.failed,
+        createTestResults(values, false)
+      )
 
       return h.redirect(getPreviousPageUrl(applianceId))
     } catch (error) {
@@ -267,7 +242,11 @@ export const postTestReports = async (request, h) => {
   }
 
   try {
-    await updateTestReport(applianceId, createPassedPayload(validation.values))
+    await updateTestReport(
+      applianceId,
+      REVIEW_STATUS.passed,
+      createTestResults(validation.values, true)
+    )
 
     return h.redirect(getPreviousPageUrl(applianceId))
   } catch (error) {

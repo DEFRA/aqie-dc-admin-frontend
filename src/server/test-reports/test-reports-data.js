@@ -20,17 +20,18 @@ export const getTestReport = (applianceId) => {
  * and marks the testReports check as complete in the technical review workflow.
  *
  * @param {string} applianceId Appliance identifier.
- * @param {object} testReport Object with reviewStatus, ratedOutput, testedOutput, smokeEmissionOutput.
+ * @param {boolean} result Review result: true (passed) or false (failed).
+ * @param {object} testResults Object with ratedOutput, testedOutput, smokeEmissionOutput.
  * @returns {Promise<object>} Updated appliance data.
  */
-export const updateTestReport = (applianceId, testReport) => {
+export const updateTestReport = (applianceId, result, testResults) => {
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/technical-review/checks`,
     {
       check: CHECK,
-      result: testReport.reviewStatus,
+      result,
       data: {
-        testResults: testReport
+        testResults
       }
     }
   )

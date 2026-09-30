@@ -85,8 +85,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: false,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
       ratedOutput: '',
       testedOutput: {
         rated: '',
@@ -115,8 +114,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: false,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
       ratedOutput: '0',
       testedOutput: {
         rated: '0.0',
@@ -145,8 +143,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: false,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
       ratedOutput: 'abc',
       testedOutput: {
         rated: '-1',
@@ -177,8 +174,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: false,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
       ratedOutput: 'abc',
       testedOutput: {
         rated: '-1',
@@ -218,8 +214,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).toHaveBeenCalledWith(request.payload)
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: true,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', true, {
       ratedOutput: 5.2,
       testedOutput: {
         rated: 5.1,
@@ -261,8 +256,7 @@ describe('postTestReports', () => {
 
     expect(validatePassedTestReportMock).toHaveBeenCalledWith(request.payload)
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: true,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', true, {
       ratedOutput: 5.68,
       testedOutput: {
         rated: 5.12,
@@ -302,8 +296,7 @@ describe('postTestReports', () => {
 
     await postTestReports(request, h)
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', {
-      reviewStatus: true,
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', true, {
       ratedOutput: 0,
       testedOutput: {
         rated: 0,
@@ -369,9 +362,9 @@ describe('postTestReports', () => {
   test('returns 400 when action is missing', async () => {
     request.payload = {}
 
-    const result = await postTestReports(request, h)
-
-    expect(result.statusCode).toBe(400)
+    await expect(postTestReports(request, h)).rejects.toThrow(
+      'Select an action'
+    )
 
     expect(updateTestReportMock).not.toHaveBeenCalled()
 
@@ -383,9 +376,9 @@ describe('postTestReports', () => {
       action: 'unknown'
     }
 
-    const result = await postTestReports(request, h)
-
-    expect(result.statusCode).toBe(400)
+    await expect(postTestReports(request, h)).rejects.toThrow(
+      'Select an action'
+    )
 
     expect(updateTestReportMock).not.toHaveBeenCalled()
 

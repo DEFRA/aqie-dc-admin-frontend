@@ -46,8 +46,7 @@ describe('review-test-reports-data', () => {
   })
 
   it('updates a test report via the technical-review/checks endpoint', async () => {
-    const testReportPayload = {
-      reviewStatus: true,
+    const testResults = {
       ratedOutput: 10.5,
       testedOutput: {
         rated: 9.75,
@@ -63,7 +62,7 @@ describe('review-test-reports-data', () => {
       success: true,
       data: {
         id: 'APP-123',
-        testResults: testReportPayload,
+        testResults,
         technicalReview: {
           documentationChecks: {
             testReports: true
@@ -74,7 +73,7 @@ describe('review-test-reports-data', () => {
 
     patchJson.mockResolvedValue(response)
 
-    const result = await updateTestReport('APP-123', testReportPayload)
+    const result = await updateTestReport('APP-123', true, testResults)
 
     expect(patchJson).toHaveBeenCalledWith(
       '/appliances/APP-123/technical-review/checks',
@@ -82,7 +81,7 @@ describe('review-test-reports-data', () => {
         check: 'testReports',
         result: true,
         data: {
-          testResults: testReportPayload
+          testResults
         }
       }
     )
@@ -91,14 +90,13 @@ describe('review-test-reports-data', () => {
   })
 
   it('URL-encodes the appliance identifier when updating a report', async () => {
-    const testReportPayload = {
-      reviewStatus: false,
+    const testResults = {
       ratedOutput: 10
     }
 
     patchJson.mockResolvedValue({})
 
-    await updateTestReport('APP/123', testReportPayload)
+    await updateTestReport('APP/123', false, testResults)
 
     expect(patchJson).toHaveBeenCalledWith(
       '/appliances/APP%2F123/technical-review/checks',
@@ -106,7 +104,7 @@ describe('review-test-reports-data', () => {
         check: 'testReports',
         result: false,
         data: {
-          testResults: testReportPayload
+          testResults
         }
       }
     )
