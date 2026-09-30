@@ -87,6 +87,7 @@ describe('#formatters', () => {
 
 describe('#buildSummaryItems', () => {
   const baseAppliance = {
+    id: 'APP-test123',
     modelName: 'Twin Heat M40i',
     modelNumber: null,
     applianceType: 'boiler',
@@ -120,7 +121,7 @@ describe('#buildSummaryItems', () => {
     expect(items[2].value.text).toBe('Boiler')
   })
 
-  test('adds Other appliance type row when applianceType is other', () => {
+  test('adds Other appliance type row with SELECT link when not saved', () => {
     const appliance = { ...baseAppliance, applianceType: 'other' }
     const items = buildSummaryItems(appliance)
     expect(items).toHaveLength(7)
@@ -128,8 +129,30 @@ describe('#buildSummaryItems', () => {
       (row) => row.key.text === 'Other appliance type'
     )
     expect(otherRow).toBeDefined()
-    expect(otherRow.value.html).toContain('appliance-type-other')
+    expect(otherRow.value.html).toContain(
+      '/review-appliance/APP-test123/other-appliance-type'
+    )
     expect(otherRow.value.html).toContain('Select')
+    expect(otherRow.actions).toBeUndefined()
+  })
+
+  test('displays Other appliance type value with CHANGE link when saved', () => {
+    const appliance = {
+      ...baseAppliance,
+      applianceType: 'other',
+      otherApplianceType: 'Air heater'
+    }
+    const items = buildSummaryItems(appliance)
+    expect(items).toHaveLength(7)
+    const otherRow = items.find(
+      (row) => row.key.text === 'Other appliance type'
+    )
+    expect(otherRow).toBeDefined()
+    expect(otherRow.value.text).toBe('Air heater')
+    expect(otherRow.actions.items[0].text).toBe('Change')
+    expect(otherRow.actions.items[0].href).toContain(
+      '/review-appliance/APP-test123/other-appliance-type'
+    )
   })
 
   test('includes isVariant row', () => {
