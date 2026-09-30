@@ -141,11 +141,7 @@ export const getTestReports = async (request, h) => {
       })
     )
   } catch (error) {
-    request.logger?.error(
-      {
-        error,
-        applianceId
-      },
+    logger.error(
       `[reviewTestReports] Failed to load review test reports for ${applianceId}: ${error.message}`
     )
 
@@ -184,12 +180,7 @@ export const postTestReports = async (request, h) => {
 
       return h.redirect(getPreviousPageUrl(applianceId))
     } catch (error) {
-      request.logger?.error(
-        {
-          error,
-          applianceId,
-          action
-        },
+      logger.error(
         `[reviewTestReports] Failed to mark review test reports for ${applianceId}: ${error.message}`
       )
 
@@ -218,11 +209,7 @@ export const postTestReports = async (request, h) => {
        */
       testReport = await getTestReport(applianceId)
     } catch (error) {
-      request.logger?.warn(
-        {
-          error,
-          applianceId
-        },
+      logger.warn(
         `[reviewTestReports] Unable to reload appliance details after validation failure for ${applianceId}: ${error.message}`
       )
     }
@@ -250,12 +237,7 @@ export const postTestReports = async (request, h) => {
 
     return h.redirect(getPreviousPageUrl(applianceId))
   } catch (error) {
-    request.logger?.error(
-      {
-        error,
-        applianceId,
-        action
-      },
+    logger.error(
       `[reviewTestReports] Failed to mark review test reports as passed for ${applianceId}: ${error.message}`
     )
 

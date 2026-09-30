@@ -4,11 +4,20 @@ import { postTestReports } from './controller.js'
 const {
   getTestReportMock,
   updateTestReportMock,
-  validatePassedTestReportMock
+  validatePassedTestReportMock,
+  loggerMock
 } = vi.hoisted(() => ({
   getTestReportMock: vi.fn(),
   updateTestReportMock: vi.fn(),
-  validatePassedTestReportMock: vi.fn()
+  validatePassedTestReportMock: vi.fn(),
+  loggerMock: {
+    error: vi.fn(),
+    warn: vi.fn()
+  }
+}))
+
+vi.mock('../common/helpers/logging/logger.js', () => ({
+  createLogger: () => loggerMock
 }))
 
 vi.mock('./test-reports-data.js', () => ({
@@ -33,6 +42,8 @@ describe('postTestReports', () => {
     getTestReportMock.mockReset()
     updateTestReportMock.mockReset()
     validatePassedTestReportMock.mockReset()
+    loggerMock.error.mockReset()
+    loggerMock.warn.mockReset()
 
     updateTestReportMock.mockResolvedValue({
       success: true
@@ -42,11 +53,7 @@ describe('postTestReports', () => {
       params: {
         applianceId: 'APP-123'
       },
-      payload: {},
-      logger: {
-        error: vi.fn(),
-        warn: vi.fn()
-      }
+      payload: {}
     }
 
     h = {
