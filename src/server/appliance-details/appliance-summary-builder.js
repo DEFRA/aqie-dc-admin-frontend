@@ -105,7 +105,7 @@ export function buildSummaryItems(appliance) {
     actions: {
       items: [
         {
-          href: 'variant',
+          href: 'variant-appliance',
           text: content.actions.change,
           visuallyHiddenText: 'if this is a variant'
         }
@@ -124,7 +124,7 @@ export function buildSummaryItems(appliance) {
         ? {
             items: [
               {
-                href: 'variant',
+                href: 'variant-appliance',
                 text: content.actions.change,
                 visuallyHiddenText: 'variant details'
               }
@@ -154,7 +154,7 @@ export function buildSummaryItems(appliance) {
       actions: {
         items: [
           {
-            href: 'multi-fuel',
+            href: 'multifuel-appliance',
             text: content.actions.change,
             visuallyHiddenText: 'if the appliance is multifuel'
           }
