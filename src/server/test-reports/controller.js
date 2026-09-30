@@ -97,7 +97,7 @@ const toRoundedNumber = (value) => {
  * Surrounding spaces are trimmed from all values.
  *
  * The value is stored as a string because failed values can contain
- * non-numeric content that should not be validated or coerced.
+ * non-numeric content that should not be validated or forced into a numeric format.
  */
 const toFailedValue = (value) => {
   if (value === null || value === undefined) {
