@@ -15,6 +15,7 @@ import { technicalDrawings } from './technical-drawings/index.js'
 import { additionalConditions } from './additional-conditions/index.js'
 import { checkPermittedFuels } from './check-permitted-fuels/index.js'
 import { nominalOutput } from './nominal-output/index.js'
+import { multifuelAppliance } from './multifuel-appliance/index.js'
 import { checkApplianceDetails } from './appliance-details/index.js'
 import { modelName } from './model-name/index.js'
 import { modelNumber } from './model-number/index.js'
@@ -48,6 +49,7 @@ export const router = {
         checkApplianceDetails,
         checkPermittedFuels,
         nominalOutput,
+        multifuelAppliance,
         modelName,
         modelNumber,
         applianceType,

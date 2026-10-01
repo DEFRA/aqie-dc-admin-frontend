@@ -78,8 +78,8 @@ describe('#getApplianceTypes', () => {
 
   test('fetches primary appliance types when isPrimary is true', async () => {
     const mockTypes = [
-      { value: 'Stove', label: 'Stove', isPrimary: true },
-      { value: 'Boiler', label: 'Independent boiler', isPrimary: true }
+      { value: 'Stove', isPrimary: true },
+      { value: 'Boiler', isPrimary: true }
     ]
     fetchJsonMock.mockResolvedValue(mockTypes)
 
@@ -95,8 +95,8 @@ describe('#getApplianceTypes', () => {
 
   test('fetches secondary appliance types when isPrimary is false', async () => {
     const mockTypes = [
-      { value: 'Air heater', label: 'Air heater', isPrimary: false },
-      { value: 'Gasifier', label: 'Gasifier', isPrimary: false }
+      { value: 'Air heater', isPrimary: false },
+      { value: 'Gasifier', isPrimary: false }
     ]
     fetchJsonMock.mockResolvedValue(mockTypes)
 

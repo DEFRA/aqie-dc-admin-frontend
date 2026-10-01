@@ -28,12 +28,12 @@ const appliance = {
 }
 
 const applianceTypes = [
-  { value: 'Stove', label: 'Stove' },
-  { value: 'Boiler', label: 'Independent boiler' },
-  { value: 'Inset appliance', label: 'Inset appliance' },
-  { value: 'Cooker', label: 'Cooker' },
-  { value: 'Pizza oven', label: 'Pizza oven' },
-  { value: 'Other', label: 'Other' }
+  { value: 'Stove' },
+  { value: 'Boiler' },
+  { value: 'Inset appliance' },
+  { value: 'Cooker' },
+  { value: 'Pizza oven' },
+  { value: 'Other' }
 ]
 
 function toolkit() {
@@ -65,6 +65,20 @@ describe('#handleApplianceTypeRequest', () => {
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.selectedType).toBe('Stove')
     expect(viewModel.appliance).toEqual(appliance)
+    expect(viewModel.applianceTypeItems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          value: 'Stove',
+          text: 'Stove',
+          checked: true
+        }),
+        expect.objectContaining({
+          value: 'Boiler',
+          text: 'Boiler',
+          checked: false
+        })
+      ])
+    )
   })
 
   test('renders error page when fetch fails', async () => {
@@ -123,6 +137,33 @@ describe('#handleApplianceTypeDecisionRequest', () => {
 
     expect(saveApplianceTypeMock).not.toHaveBeenCalled()
     expect(getApplianceTypesMock).toHaveBeenCalledWith(true)
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-type/index',
+      expect.objectContaining({
+        error: {
+          field: 'applianceType',
+          message: 'Select an appliance type',
+          href: '#appliance-type'
+        }
+      })
+    )
+    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
+  })
+
+  test('rejects an appliance type that is no longer supported by the database values', async () => {
+    getApplianceForApplianceTypeMock.mockResolvedValue({ data: appliance })
+    getApplianceTypesMock.mockResolvedValue(applianceTypes)
+    const h = toolkit()
+
+    await handleApplianceTypeDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: { applianceType: 'Independent boiler' }
+      },
+      h
+    )
+
+    expect(saveApplianceTypeMock).not.toHaveBeenCalled()
     expect(h.view).toHaveBeenCalledWith(
       'appliance-type/index',
       expect.objectContaining({

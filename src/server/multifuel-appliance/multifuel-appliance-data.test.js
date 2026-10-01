@@ -13,10 +13,10 @@ vi.mock('../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
-const { getApplianceForNominalOutput, saveNominalOutput } =
-  await import('./nominal-output-data.js')
+const { getApplianceForMultifuel, saveMultifuelAppliance } =
+  await import('./multifuel-appliance-data.js')
 
-describe('#getApplianceForNominalOutput', () => {
+describe('#getApplianceForMultifuel', () => {
   beforeEach(() => {
     getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
@@ -25,35 +25,45 @@ describe('#getApplianceForNominalOutput', () => {
   test('uses the shared appliance technical review fetch helper', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ success: true })
 
-    await getApplianceForNominalOutput('APP-1')
+    await getApplianceForMultifuel('APP-1')
 
     expect(getApplianceTechnicalReviewMock).toHaveBeenCalledWith('APP-1')
   })
 })
 
-describe('#saveNominalOutput', () => {
+describe('#saveMultifuelAppliance', () => {
   beforeEach(() => {
     getApplianceTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
-  test('patches /appliances/{id} with nominalOutput as a number', async () => {
+  test('patches /appliances/{id} with multifuelAppliance as true', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveNominalOutput('APP-1', 6.3)
+    await saveMultifuelAppliance('APP-1', true)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1', {
-      nominalOutput: 6.3
+      multifuelAppliance: true
+    })
+  })
+
+  test('patches /appliances/{id} with multifuelAppliance as false', async () => {
+    patchJsonMock.mockResolvedValue({ success: true })
+
+    await saveMultifuelAppliance('APP-1', false)
+
+    expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1', {
+      multifuelAppliance: false
     })
   })
 
   test('encodes appliance id in patch request', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveNominalOutput('APP/1', 5)
+    await saveMultifuelAppliance('APP/1', true)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1', {
-      nominalOutput: 5
+      multifuelAppliance: true
     })
   })
 })
