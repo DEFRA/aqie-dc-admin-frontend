@@ -19,7 +19,7 @@ const content = applianceTypeContent.en
 function transformToRadioItems(applianceTypes, checkedValue = null) {
   return (applianceTypes || []).map((type) => ({
     value: type.value,
-    text: type.label,
+    text: type.value,
     checked: checkedValue === type.value,
     id: `applianceType-${type.value.replace(/\s+/g, '-').toLowerCase()}`
   }))
@@ -102,19 +102,24 @@ async function handleApplianceTypeDecisionRequest(request, h) {
   const { applianceType } = request.payload
 
   try {
-    if (!applianceType) {
-      const [{ data: appliance }, applianceTypesResponse] = await Promise.all([
-        getApplianceForApplianceType(applianceId),
-        getApplianceTypes(true) // true = only primary types
-      ])
+    const [applianceResponse, applianceTypesResponse] = await Promise.all([
+      getApplianceForApplianceType(applianceId),
+      getApplianceTypes(true)
+    ])
 
+    const { data: appliance } = applianceResponse || {}
+    const validApplianceTypes = (applianceTypesResponse || []).map(
+      (type) => type.value
+    )
+
+    if (!applianceType || !validApplianceTypes.includes(applianceType)) {
       const applianceTypeItems = transformToRadioItems(applianceTypesResponse)
 
       return renderApplianceTypePage(
         h,
         applianceId,
         appliance,
-        '',
+        applianceType ?? '',
         {
           field: 'applianceType',
           message: content.errors.applianceTypeRequired,
