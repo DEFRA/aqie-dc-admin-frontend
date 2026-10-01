@@ -19,7 +19,7 @@ const content = otherApplianceTypeContent.en
 function transformToRadioItems(applianceTypes, checkedValue = null) {
   return (applianceTypes || []).map((type) => ({
     value: type.value,
-    text: type.label,
+    text: type.value,
     checked: checkedValue === type.value,
     id: `otherApplianceType-${type.value.replace(/\s+/g, '-').toLowerCase()}`
   }))
@@ -102,21 +102,30 @@ async function handleOtherApplianceTypeDecisionRequest(request, h) {
   const { otherApplianceType } = request.payload
 
   try {
-    if (!otherApplianceType) {
-      const [{ data: appliance }, secondaryTypesResponse] = await Promise.all([
-        getApplianceForOtherType(applianceId),
-        getSecondaryApplianceTypes()
-      ])
+    const [applianceResponse, secondaryTypesResponse] = await Promise.all([
+      getApplianceForOtherType(applianceId),
+      getSecondaryApplianceTypes()
+    ])
 
+    const { data: appliance } = applianceResponse || {}
+    const validOtherApplianceTypes = (secondaryTypesResponse || []).map(
+      (type) => type.value
+    )
+
+    if (
+      !otherApplianceType ||
+      !validOtherApplianceTypes.includes(otherApplianceType)
+    ) {
       const otherApplianceTypeItems = transformToRadioItems(
-        secondaryTypesResponse
+        secondaryTypesResponse,
+        otherApplianceType ?? ''
       )
 
       return renderOtherApplianceTypePage(
         h,
         applianceId,
         appliance,
-        '',
+        otherApplianceType ?? '',
         {
           field: 'otherApplianceType',
           message: content.errors.otherApplianceTypeRequired,

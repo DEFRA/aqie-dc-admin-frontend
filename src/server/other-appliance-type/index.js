@@ -13,14 +13,6 @@ const paramsSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
-const secondaryApplianceTypes = [
-  'Air heater',
-  'Oven incinerator',
-  'Cooker with boiler',
-  'Wet room heater',
-  'Gasifier'
-]
-
 export const otherApplianceType = {
   plugin: {
     name: 'otherApplianceType',
@@ -40,9 +32,7 @@ export const otherApplianceType = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                otherApplianceType: Joi.string()
-                  .valid(...secondaryApplianceTypes)
-                  .required()
+                otherApplianceType: Joi.string().required()
               })
             }
           }
