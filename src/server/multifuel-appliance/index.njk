@@ -1,0 +1,61 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}{{ pageTitle }} - GOV.UK{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <form method="post"
+          action="{{ formAction }}"
+          novalidate>
+
+      {{ govukRadios({
+        idPrefix: "multifuelAppliance",
+        name: "multifuelAppliance",
+        classes: "govuk-radios--inline",
+        fieldset: {
+          legend: {
+            text: heading,
+            classes: "govuk-fieldset__legend--xl",
+            isPageHeading: true
+          }
+        },
+        errorMessage: error and { text: error.message } or null,
+        items: [
+          {
+            value: "Yes",
+            text: content.yes,
+            checked: formValue == "Yes"
+          },
+          {
+            value: "No",
+            text: content.no,
+            checked: formValue == "No"
+          }
+        ]
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+        <a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
