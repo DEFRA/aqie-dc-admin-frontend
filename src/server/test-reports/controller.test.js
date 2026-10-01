@@ -93,21 +93,21 @@ describe('postTestReports', () => {
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: '',
+      ratedOutput: undefined,
       testedOutput: {
-        rated: '',
-        low: ''
+        rated: undefined,
+        low: undefined
       },
       smokeEmissionOutput: {
-        rated: '',
-        low: ''
+        rated: undefined,
+        low: undefined
       }
     })
 
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-123')
   })
 
-  test('retains numeric values as strings when marking as failed', async () => {
+  test('retains numeric values as numbers when marking as failed', async () => {
     request.payload = {
       action: 'failed',
       ratedOutput: '0',
@@ -122,14 +122,14 @@ describe('postTestReports', () => {
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: '0',
+      ratedOutput: 0,
       testedOutput: {
-        rated: '0.0',
-        low: '2.456'
+        rated: 0.0,
+        low: 2.46
       },
       smokeEmissionOutput: {
-        rated: '',
-        low: '3.1'
+        rated: undefined,
+        low: 3.1
       }
     })
 
@@ -151,14 +151,14 @@ describe('postTestReports', () => {
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: 'abc',
+      ratedOutput: undefined,
       testedOutput: {
-        rated: '-1',
-        low: 'ABC123'
+        rated: undefined,
+        low: undefined
       },
       smokeEmissionOutput: {
-        rated: '1abc',
-        low: '.'
+        rated: undefined,
+        low: undefined
       }
     })
 
@@ -170,7 +170,7 @@ describe('postTestReports', () => {
   test('trims surrounding spaces from failed values', async () => {
     request.payload = {
       action: 'failed',
-      ratedOutput: '  abc  ',
+      ratedOutput: 4.8,
       testedOutputRated: '  -1  ',
       testedOutputLow: '  ABC123  ',
       smokeEmissionOutputRated: '  1abc  ',
@@ -182,14 +182,14 @@ describe('postTestReports', () => {
     expect(validatePassedTestReportMock).not.toHaveBeenCalled()
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: 'abc',
+      ratedOutput: 4.8,
       testedOutput: {
-        rated: '-1',
-        low: 'ABC123'
+        rated: undefined,
+        low: undefined
       },
       smokeEmissionOutput: {
-        rated: '1abc',
-        low: '.'
+        rated: undefined,
+        low: undefined
       }
     })
   })

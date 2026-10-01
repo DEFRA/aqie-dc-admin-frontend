@@ -6,7 +6,8 @@ import { statusCodes } from '../common/constants/status-codes.js'
 import {
   getTestReportValues,
   testReportFields,
-  validatePassedTestReport
+  validatePassedTestReport,
+  decimalPattern
 } from './validation.js'
 
 const logger = createLogger()
@@ -99,12 +100,14 @@ const toRoundedNumber = (value) => {
  * The value is stored as a string because failed values can contain
  * non-numeric content that should not be validated or forced into a numeric format.
  */
-const toFailedValue = (value) => {
-  if (value === null || value === undefined) {
-    return ''
+const toOptionalNumber = (value) => {
+  const trimmed = String(value ?? '').trim()
+
+  if (trimmed === '' || !decimalPattern.test(trimmed)) {
+    return undefined
   }
 
-  return String(value).trim()
+  return toRoundedNumber(trimmed)
 }
 
 /**
@@ -114,7 +117,7 @@ const toFailedValue = (value) => {
  * For failed reports: all values are retained as submitted (empty strings, alphabetic, etc).
  */
 const createTestResults = (values, isPassed) => {
-  const valueConverter = isPassed ? toRoundedNumber : toFailedValue
+  const valueConverter = isPassed ? toRoundedNumber : toOptionalNumber
 
   return {
     ratedOutput: valueConverter(values.ratedOutput),

@@ -24,7 +24,7 @@
  * They are rounded to two decimal places when the passed payload
  * is created.
  */
-const decimalPattern = /^(?:\d+(?:\.\d+)?|\.\d+)$/
+export const decimalPattern = /^(?:\d+(?:\.\d+)?|\.\d+)$/
 
 export const testReportFields = Object.freeze([
   {
