@@ -56,7 +56,7 @@ export const router = {
         conformityMark,
         technicalDrawings,
         additionalConditions,
-        instructionManual
+        instructionManual,
         testReports
       ])
 
