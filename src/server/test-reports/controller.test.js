@@ -5,11 +5,13 @@ const {
   getTestReportMock,
   updateTestReportMock,
   validatePassedTestReportMock,
+  validateFailedTestReportMock,
   loggerMock
 } = vi.hoisted(() => ({
   getTestReportMock: vi.fn(),
   updateTestReportMock: vi.fn(),
   validatePassedTestReportMock: vi.fn(),
+  validateFailedTestReportMock: vi.fn(),
   loggerMock: {
     error: vi.fn(),
     warn: vi.fn()
@@ -30,7 +32,8 @@ vi.mock('./validation.js', async () => {
 
   return {
     ...actual,
-    validatePassedTestReport: validatePassedTestReportMock
+    validatePassedTestReport: validatePassedTestReportMock,
+    validateFailedTestReport: validateFailedTestReportMock
   }
 })
 
@@ -42,6 +45,7 @@ describe('postTestReports', () => {
     getTestReportMock.mockReset()
     updateTestReportMock.mockReset()
     validatePassedTestReportMock.mockReset()
+    validateFailedTestReportMock.mockReset()
     loggerMock.error.mockReset()
     loggerMock.warn.mockReset()
 
@@ -88,19 +92,32 @@ describe('postTestReports', () => {
       smokeEmissionOutputLow: ''
     }
 
+    validateFailedTestReportMock.mockReturnValue({
+      isValid: true,
+      values: {
+        ratedOutput: '',
+        testedOutputRated: '',
+        testedOutputLow: '',
+        smokeEmissionOutputRated: '',
+        smokeEmissionOutputLow: ''
+      },
+      errors: {},
+      errorList: []
+    })
+
     await postTestReports(request, h)
 
-    expect(validatePassedTestReportMock).not.toHaveBeenCalled()
+    expect(validateFailedTestReportMock).toHaveBeenCalledWith(request.payload)
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: undefined,
+      ratedOutput: null,
       testedOutput: {
-        rated: undefined,
-        low: undefined
+        rated: null,
+        low: null
       },
       smokeEmissionOutput: {
-        rated: undefined,
-        low: undefined
+        rated: null,
+        low: null
       }
     })
 
@@ -117,9 +134,22 @@ describe('postTestReports', () => {
       smokeEmissionOutputLow: '3.1'
     }
 
+    validateFailedTestReportMock.mockReturnValue({
+      isValid: true,
+      values: {
+        ratedOutput: '0',
+        testedOutputRated: '0.0',
+        testedOutputLow: '2.456',
+        smokeEmissionOutputRated: '',
+        smokeEmissionOutputLow: '3.1'
+      },
+      errors: {},
+      errorList: []
+    })
+
     await postTestReports(request, h)
 
-    expect(validatePassedTestReportMock).not.toHaveBeenCalled()
+    expect(validateFailedTestReportMock).toHaveBeenCalledWith(request.payload)
 
     expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
       ratedOutput: 0,
@@ -128,7 +158,7 @@ describe('postTestReports', () => {
         low: 2.46
       },
       smokeEmissionOutput: {
-        rated: undefined,
+        rated: null,
         low: 3.1
       }
     })
@@ -136,7 +166,7 @@ describe('postTestReports', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-123')
   })
 
-  test('retains any submitted values when marking as failed', async () => {
+  test('shows validation errors when non-empty failed values are invalid', async () => {
     request.payload = {
       action: 'failed',
       ratedOutput: 'abc',
@@ -146,52 +176,156 @@ describe('postTestReports', () => {
       smokeEmissionOutputLow: '.'
     }
 
-    await postTestReports(request, h)
-
-    expect(validatePassedTestReportMock).not.toHaveBeenCalled()
-
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: undefined,
-      testedOutput: {
-        rated: undefined,
-        low: undefined
-      },
-      smokeEmissionOutput: {
-        rated: undefined,
-        low: undefined
+    getTestReportMock.mockResolvedValue({
+      data: {
+        modelName: 'Model X'
       }
     })
 
-    expect(h.view).not.toHaveBeenCalled()
+    validateFailedTestReportMock.mockReturnValue({
+      isValid: false,
+      values: {
+        ratedOutput: 'abc',
+        testedOutputRated: '-1',
+        testedOutputLow: 'ABC123',
+        smokeEmissionOutputRated: '1abc',
+        smokeEmissionOutputLow: '.'
+      },
+      errors: {
+        ratedOutput: 'The rated output must be a number',
+        testedOutputRated: 'The tested output - rated must be a number',
+        testedOutputLow: 'The tested output - low must be a number',
+        smokeEmissionOutputRated:
+          'The smoke emission output - rated must be a number',
+        smokeEmissionOutputLow:
+          'The smoke emission output - low must be a number'
+      },
+      errorList: [
+        { text: 'The rated output must be a number', href: '#ratedOutput' },
+        {
+          text: 'The tested output - rated must be a number',
+          href: '#testedOutputRated'
+        },
+        {
+          text: 'The tested output - low must be a number',
+          href: '#testedOutputLow'
+        },
+        {
+          text: 'The smoke emission output - rated must be a number',
+          href: '#smokeEmissionOutputRated'
+        },
+        {
+          text: 'The smoke emission output - low must be a number',
+          href: '#smokeEmissionOutputLow'
+        }
+      ]
+    })
+
+    await postTestReports(request, h)
+
+    expect(validateFailedTestReportMock).toHaveBeenCalledWith(request.payload)
+    expect(updateTestReportMock).not.toHaveBeenCalled()
+    expect(h.redirect).not.toHaveBeenCalled()
+
+    const callArgs = h.view.mock.calls[0]
+    expect(callArgs[0]).toBe('test-reports/index')
+    expect(callArgs[1].errorList).toHaveLength(5)
+  })
+
+  test('allows empty fields when marking as failed, even with partial invalid values', async () => {
+    request.payload = {
+      action: 'failed',
+      ratedOutput: '5.2',
+      testedOutputRated: '',
+      testedOutputLow: '2.4',
+      smokeEmissionOutputRated: '',
+      smokeEmissionOutputLow: ''
+    }
+
+    validateFailedTestReportMock.mockReturnValue({
+      isValid: true,
+      values: {
+        ratedOutput: '5.2',
+        testedOutputRated: '',
+        testedOutputLow: '2.4',
+        smokeEmissionOutputRated: '',
+        smokeEmissionOutputLow: ''
+      },
+      errors: {},
+      errorList: []
+    })
+
+    await postTestReports(request, h)
+
+    expect(validateFailedTestReportMock).toHaveBeenCalledWith(request.payload)
+
+    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
+      ratedOutput: 5.2,
+      testedOutput: {
+        rated: null,
+        low: 2.4
+      },
+      smokeEmissionOutput: {
+        rated: null,
+        low: null
+      }
+    })
 
     expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-123')
   })
 
-  test('trims surrounding spaces from failed values', async () => {
+  test('rejects negative and invalid values when marking as failed', async () => {
     request.payload = {
       action: 'failed',
-      ratedOutput: 4.8,
-      testedOutputRated: '  -1  ',
-      testedOutputLow: '  ABC123  ',
-      smokeEmissionOutputRated: '  1abc  ',
-      smokeEmissionOutputLow: '  .  '
+      ratedOutput: '-1',
+      testedOutputRated: '',
+      testedOutputLow: 'ABC',
+      smokeEmissionOutputRated: '',
+      smokeEmissionOutputLow: ''
     }
+
+    getTestReportMock.mockResolvedValue({
+      data: {
+        modelName: 'Model X'
+      }
+    })
+
+    validateFailedTestReportMock.mockReturnValue({
+      isValid: false,
+      values: {
+        ratedOutput: '-1',
+        testedOutputRated: '',
+        testedOutputLow: 'ABC',
+        smokeEmissionOutputRated: '',
+        smokeEmissionOutputLow: ''
+      },
+      errors: {
+        ratedOutput: 'The rated output must be a number',
+        testedOutputLow: 'The tested output - low must be a number'
+      },
+      errorList: [
+        { text: 'The rated output must be a number', href: '#ratedOutput' },
+        {
+          text: 'The tested output - low must be a number',
+          href: '#testedOutputLow'
+        }
+      ]
+    })
 
     await postTestReports(request, h)
 
-    expect(validatePassedTestReportMock).not.toHaveBeenCalled()
+    expect(validateFailedTestReportMock).toHaveBeenCalledWith(request.payload)
+    expect(updateTestReportMock).not.toHaveBeenCalled()
 
-    expect(updateTestReportMock).toHaveBeenCalledWith('APP-123', false, {
-      ratedOutput: 4.8,
-      testedOutput: {
-        rated: undefined,
-        low: undefined
-      },
-      smokeEmissionOutput: {
-        rated: undefined,
-        low: undefined
-      }
-    })
+    const callArgs = h.view.mock.calls[0]
+    expect(callArgs[0]).toBe('test-reports/index')
+    expect(callArgs[1].errorList).toHaveLength(2)
+    expect(callArgs[1].errors.ratedOutput).toBe(
+      'The rated output must be a number'
+    )
+    expect(callArgs[1].errors.testedOutputLow).toBe(
+      'The tested output - low must be a number'
+    )
   })
 
   test('validates fields when marking as passed', async () => {

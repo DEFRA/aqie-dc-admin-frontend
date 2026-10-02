@@ -143,3 +143,47 @@ export const validatePassedTestReport = (payload = {}) => {
     isValid: errorList.length === 0
   }
 }
+
+/**
+ * Validates measurements when the user clicks "Mark as failed".
+ *
+ * Empty values are allowed and optional.
+ * Non-empty values must be valid numbers (matching the same format as passed reports).
+ * This ensures data consistency while allowing partial or incomplete failed reports.
+ */
+export const validateFailedTestReport = (payload = {}) => {
+  const values = getTestReportValues(payload)
+  const errors = {}
+
+  for (const field of testReportFields) {
+    const value = values[field.name]
+
+    // Empty values are allowed for failed reports
+    if (value === '') {
+      continue
+    }
+
+    /*
+     * For non-empty values, apply the same format validation as passed reports.
+     * The regular expression rejects negative values, letters and incomplete decimals.
+     * Number.isFinite prevents extremely large values from becoming Infinity.
+     */
+    if (!decimalPattern.test(value) || !Number.isFinite(Number(value))) {
+      errors[field.name] = field.numberMessage
+    }
+  }
+
+  const errorList = testReportFields
+    .filter(({ name }) => errors[name])
+    .map(({ name }) => ({
+      text: errors[name],
+      href: `#${name}`
+    }))
+
+  return {
+    values,
+    errors,
+    errorList,
+    isValid: errorList.length === 0
+  }
+}
