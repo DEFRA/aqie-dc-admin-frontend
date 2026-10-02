@@ -23,6 +23,7 @@ import { variantAppliance } from './variant-appliance/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 import { instructionManual } from './instruction-manual/index.js'
+import { testReports } from './test-reports/index.js'
 
 export const router = {
   plugin: {
@@ -56,6 +57,7 @@ export const router = {
         technicalDrawings,
         additionalConditions,
         instructionManual
+        testReports
       ])
 
       // Static assets
