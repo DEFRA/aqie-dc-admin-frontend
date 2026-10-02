@@ -46,6 +46,8 @@ export function buildSummaryItems(appliance) {
   const isVariant = appliance.isVariant === true
   const variantDetailsValue = valueText(appliance.existingAuthorisedAppliance)
   const hasVariantDetails = variantDetailsValue !== content.notProvided
+  const otherApplianceTypeValue = valueText(appliance.otherApplianceType)
+  const hasOtherApplianceType = otherApplianceTypeValue !== content.notProvided
 
   const items = [
     {
@@ -93,9 +95,22 @@ export function buildSummaryItems(appliance) {
   if (isOtherApplianceType) {
     items.push({
       key: { text: content.labels.otherApplianceType },
-      value: {
-        html: `<a class="govuk-link" href="appliance-type-other">${content.actions.select}<span class="govuk-visually-hidden"> other appliance type</span></a>`
-      }
+      value: hasOtherApplianceType
+        ? { text: otherApplianceTypeValue }
+        : {
+            html: `<a class="govuk-link" href="/review-appliance/${encodeURIComponent(appliance.id)}/other-appliance-type">${content.actions.select}<span class="govuk-visually-hidden"> other appliance type</span></a>`
+          },
+      actions: hasOtherApplianceType
+        ? {
+            items: [
+              {
+                href: `/review-appliance/${encodeURIComponent(appliance.id)}/other-appliance-type`,
+                text: content.actions.change,
+                visuallyHiddenText: 'other appliance type'
+              }
+            ]
+          }
+        : undefined
     })
   }
 
