@@ -19,6 +19,7 @@ import { multifuelAppliance } from './multifuel-appliance/index.js'
 import { checkApplianceDetails } from './appliance-details/index.js'
 import { modelName } from './model-name/index.js'
 import { modelNumber } from './model-number/index.js'
+import { applianceType } from './appliance-type/index.js'
 import { variantAppliance } from './variant-appliance/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
@@ -52,6 +53,7 @@ export const router = {
         multifuelAppliance,
         modelName,
         modelNumber,
+        applianceType,
         variantAppliance,
         conformityMark,
         technicalDrawings,
