@@ -104,8 +104,39 @@ describe('#handleCheckApplianceDetailsRequest', () => {
       (row) => row.key.text === 'Other appliance type'
     )
     expect(otherTypeRow).toBeDefined()
-    expect(otherTypeRow.value.html).toContain('appliance-type-other')
+    expect(otherTypeRow.value.html).toContain(
+      '/review-appliance/APP-1/other-appliance-type'
+    )
     expect(otherTypeRow.value.html).toContain('Select')
+    expect(otherTypeRow.actions).toBeUndefined()
+  })
+
+  test('displays saved Other appliance type value with CHANGE link', async () => {
+    getApplianceForCheckDetailsMock.mockResolvedValue({
+      data: {
+        ...appliance,
+        applianceType: 'other',
+        otherApplianceType: 'Air heater'
+      }
+    })
+    const h = toolkit()
+
+    await handleCheckApplianceDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryItems).toHaveLength(7)
+    const otherTypeRow = viewModel.summaryItems.find(
+      (row) => row.key.text === 'Other appliance type'
+    )
+    expect(otherTypeRow).toBeDefined()
+    expect(otherTypeRow.value.text).toBe('Air heater')
+    expect(otherTypeRow.actions.items[0].text).toBe('Change')
+    expect(otherTypeRow.actions.items[0].href).toContain(
+      '/review-appliance/APP-1/other-appliance-type'
+    )
   })
 
   test('includes Variant details row when isVariant is true', async () => {
