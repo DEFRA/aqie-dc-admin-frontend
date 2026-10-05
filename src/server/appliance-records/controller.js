@@ -59,7 +59,7 @@ function buildApplianceRows(rawData, contentLabels) {
                </strong>`
       },
       {
-        html: `${href}
+        html: `<a href="${href}">
                  View
                  <span class="govuk-visually-hidden">
                    details of ${name}
