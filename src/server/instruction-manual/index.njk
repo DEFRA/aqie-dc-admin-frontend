@@ -1,0 +1,238 @@
+{% extends "layouts/page.njk" %}
+
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if hasErrors %}
+        {{ govukErrorSummary({
+          titleText: content.errors.summaryTitle,
+          errorList: errorList
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-7">
+        {{ content.title }}<br>
+        for {{ appliance.modelName }}
+      </h1>
+
+      <p class="govuk-body">
+        {{ content.description }}
+      </p>
+
+      <p class="govuk-body govuk-!-margin-bottom-6">
+        {{ content.publicationDescription }}
+        for {{ appliance.modelName }}.
+      </p>
+      <form method="post" action="/review-appliance/{{ appliance.id }}/instruction-manual" novalidate>
+
+        {# Title field #}
+        {% set titleError = null %}
+
+        {% if fieldErrors.title %}
+          {% set titleError = {
+            text: fieldErrors.title.message
+          } %}
+        {% endif %}
+
+        {{ govukInput({
+          id: "title",
+          name: "title",
+          label: {
+            text: content.fields.title.label,
+            classes: "govuk-label--s"
+          },
+          value: formValues.title,
+          maxlength: content.fields.title.maximumCharacters,
+          errorMessage: titleError
+        }) }}
+
+        {# Version input error #}
+        {% set versionError = null %}
+
+        {% if fieldErrors.version %}
+          {% set versionError = {
+            text: fieldErrors.version.message
+          } %}
+        {% endif %}
+
+        {# Conditional version text box #}
+        {% set versionHtml %}
+          {{ govukInput({
+            id: "version",
+            name: "version",
+            label: {
+              text: content.fields.version.label
+            },
+            value: formValues.version,
+            maxlength: content.fields.version.maximumCharacters,
+            classes: "govuk-input--width-10",
+            errorMessage: versionError
+          }) }}
+        {% endset %}
+
+        {# Include version radio error #}
+        {% set includeVersionError = null %}
+
+        {% if fieldErrors.includeVersion %}
+          {% set includeVersionError = {
+            text: fieldErrors.includeVersion.message
+          } %}
+        {% endif %}
+
+        {# Version radio buttons #}
+        {{ govukRadios({
+          idPrefix: "includeVersion",
+          name: "includeVersion",
+          fieldset: {
+            legend: {
+              text: content.fields.includeVersion.legend,
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          errorMessage: includeVersionError,
+          items: [
+            {
+              value: "yes",
+              text: content.fields.includeVersion.yes,
+              checked: formValues.includeVersion == "yes",
+              conditional: {
+                html: versionHtml
+              }
+            },
+            {
+              value: "no",
+              text: content.fields.includeVersion.no,
+              checked: formValues.includeVersion == "no"
+            }
+          ]
+        }) }}
+
+        {# Publication date #}
+        <div class="govuk-form-group{% if fieldErrors.publicationDate %} govuk-form-group--error{% endif %}">
+          <fieldset
+            class="govuk-fieldset"
+            role="group"
+            aria-describedby="publicationDate-hint{% if fieldErrors.publicationDate %} publicationDate-error{% endif %}"
+          >
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              {{ content.fields.publicationDate.legend }}
+            </legend>
+
+            <div id="publicationDate-hint" class="govuk-hint">
+              {{ content.fields.publicationDate.hint }}
+            </div>
+
+            {% if fieldErrors.publicationDate %}
+              <p
+                id="publicationDate-error"
+                class="govuk-error-message"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ fieldErrors.publicationDate.message }}
+              </p>
+            {% endif %}
+
+            <div
+              class="govuk-date-input"
+              id="publicationDate"
+            >
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label
+                    class="govuk-label govuk-date-input__label"
+                    for="publicationDay"
+                  >
+                    {{ content.fields.publicationDate.day }}
+                  </label>
+
+                  <input
+                    class="govuk-input govuk-date-input__input govuk-input--width-2{% if fieldErrors.publicationDate %} govuk-input--error{% endif %}"
+                    id="publicationDay"
+                    name="publicationDay"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    value="{{ formValues.publicationDay }}"
+                  >
+                </div>
+              </div>
+
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label
+                    class="govuk-label govuk-date-input__label"
+                    for="publicationMonth"
+                  >
+                    {{ content.fields.publicationDate.month }}
+                  </label>
+
+                  <input
+                    class="govuk-input govuk-date-input__input govuk-input--width-2{% if fieldErrors.publicationDate %} govuk-input--error{% endif %}"
+                    id="publicationMonth"
+                    name="publicationMonth"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    value="{{ formValues.publicationMonth }}"
+                  >
+                </div>
+              </div>
+
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label
+                    class="govuk-label govuk-date-input__label"
+                    for="publicationYear"
+                  >
+                    {{ content.fields.publicationDate.year }}
+                  </label>
+
+                  <input
+                    class="govuk-input govuk-date-input__input govuk-input--width-4{% if fieldErrors.publicationDate %} govuk-input--error{% endif %}"
+                    id="publicationYear"
+                    name="publicationYear"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    value="{{ formValues.publicationYear }}"
+                  >
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        {# Decision buttons #}
+        <div class="govuk-button-group govuk-!-margin-top-6">
+          {{ govukButton({
+            text: content.buttons.passed,
+            name: "action",
+            value: "passed"
+          }) }}
+
+          {{ govukButton({
+            text: content.buttons.failed,
+            name: "action",
+            value: "failed",
+            classes: "govuk-button--secondary"
+          }) }}
+        </div>
+      </form>
+
+      {# Cancel link is outside the form #}
+      <p class="govuk-body govuk-!-margin-top-2">          
+           <a  href="{{ reviewHref }}">{{ content.buttons.cancel }}</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

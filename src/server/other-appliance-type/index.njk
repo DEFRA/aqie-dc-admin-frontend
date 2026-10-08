@@ -1,0 +1,61 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <form method="post"
+          action="/review-appliance/{{ appliance.id }}/other-appliance-type"
+          novalidate>
+
+      {% set otherApplianceTypeError = null %}
+      {% if error and error.field == 'otherApplianceType' %}
+        {% set otherApplianceTypeError = { text: error.message } %}
+      {% endif %}
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              {{ heading }}
+            </h1>
+          </legend>
+
+          {{ govukRadios({
+            idPrefix: "otherApplianceType",
+            name: "otherApplianceType",
+            items: otherApplianceTypeItems,
+            errorMessage: otherApplianceTypeError
+          }) }}
+        </fieldset>
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+        <a class="govuk-link" href="{{ applianceDetailsHref }}">{{ content.cancel }}</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
