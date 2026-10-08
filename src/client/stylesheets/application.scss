@@ -4,14 +4,3 @@
 @use "core";
 @use "components";
 @use "partials";
-
-/* Status tag styling - force single line with full color coverage */
-/* Scoped to appliance-record page only to avoid affecting other screens */
-h1.govuk-heading-xl .govuk-caption-xl strong.govuk-tag {
-    white-space: nowrap !important;
-    display: inline-block !important;
-    padding: 3px 6px !important;
-    line-height: 1.4 !important;
-    width: auto !important;
-    max-width: none !important;
-}
