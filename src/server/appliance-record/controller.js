@@ -90,8 +90,27 @@ const buildCertificationTableRows = (appliance) =>
  * @param {Object} appliance - Transformed appliance data from data layer
  * @returns {Array} Array of row objects with key and actions
  */
-const buildDetailsRows = (appliance) =>
-  appliance.details.map((detail) => ({
+const buildRejectedDetailsRows = (appliance) => {
+  const rejectedRows = [
+    {
+      key: { text: content.rejectedDetails.dateRejected },
+      value: {
+        text: appliance.updatedAt ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }) : null
+      }
+    },
+    {
+      key: { text: content.rejectedDetails.rejectedBy },
+      value: {
+        text: appliance.technicalReview?.reviewedBy || 'Unknown'
+      }
+    }
+  ]
+
+  const normalRows = appliance.details.map((detail) => ({
     key: { text: detail.label },
     actions: {
       items: [
@@ -103,6 +122,28 @@ const buildDetailsRows = (appliance) =>
       ]
     }
   }))
+
+  return [...rejectedRows, ...normalRows]
+}
+
+const buildDetailsRows = (appliance) => {
+  if (appliance.applianceStatus === content.statusValues.rejected) {
+    return buildRejectedDetailsRows(appliance)
+  }
+
+  return appliance.details.map((detail) => ({
+    key: { text: detail.label },
+    actions: {
+      items: [
+        {
+          href: detail.viewUrl,
+          text: content.actionText,
+          visuallyHiddenText: detail.label.toLowerCase()
+        }
+      ]
+    }
+  }))
+}
 
 /**
  * Build public listing configuration for the public listing section.
@@ -119,7 +160,7 @@ const buildDetailsRows = (appliance) =>
  * @returns {Object} Public listing configuration object
  */
 const buildPublicListing = (appliance) => {
-  const showLink = appliance.applianceStatus === 'live'
+  const showLink = appliance.applianceStatus === content.statusValues.live
   return {
     showLink,
     url: showLink ? appliance.publicListingUrl : null,
@@ -207,6 +248,9 @@ export const handleGetApplianceRecordPage = async (request, h) => {
       ...content,
       pageTitle: content.pageTitle(appliance.modelName),
       pageHeading: content.pageHeading(appliance.modelName),
+      applianceStatus: appliance.applianceStatus,
+      rejectedStatus: content.statusValues.rejected,
+      backLinkText: content.backLinkText,
       statusDisplay: appliance.statusDisplay,
       tableHeaders: content.tableHeaders,
       certificationTableRows: buildCertificationTableRows(appliance),

@@ -14,7 +14,7 @@ const mockBackendResponse = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    status: 'live',
+    applianceStatus: 'live',
     canTogglePublicVisibility: true,
     certifications: {
       england: {
@@ -119,11 +119,6 @@ function toolkit() {
 
 describe('applianceRecord controller', () => {
   describe('GET handler', () => {
-    // NOTE: Early tests use mockBackendResponse with applianceStatus: 'live' to test
-    // rendering and data passing (status-independent functionality).
-    // Status-SPECIFIC tests for button display are separate tests below that create
-    // their own response objects with different statuses (pending, hidden with/without toggle).
-
     beforeEach(() => {
       vi.clearAllMocks()
     })
@@ -153,9 +148,7 @@ describe('applianceRecord controller', () => {
       )
 
       const callArgs = h.view.mock.calls[0][1]
-      expect(callArgs.pageTitle).toBe(
-        'Appliance record for Test Appliance Model'
-      )
+      expect(callArgs.pageTitle).toBe('Appliance record for Test Appliance Model')
       expect(callArgs.pageHeading).toBe('Test Appliance Model')
     })
 
@@ -333,14 +326,11 @@ describe('applianceRecord controller', () => {
     })
 
     test('passes no public listing link or buttons for pending appliance', async () => {
-      // ========== STATUS-SPECIFIC TEST: PENDING ==========
-      // Verifies: yellow tag, 'Pending government approval' label, no public listing link, no buttons
-
       const pendingResponse = {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          status: 'pending',
+          applianceStatus: 'pending',
           canTogglePublicVisibility: false
         }
       }
@@ -360,14 +350,11 @@ describe('applianceRecord controller', () => {
     })
 
     test('passes make public button for hidden appliance with toggle permission', async () => {
-      // ========== STATUS-SPECIFIC TEST: HIDDEN WITH TOGGLE ==========
-      // Verifies: grey tag, 'Hidden from public list' label, no public listing link, make-public button
-
       const hiddenResponse = {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          status: 'hidden',
+          applianceStatus: 'hidden',
           canTogglePublicVisibility: true
         }
       }
@@ -393,14 +380,11 @@ describe('applianceRecord controller', () => {
     })
 
     test('passes no public listing link or buttons for hidden appliance without toggle permission', async () => {
-      // ========== STATUS-SPECIFIC TEST: HIDDEN WITHOUT TOGGLE ==========
-      // Verifies: grey tag, 'Hidden from public list' label, no public listing link, no buttons
-
       const hiddenResponse = {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          status: 'hidden',
+          applianceStatus: 'hidden',
           canTogglePublicVisibility: false
         }
       }
@@ -416,6 +400,37 @@ describe('applianceRecord controller', () => {
       expect(callArgs.publicListing.showLink).toBe(false)
       expect(callArgs.actions.buttons).toHaveLength(0)
       expect(callArgs.statusDisplay.label).toBe('Hidden from public list')
+    })
+
+    test('passes rejected details rows with rejection metadata and back link text', async () => {
+      const rejectedResponse = {
+        ...mockBackendResponse,
+        data: {
+          ...mockBackendResponse.data,
+          applianceStatus: 'rejected',
+          canTogglePublicVisibility: false,
+          updatedAt: '2026-01-10T10:00:00.000Z',
+          technicalReview: { reviewedBy: 'Calvin May' }
+        }
+      }
+
+      fetchJsonMock.mockResolvedValue(rejectedResponse)
+      const h = toolkit()
+
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-123' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      expect(callArgs.applianceStatus).toBe('rejected')
+      expect(callArgs.rejectedStatus).toBe('rejected')
+      expect(callArgs.backLinkText).toBe('Back')
+      expect(callArgs.detailsRows).toHaveLength(7)
+      expect(callArgs.detailsRows[0].key.text).toBe('Date rejected')
+      expect(callArgs.detailsRows[0].value.text).toBe('10/01/2026')
+      expect(callArgs.detailsRows[1].key.text).toBe('Rejected by')
+      expect(callArgs.detailsRows[1].value.text).toBe('Calvin May')
     })
   })
 })

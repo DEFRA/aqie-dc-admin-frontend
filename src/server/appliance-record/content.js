@@ -16,6 +16,15 @@ export const applianceRecordContent = {
     // Page metadata
     pageHeading: (modelName) => modelName,
     pageTitle: (modelName) => `Appliance record for ${modelName}`,
+    defaultModelName: 'Unknown model',
+
+    // Core status values used across the data transform and controller
+    statusValues: {
+      pending: 'pending',
+      live: 'live',
+      hidden: 'hidden',
+      rejected: 'rejected'
+    },
 
     // Section titles
     certificationStatusTitle: 'Certification status',
@@ -67,7 +76,7 @@ export const applianceRecordContent = {
       }
     },
 
-    // Appliance status (pending, live, hidden) with GOV.UK tag colors
+    // Appliance status (pending, live, hidden, rejected) with GOV.UK tag colors
     applianceStatus: {
       pending: {
         label: 'Pending government approval',
@@ -80,7 +89,17 @@ export const applianceRecordContent = {
       hidden: {
         label: 'Hidden from public list',
         tagClass: 'govuk-tag--grey'
+      },
+      rejected: {
+        label: 'Rejected',
+        tagClass: 'govuk-tag--red'
       }
+    },
+
+    // Rejected record metadata labels
+    rejectedDetails: {
+      dateRejected: 'Date rejected',
+      rejectedBy: 'Rejected by'
     },
 
     // Detail section items - references to related pages
@@ -101,6 +120,7 @@ export const applianceRecordContent = {
 
     // Navigation
     returnLink: 'Return to appliance records',
+    backLinkText: 'Back',
 
     // Error messages
     errors: {
