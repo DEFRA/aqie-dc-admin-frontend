@@ -14,6 +14,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 
 {# Import custom components globally #}
 {% from "heading/macro.njk" import appHeading %}
@@ -21,13 +22,13 @@
 {% set mainClasses = "app-main-wrapper" %}
 
 {% block head %}
-  <link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
+<link href="{{ getAssetPath('stylesheets/application.scss') }}" rel="stylesheet">
 {% endblock %}
 
 {% block header %}
 {% set accountNavigation = [{ href: "/auth/logout", text: "Sign out" }] if user else [] %}
-  {# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
-  {{ govukHeader({
+{# serviceName being used in govukHeader will be @deprecated in v6. It has moved to govukServiceNavigation - https://github.com/alphagov/govuk-frontend/blob/main/CHANGELOG.md#move-service-name-and-navigation-links-from-the-govuk-header-to-service-navigation-component #}
+{{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
     containerClasses: "govuk-width-container",
@@ -35,34 +36,34 @@
     navigation: accountNavigation
   }) }}
 
-  {{ govukServiceNavigation({
+{{ govukServiceNavigation({
   navigation: navigation
   }) }}
 {% endblock %}
 
 {% block pageTitle %}
-  {{ pageTitle }} | {{ serviceName }}
+{{ pageTitle }} | {{ serviceName }}
 {% endblock %}
 
 {% block beforeContent %}
-  {% if breadcrumbs.length > 1 %}
-    {{ govukBreadcrumbs({
+{% if breadcrumbs.length > 1 %}
+{{ govukBreadcrumbs({
       items: breadcrumbs
     }) }}
-  {% endif %}
+{% endif %}
 
 {% if backLink %}
 {{ govukBackLink({
   text: backLink.text | default("Back"),
    href: backLink.href
   }) }}
- {% endif %}
- {% endblock %}
+{% endif %}
+{% endblock %}
 
 {% block content %}{% endblock %}
 
 {% block footer %}
-  {{ govukFooter({
+{{ govukFooter({
     meta: {
       items: [
         {
@@ -83,5 +84,5 @@
 {% endblock %}
 
 {% block bodyEnd %}
-  <script type="module" src="{{ getAssetPath('application.js') }}"></script>
+<script type="module" src="{{ getAssetPath('application.js') }}"></script>
 {% endblock %}
