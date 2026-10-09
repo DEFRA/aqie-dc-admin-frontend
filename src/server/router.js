@@ -4,6 +4,7 @@ import { home } from './home/index.js'
 import { about } from './about/index.js'
 import { health } from './health/index.js'
 import { manageCertification } from './manage-certification/index.js'
+import { applianceRecords } from './appliance-records/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
 import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { finishApplicationReview } from './finish-application-review/index.js'
@@ -42,6 +43,7 @@ export const router = {
         about,
         azureAuth,
         manageCertification,
+        applianceRecords,
         applianceApplications,
         reviewApplianceApplication,
         finishApplicationReview,
