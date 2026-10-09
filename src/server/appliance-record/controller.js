@@ -26,6 +26,14 @@ const logger = createLogger()
 const content = applianceRecordContent.en
 
 /**
+ * TESTING FLAG: Toggle this to test legacy vs non-legacy display
+ * Set to true to display legacy record details
+ * Set to false to display standard record details
+ * TODO: Remove this and get isLegacyRecord from backend response once API is updated
+ */
+const IS_LEGACY_RECORD = false
+
+/**
  * Returns the URL for appliance-records list page (return link destination).
  * @returns {string} Return URL path
  */
@@ -76,30 +84,100 @@ const buildCertificationTableRows = (appliance) =>
   })
 
 /**
- * Build details rows for govukSummaryList macro.
+ * Build standard details rows for govukSummaryList macro.
  *
- * Transforms appliance.details array into summary list rows:
- * Key (label) | Actions (View link with visually-hidden text)
+ * Standard details for current appliance records:
+ * - Appliance details
+ * - Test results
+ * - Instruction manual
+ * - Application details (with application ID if available)
+ * - Action history
  *
- * Each row includes:
- * - Key: detail label (e.g., "Appliance details")
- * - Action: View link with screen-reader text
+ * @param {Object} appliance - The transformed appliance data
+ * @returns {Array} Array of detail row objects
+ */
+const buildStandardDetailsRows = (appliance) =>
+  appliance.details.map((detail) => ({
+    key: { text: detail.label },
+    actions: {
+      items: [
+        {
+          href: detail.viewUrl,
+          text: content.actionText,
+          visuallyHiddenText: detail.label.toLowerCase()
+        }
+      ]
+    }
+  }))
+
+/**
+ * Build legacy details rows for govukSummaryList macro.
  *
- * Follows GOV.UK accessibility pattern for summary lists.
+ * Legacy details for historical appliance records include the legacy-specific values.
  *
- * @param {Object} appliance - Transformed appliance data from data layer
- * @returns {Array} Array of row objects with key and actions
+ * @param {Object} appliance - The transformed appliance data
+ * @returns {Array} Array of detail row objects
+ */
+const buildLegacyDetailsRows = (appliance) => {
+  const details = [
+    {
+      label: content.legacyDetailsItems.applianceDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/appliance-details`
+    },
+    {
+      label: content.legacyDetailsItems.manuals,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/manuals`
+    },
+    {
+      label: content.legacyDetailsItems.legacyComments,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
+    },
+    {
+      label: appliance.applicationId
+        ? `Application ${appliance.applicationId} details`
+        : content.legacyDetailsItems.applicationDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
+    },
+    {
+      label: content.legacyDetailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
+    }
+  ]
+
+  return details.map((detail) => ({
+    key: { text: detail.label },
+    actions: {
+      items: [
+        {
+          href: detail.viewUrl,
+          text: content.actionText,
+          visuallyHiddenText: detail.label.toLowerCase()
+        }
+      ]
+    }
+  }))
+}
+
+/**
+ * Build rejected details rows for govukSummaryList macro.
+ *
+ * Adds rejection metadata rows before the standard or legacy detail rows.
+ *
+ * @param {Object} appliance - The transformed appliance data
+ * @returns {Array} Array of row objects
  */
 const buildRejectedDetailsRows = (appliance) => {
   const rejectedRows = [
     {
       key: { text: content.rejectedDetails.dateRejected },
       value: {
-        text: appliance.updatedAt ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        }) : null
+        text: appliance.updatedAt
+          ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
+          : null
       }
     },
     {
@@ -110,39 +188,27 @@ const buildRejectedDetailsRows = (appliance) => {
     }
   ]
 
-  const normalRows = appliance.details.map((detail) => ({
-    key: { text: detail.label },
-    actions: {
-      items: [
-        {
-          href: detail.viewUrl,
-          text: content.actionText,
-          visuallyHiddenText: detail.label.toLowerCase()
-        }
-      ]
-    }
-  }))
+  const remainingRows = appliance.isLegacyRecord
+    ? buildLegacyDetailsRows(appliance)
+    : buildStandardDetailsRows(appliance)
 
-  return [...rejectedRows, ...normalRows]
+  return [...rejectedRows, ...remainingRows]
 }
 
+/**
+ * Build details rows for govukSummaryList macro.
+ *
+ * @param {Object} appliance - The transformed appliance data
+ * @returns {Array} Array of row objects with key and actions
+ */
 const buildDetailsRows = (appliance) => {
   if (appliance.applianceStatus === content.statusValues.rejected) {
     return buildRejectedDetailsRows(appliance)
   }
 
-  return appliance.details.map((detail) => ({
-    key: { text: detail.label },
-    actions: {
-      items: [
-        {
-          href: detail.viewUrl,
-          text: content.actionText,
-          visuallyHiddenText: detail.label.toLowerCase()
-        }
-      ]
-    }
-  }))
+  return appliance.isLegacyRecord
+    ? buildLegacyDetailsRows(appliance)
+    : buildStandardDetailsRows(appliance)
 }
 
 /**
@@ -259,6 +325,7 @@ export const handleGetApplianceRecordPage = async (request, h) => {
       actions: buildActions(appliance),
       returnLinkUrl: buildReturnHref(),
       returnLinkText: content.returnLink,
+      detailsTitle: content.detailsTitle,
       appliance
     })
   } catch (error) {

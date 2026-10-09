@@ -53,6 +53,8 @@
         {% endif %}
 
         <!-- Certification status section: displays 4-country certification table -->
+        <!-- Hidden for rejected appliances as per GOV.UK design pattern -->
+        {% if applianceStatus !== 'rejected' %}
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title">{{ certificationStatusTitle }}</h2>
@@ -69,9 +71,11 @@
                 }) }}
             </div>
         </div>
+        {% endif %}
 
         <!-- Details section: links to related appliance information pages -->
         <!-- Uses GOV.UK summary list pattern with View links for each detail type -->
+        <!-- Title is always 'Details' for both legacy and standard records -->
         {{ govukSummaryList({
             card: {
                 title: {

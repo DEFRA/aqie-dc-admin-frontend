@@ -31,6 +31,7 @@ export const applianceRecordContent = {
     certificationStatusCaption: 'Certification status by country',
     publicListingTitle: 'Public listing',
     detailsTitle: 'Details',
+    legacyDetailsTitle: 'Legacy Record Details',
 
     // Table headers
     tableHeaders: {
@@ -107,6 +108,16 @@ export const applianceRecordContent = {
       applianceDetails: 'Appliance details',
       testResults: 'Test results',
       instructionManual: 'Instruction manual',
+      applicationDetails: 'Application details',
+      actionHistory: 'Action history'
+    },
+
+    // Detail section items - references to related pages (Legacy records)
+    // Legacy records use a different set of details focused on historical data
+    legacyDetailsItems: {
+      applianceDetails: 'Appliance details',
+      manuals: 'Manuals',
+      legacyComments: 'Legacy comments',
       applicationDetails: 'Application details',
       actionHistory: 'Action history'
     },
