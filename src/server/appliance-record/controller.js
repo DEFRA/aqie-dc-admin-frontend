@@ -26,6 +26,14 @@ const logger = createLogger()
 const content = applianceRecordContent.en
 
 /**
+ * TESTING FLAG: Toggle this to test legacy vs non-legacy display
+ * Set to true to display legacy record details
+ * Set to false to display standard record details
+ * TODO: Remove this and get isLegacyRecord from backend response once API is updated
+ */
+const IS_LEGACY_RECORD = false
+
+/**
  * Returns the URL for appliance-records list page (return link destination).
  * @returns {string} Return URL path
  */
@@ -76,22 +84,46 @@ const buildCertificationTableRows = (appliance) =>
   })
 
 /**
- * Build details rows for govukSummaryList macro.
+ * Build details rows for govukSummaryList macro (Non-Legacy records).
  *
- * Transforms appliance.details array into summary list rows:
- * Key (label) | Actions (View link with visually-hidden text)
+ * Standard details for current appliance records:
+ * - Appliance details
+ * - Test results
+ * - Instruction manual
+ * - Application details (with application ID if available)
+ * - Action history
  *
- * Each row includes:
- * - Key: detail label (e.g., "Appliance details")
- * - Action: View link with screen-reader text
- *
- * Follows GOV.UK accessibility pattern for summary lists.
- *
- * @param {Object} appliance - Transformed appliance data from data layer
- * @returns {Array} Array of row objects with key and actions
+ * @param {string} applianceId - The appliance ID
+ * @param {string} applicationId - The application ID (optional)
+ * @returns {Array} Array of detail row objects
  */
-const buildDetailsRows = (appliance) =>
-  appliance.details.map((detail) => ({
+const buildStandardDetailsRows = (applianceId, applicationId) => {
+  const details = [
+    {
+      label: content.detailsItems.applianceDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/appliance-details`
+    },
+    {
+      label: content.detailsItems.testResults,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/test-reports`
+    },
+    {
+      label: content.detailsItems.instructionManual,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/instruction-manual`
+    },
+    {
+      label: applicationId
+        ? `Application ${applicationId} details`
+        : content.detailsItems.applicationDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
+    },
+    {
+      label: content.detailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/action-history`
+    }
+  ]
+
+  return details.map((detail) => ({
     key: { text: detail.label },
     actions: {
       items: [
@@ -103,6 +135,87 @@ const buildDetailsRows = (appliance) =>
       ]
     }
   }))
+}
+
+/**
+ * Build details rows for govukSummaryList macro (Legacy records).
+ *
+ * Legacy details for historical appliance records:
+ * - Appliance details
+ * - Manuals
+ * - Legacy comments
+ * - Application details (with application ID if available)
+ * - Action history
+ *
+ * Follows GOV.UK accessibility pattern for summary lists.
+ *
+ * @param {string} applianceId - The appliance ID
+ * @param {string} applicationId - The application ID (optional)
+ * @returns {Array} Array of detail row objects
+ */
+const buildLegacyDetailsRows = (applianceId, applicationId) => {
+  const details = [
+    {
+      label: content.legacyDetailsItems.applianceDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/appliance-details`
+    },
+    {
+      label: content.legacyDetailsItems.manuals,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/manuals`
+    },
+    {
+      label: content.legacyDetailsItems.legacyComments,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/legacy-comments`
+    },
+    {
+      label: applicationId
+        ? `Application ${applicationId} details`
+        : content.legacyDetailsItems.applicationDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
+    },
+    {
+      label: content.legacyDetailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/action-history`
+    }
+  ]
+
+  return details.map((detail) => ({
+    key: { text: detail.label },
+    actions: {
+      items: [
+        {
+          href: detail.viewUrl,
+          text: content.actionText,
+          visuallyHiddenText: detail.label.toLowerCase()
+        }
+      ]
+    }
+  }))
+}
+
+/**
+ * Build details rows for govukSummaryList macro.
+ *
+ * Transforms appliance details into summary list rows based on record type.
+ * Conditionally returns either standard or legacy details based on isLegacyRecord flag.
+ *
+ * Key (label) | Actions (View link with visually-hidden text)
+ *
+ * Each row includes:
+ * - Key: detail label (includes application ID if available)
+ * - Action: View link with screen-reader text
+ *
+ * Follows GOV.UK accessibility pattern for summary lists.
+ *
+ * @param {string} applianceId - The appliance ID
+ * @param {boolean} isLegacyRecord - Whether this is a legacy record
+ * @param {string} applicationId - The application ID (optional)
+ * @returns {Array} Array of row objects with key and actions
+ */
+const buildDetailsRows = (applianceId, isLegacyRecord, applicationId) =>
+  isLegacyRecord
+    ? buildLegacyDetailsRows(applianceId, applicationId)
+    : buildStandardDetailsRows(applianceId, applicationId)
 
 /**
  * Build public listing configuration for the public listing section.
@@ -208,13 +321,19 @@ export const handleGetApplianceRecordPage = async (request, h) => {
       pageTitle: content.pageTitle(appliance.modelName),
       pageHeading: content.pageHeading(appliance.modelName),
       statusDisplay: appliance.statusDisplay,
+      applianceStatus: appliance.applianceStatus,
       tableHeaders: content.tableHeaders,
       certificationTableRows: buildCertificationTableRows(appliance),
       publicListing: buildPublicListing(appliance),
-      detailsRows: buildDetailsRows(appliance),
+      detailsRows: buildDetailsRows(
+        appliance.id,
+        IS_LEGACY_RECORD,
+        appliance.applicationId
+      ),
       actions: buildActions(appliance),
       returnLinkUrl: buildReturnHref(),
       returnLinkText: content.returnLink,
+      detailsTitle: content.detailsTitle,
       appliance
     })
   } catch (error) {
