@@ -102,7 +102,7 @@ export async function getApplianceRecord(applianceId) {
   }
 
   // Ensure we have a valid status value
-  const applianceStatus = data.applianceStatus || 'pending'
+  const applianceStatus = data.status || 'pending'
   let applianceStatusData = STATUS_DISPLAY_MAP[applianceStatus]
 
   // Fallback to pending if status not found
