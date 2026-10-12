@@ -175,14 +175,36 @@ describe('applianceRecord controller - Legacy Records', () => {
   })
 
   describe('Legacy Record Details (when IS_LEGACY_RECORD = true)', () => {
-    // NOTE: Legacy details tests are provided as reference for when IS_LEGACY_RECORD flag is set to true
-    // These tests document the expected behavior for legacy records but are NOT executed
-    // because the controller has IS_LEGACY_RECORD = false by default.
-    //
-    // To test legacy functionality:
-    // 1. Change IS_LEGACY_RECORD to true in controller.js
-    // 2. Run these tests to verify legacy details are displayed correctly
-    // 3. Change IS_LEGACY_RECORD back to false after testing
+    test('renders legacy detail rows when the backend marks the record as legacy', async () => {
+      fetchJsonMock.mockResolvedValue({
+        success: true,
+        data: {
+          ...mockBackendResponse.data,
+          id: 'APP-LEGACY-789',
+          applicationId: '0042',
+          isLegacyRecord: true,
+          modelName: 'Legacy Record Model',
+          applianceStatus: 'live'
+        }
+      })
+
+      const h = toolkit()
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-LEGACY-789' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
+
+      expect(detailLabels).toEqual([
+        applianceRecordContent.en.legacyDetailsItems.applianceDetails,
+        applianceRecordContent.en.legacyDetailsItems.manuals,
+        applianceRecordContent.en.legacyDetailsItems.legacyComments,
+        'Application 0042 details',
+        applianceRecordContent.en.legacyDetailsItems.actionHistory
+      ])
+    })
 
     test('REFERENCE: legacy content should define 5 expected detail labels', () => {
       const expectedLegacyDetails = [

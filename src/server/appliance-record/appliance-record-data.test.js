@@ -103,6 +103,31 @@ describe('#getApplianceRecord', () => {
     expect(hiddenResult.data.buttons.makePublic).toBe(true)
   })
 
+  test('preserves the backend legacy flag for legacy appliance records', async () => {
+    fetchJsonMock.mockResolvedValue({
+      success: true,
+      data: {
+        id: 'APP-LEGACY-001',
+        modelName: 'Legacy Model',
+        applicationId: '0042',
+        isLegacyRecord: true,
+        applianceStatus: 'live',
+        certifications: {
+          england: { status: 'certified' },
+          scotland: { status: 'awaiting_decision' },
+          wales: { status: 'uncertified' },
+          northernIreland: { status: 'not_certified' }
+        }
+      }
+    })
+
+    const result = await getApplianceRecord('APP-LEGACY-001')
+
+    expect(result.data.isLegacyRecord).toBe(true)
+    expect(result.data.applicationId).toBe('0042')
+    expect(result.data.details[3].label).toBe('Application 0042 details')
+  })
+
   test('maps certification values and dates into the frontend format', async () => {
     fetchJsonMock.mockResolvedValue({
       success: true,
