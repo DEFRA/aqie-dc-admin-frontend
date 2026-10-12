@@ -10,6 +10,7 @@
 
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { handleGetApplianceRecordPage } from './controller.js'
+import { applianceRecordContent } from './content.js'
 
 const { fetchJsonMock } = vi.hoisted(() => ({
   fetchJsonMock: vi.fn()
@@ -183,34 +184,38 @@ describe('applianceRecord controller - Legacy Records', () => {
     // 2. Run these tests to verify legacy details are displayed correctly
     // 3. Change IS_LEGACY_RECORD back to false after testing
 
-    test('REFERENCE: Legacy details should include 5 items', () => {
-      // Expected legacy details count
-      const legacyDetailsCount = 5
-      expect(legacyDetailsCount).toBe(5)
-    })
-
-    test('REFERENCE: Legacy details should include these items', () => {
-      // Expected legacy detail labels
+    test('REFERENCE: legacy content should define 5 expected detail labels', () => {
       const expectedLegacyDetails = [
+        applianceRecordContent.en.legacyDetailsItems.applianceDetails,
+        applianceRecordContent.en.legacyDetailsItems.manuals,
+        applianceRecordContent.en.legacyDetailsItems.legacyComments,
+        applianceRecordContent.en.legacyDetailsItems.applicationDetails,
+        applianceRecordContent.en.legacyDetailsItems.actionHistory
+      ]
+
+      expect(expectedLegacyDetails).toHaveLength(5)
+      expect(expectedLegacyDetails).toEqual([
         'Appliance details',
         'Manuals',
         'Legacy comments',
         'Application details',
         'Action history'
-      ]
-      expect(expectedLegacyDetails).toHaveLength(5)
+      ])
     })
 
-    test('REFERENCE: Legacy record should use legacyDetailsTitle in template', () => {
-      // Expected section title for legacy records
-      const legacyTitle = 'Legacy Record Details'
+    test('REFERENCE: legacy title should be defined in the content model', () => {
+      const legacyTitle = applianceRecordContent.en.legacyDetailsTitle
+
       expect(legacyTitle).toContain('Legacy')
+      expect(legacyTitle).toBe('Legacy Record Details')
     })
 
-    test('REFERENCE: Legacy records should show legacy badge in heading', () => {
-      // When isLegacyRecord = true, template should show a blue 'Legacy Record' badge
+    test('REFERENCE: legacy badge text should reflect the configured content', () => {
       const expectedBadgeText = 'Legacy Record'
-      expect(expectedBadgeText).toBe('Legacy Record')
+      const legacyTitle = applianceRecordContent.en.legacyDetailsTitle
+
+      expect(expectedBadgeText).toContain('Legacy')
+      expect(legacyTitle).toContain('Legacy')
     })
   })
 
