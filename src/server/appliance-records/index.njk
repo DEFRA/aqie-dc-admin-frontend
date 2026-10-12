@@ -1,0 +1,127 @@
+{% extends "layouts/page.njk" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">
+      {{ heading }}
+    </h1>
+
+    <form method="GET" action="/appliance-records" data-auto-submit-on-change>
+      <div class="govuk-form-group">
+        <label
+          class="govuk-label govuk-label--m"
+          for="keywords">
+          {{ content.searchLabel }}
+        </label>
+
+        <div class="govuk-button-group">
+          <input
+            class="govuk-input govuk-!-width-three-quarters"
+            id="keywords"
+            name="keywords"
+            type="text"
+            value="{{ keywords or '' }}"
+          >
+
+          <button
+            type="submit"
+            class="govuk-button govuk-!-margin-0 govuk-!-margin-left-1"
+            data-module="govuk-button">
+            {{ content.searchLabel }}
+          </button>
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h2 class="govuk-fieldset__heading">
+              {{ content.filterTitle }}
+            </h2>
+          </legend>
+
+          <div
+            class="govuk-checkboxes govuk-checkboxes--small"
+            data-module="govuk-checkboxes">
+
+            <div class="govuk-grid-row">
+              {% for filter in filters %}
+                <div class="govuk-grid-column-one-quarter">
+                  <div class="govuk-checkboxes__item">
+                    <input
+                      class="govuk-checkboxes__input"
+                      id="filter-{{ loop.index0 }}"
+                      name="filters"
+                      type="checkbox"
+                      value="{{ filter.value }}"
+                      {% if filter.checked %}checked{% endif %}
+                    >
+
+                    <label
+                      class="govuk-label govuk-checkboxes__label"
+                      for="filter-{{ loop.index0 }}">
+                      {{ filter.label }}
+                    </label>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+          </div>
+        </fieldset>
+      </div>
+    </form>
+
+    {% block pageScripts %}
+      <script type="module" src="{{ getAssetPath('checkbox-auto-submit.js') }}"></script>
+    {% endblock %}
+
+    {% if applianceRows and applianceRows.length %}
+
+      <p class="govuk-body">
+        {{ countText }}
+      </p>
+
+      {{ govukTable({
+        captionText: "Appliance records",
+        captionClasses: "govuk-visually-hidden",
+        head: [
+          {
+            text: "Appliance ID",
+            classes: "govuk-!-width-one-quarter"
+          },
+          {
+            text: "Appliance name",
+            classes: "govuk-!-width-one-half"
+          },
+          {
+            text: "Status"
+          },
+          {
+            text: "Action"
+          }
+        ],
+        rows: applianceRows
+      }) }}
+
+      {% if hasPagination %}
+        {{ govukPagination({
+          previous: previous,
+          next: next,
+          items: paginationItems
+        }) }}
+      {% endif %}
+
+    {% else %}
+
+      <p class="govuk-body">
+        {{ emptyMessage }}
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
