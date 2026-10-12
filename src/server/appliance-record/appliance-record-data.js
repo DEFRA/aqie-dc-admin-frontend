@@ -147,10 +147,12 @@ export async function getApplianceRecord(applianceId) {
     details
   }
 
-  if (data.applicationId !== undefined)
+  if (data.applicationId !== undefined) {
     transformedData.applicationId = data.applicationId
-  if (data.isLegacyRecord !== undefined)
+  }
+  if (data.isLegacyRecord !== undefined) {
     transformedData.isLegacyRecord = data.isLegacyRecord
+  }
 
   return {
     success: true,
