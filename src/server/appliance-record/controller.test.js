@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { handleGetApplianceRecordPage } from './controller.js'
+import { applianceRecordContent } from './content.js'
+
+const content = applianceRecordContent.en
 
 const { fetchJsonMock } = vi.hoisted(() => ({
   fetchJsonMock: vi.fn()
@@ -47,6 +50,8 @@ const mockApplianceRecord = {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
     applianceStatus: 'live',
+    updatedAt: null,
+    technicalReview: null,
     statusDisplay: {
       label: 'Live on public list',
       tagClass: 'govuk-tag--green'
@@ -323,6 +328,38 @@ describe('applianceRecord controller', () => {
       expect(callArgs.actions.buttons[0].href).toBe(
         '/appliance-record/APP-123/hide-from-public'
       )
+    })
+
+    test('passes rejected details rows with rejection metadata and back link text', async () => {
+      const rejectedResponse = {
+        ...mockBackendResponse,
+        data: {
+          ...mockBackendResponse.data,
+          applianceStatus: 'rejected',
+          canTogglePublicVisibility: false,
+          updatedAt: '2026-01-10T10:00:00.000Z',
+          technicalReview: { reviewedBy: 'Calvin May' }
+        }
+      }
+
+      fetchJsonMock.mockResolvedValue(rejectedResponse)
+      const h = toolkit()
+
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-123' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      expect(callArgs.applianceStatus).toBe(content.statusValues.rejected)
+      expect(callArgs.rejectedStatus).toBe(content.statusValues.rejected)
+      expect(callArgs.backLinkText).toBe(content.backLinkText)
+      expect(callArgs.detailsRows).toHaveLength(7)
+      expect(callArgs.detailsRows[0].key.text).toBe('Date rejected')
+      expect(callArgs.detailsRows[0].value.text).toBe('10/01/2026')
+      expect(callArgs.detailsRows[1].key.text).toBe('Rejected by')
+      expect(callArgs.detailsRows[1].value.text).toBe('Calvin May')
+      expect(callArgs.detailsRows[2].key.text).toBe('Appliance details')
     })
 
     test('passes no public listing link or buttons for pending appliance', async () => {

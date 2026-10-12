@@ -81,12 +81,13 @@ export async function getApplianceRecord(applianceId) {
 
   const applianceStatus =
     data.status || data.applianceStatus || content.statusValues.pending
-  const statusDisplay =
+  const baseStatusDisplay =
     content.applianceStatus[applianceStatus] || content.applianceStatus.pending
+  const statusDisplay = { ...baseStatusDisplay }
 
   if (applianceStatus === content.statusValues.rejected) {
-    statusDisplay.label = 'Rejected'
-    statusDisplay.tagClass = 'govuk-tag--red'
+    statusDisplay.label = content.applianceStatus.rejected.label
+    statusDisplay.tagClass = content.applianceStatus.rejected.tagClass
   }
 
   const buttons = {}
@@ -116,9 +117,7 @@ export async function getApplianceRecord(applianceId) {
       viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/instruction-manual`
     },
     {
-      label: data.applicationId
-        ? `Application ${data.applicationId} details`
-        : content.detailsItems.applicationDetails,
+      label: content.formatApplicationDetailsLabel(data.applicationId),
       viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
     },
     {
@@ -131,6 +130,8 @@ export async function getApplianceRecord(applianceId) {
     id: data.id,
     modelName: data.modelName || content.defaultModelName,
     applianceStatus,
+    updatedAt: data.updatedAt || null,
+    technicalReview: data.technicalReview || null,
     statusDisplay: {
       label: statusDisplay.label,
       tagClass: statusDisplay.tagClass
@@ -145,8 +146,6 @@ export async function getApplianceRecord(applianceId) {
   }
 
   if (data.applicationId !== undefined) transformedData.applicationId = data.applicationId
-  if (data.updatedAt !== undefined) transformedData.updatedAt = data.updatedAt
-  if (data.technicalReview !== undefined) transformedData.technicalReview = data.technicalReview
   if (data.isLegacyRecord !== undefined) transformedData.isLegacyRecord = data.isLegacyRecord
 
   return {

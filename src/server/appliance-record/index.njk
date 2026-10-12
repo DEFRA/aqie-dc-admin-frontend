@@ -25,7 +25,7 @@
         #}
 
         <!-- Back link for browser navigation -->
-        <a href="javascript:window.history.back()" class="govuk-back-link">Back</a>
+        <a href="javascript:window.history.back()" class="govuk-back-link">{{ backLinkText }}</a>
 
         <!-- Page heading with dynamic status tag as caption -->
         <!-- Status label shown as GOV.UK caption within the heading -->
@@ -54,7 +54,7 @@
 
         <!-- Certification status section: displays 4-country certification table -->
         <!-- Hidden for rejected appliances as per GOV.UK design pattern -->
-        {% if applianceStatus !== 'rejected' %}
+        {% if applianceStatus !== rejectedStatus %}
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title">{{ certificationStatusTitle }}</h2>

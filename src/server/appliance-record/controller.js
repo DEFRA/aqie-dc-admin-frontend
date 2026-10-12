@@ -133,9 +133,7 @@ const buildLegacyDetailsRows = (appliance) => {
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
     },
     {
-      label: appliance.applicationId
-        ? `Application ${appliance.applicationId} details`
-        : content.legacyDetailsItems.applicationDetails,
+      label: content.formatApplicationDetailsLabel(appliance.applicationId),
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
     },
     {
@@ -183,7 +181,7 @@ const buildRejectedDetailsRows = (appliance) => {
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
-        text: appliance.technicalReview?.reviewedBy || 'Unknown'
+        text: appliance.technicalReview?.reviewedBy || content.rejectedDetails.notSpecified
       }
     }
   ]

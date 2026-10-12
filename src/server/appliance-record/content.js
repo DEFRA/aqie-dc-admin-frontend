@@ -100,7 +100,8 @@ export const applianceRecordContent = {
     // Rejected record metadata labels
     rejectedDetails: {
       dateRejected: 'Date rejected',
-      rejectedBy: 'Rejected by'
+      rejectedBy: 'Rejected by',
+      notSpecified: 'Not specified'
     },
 
     // Detail section items - references to related pages
@@ -112,8 +113,10 @@ export const applianceRecordContent = {
       actionHistory: 'Action history'
     },
 
+    formatApplicationDetailsLabel: (applicationId) =>
+      applicationId ? `Application ${applicationId} details` : 'Application details',
+
     // Detail section items - references to related pages (Legacy records)
-    // Legacy records use a different set of details focused on historical data
     legacyDetailsItems: {
       applianceDetails: 'Appliance details',
       manuals: 'Manuals',
@@ -130,8 +133,8 @@ export const applianceRecordContent = {
     makePublicText: 'Make appliance live on public list',
 
     // Navigation
-    returnLink: 'Return to appliance records',
     backLinkText: 'Back',
+    returnLink: 'Return to appliance records',
 
     // Error messages
     errors: {

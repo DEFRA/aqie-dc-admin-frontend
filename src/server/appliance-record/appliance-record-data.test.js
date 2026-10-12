@@ -1,4 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { applianceRecordContent } from './content.js'
+
+const content = applianceRecordContent.en
 
 const { fetchJsonMock } = vi.hoisted(() => ({
   fetchJsonMock: vi.fn()
@@ -175,6 +178,31 @@ describe('#getApplianceRecord', () => {
     expect(result.data.details[3].label).toBe('Application details')
   })
 
+  test('uses centralized content defaults for rejected metadata and application detail labels', async () => {
+    fetchJsonMock.mockResolvedValue({
+      success: true,
+      data: {
+        id: 'APP-001',
+        applicationId: '0042',
+        modelName: 'Rejected Model',
+        applianceStatus: 'rejected',
+        technicalReview: null,
+        certifications: {
+          england: { status: 'rejected' },
+          scotland: { status: 'awaiting_decision' },
+          wales: { status: 'awaiting_decision' },
+          northernIreland: { status: 'awaiting_decision' }
+        }
+      }
+    })
+
+    const result = await getApplianceRecord('APP-001')
+
+    expect(result.data.details[3].label).toBe(content.formatApplicationDetailsLabel('0042'))
+    expect(content.rejectedDetails.notSpecified).toBe('Not specified')
+    expect(content.applianceStatus.rejected.label).toBe('Rejected')
+  })
+
   test('shows the correct public listing and toggle actions by status', async () => {
     fetchJsonMock.mockResolvedValue({
       success: true,
@@ -214,6 +242,36 @@ describe('#getApplianceRecord', () => {
 
     const hiddenResult = await getApplianceRecord('APP-002')
     expect(hiddenResult.data.buttons.makePublic).toBe(true)
+  })
+
+  test('returns status display for rejected appliance', async () => {
+    fetchJsonMock.mockResolvedValue({
+      success: true,
+      data: {
+        id: 'APP-001',
+        modelName: 'Rejected Model',
+        applianceStatus: 'rejected',
+        updatedAt: '2026-01-10T10:00:00.000Z',
+        technicalReview: { reviewedBy: 'Calvin May' },
+        canTogglePublicVisibility: false,
+        certifications: {
+          england: { status: 'rejected' },
+          scotland: { status: 'awaiting_decision' },
+          wales: { status: 'awaiting_decision' },
+          northernIreland: { status: 'awaiting_decision' }
+        }
+      }
+    })
+
+    const result = await getApplianceRecord('APP-001')
+
+    expect(result.data.statusDisplay.label).toBe('Rejected')
+    expect(result.data.statusDisplay.tagClass).toBe('govuk-tag--red')
+    expect(result.data.updatedAt).toBe('2026-01-10T10:00:00.000Z')
+    expect(result.data.technicalReview.reviewedBy).toBe('Calvin May')
+    expect(result.data.buttons.showPublicListing).toBeUndefined()
+    expect(result.data.buttons.hideFromPublic).toBeUndefined()
+    expect(result.data.buttons.makePublic).toBeUndefined()
   })
 
   test('returns an error object when the backend request fails', async () => {
