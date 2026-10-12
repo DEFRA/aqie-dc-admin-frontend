@@ -131,15 +131,12 @@ export async function getApplianceRecord(applianceId) {
    * - Pending or Hidden without toggle: no buttons
    */
   const buttons = {}
-  if (data.applianceStatus === 'live') {
+  if (data.status === 'live') {
     buttons.showPublicListing = true
     if (data.canTogglePublicVisibility) {
       buttons.hideFromPublic = true
     }
-  } else if (
-    data.applianceStatus === 'hidden' &&
-    data.canTogglePublicVisibility
-  ) {
+  } else if (data.status === 'hidden' && data.canTogglePublicVisibility) {
     buttons.makePublic = true
   }
 
@@ -177,7 +174,7 @@ export async function getApplianceRecord(applianceId) {
     data: {
       id: data.id,
       modelName: data.modelName || 'Unknown model',
-      applianceStatus: data.applianceStatus,
+      applianceStatus: applianceStatus,
       statusDisplay: {
         label: applianceStatusData.label,
         tagClass: applianceStatusData.tagClass

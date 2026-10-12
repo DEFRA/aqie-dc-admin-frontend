@@ -14,7 +14,7 @@ const mockBackendResponse = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    applianceStatus: 'live',
+    status: 'live',
     canTogglePublicVisibility: true,
     certifications: {
       england: {
@@ -340,7 +340,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'pending',
+          status: 'pending',
           canTogglePublicVisibility: false
         }
       }
@@ -367,7 +367,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: true
         }
       }
@@ -400,7 +400,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: false
         }
       }
