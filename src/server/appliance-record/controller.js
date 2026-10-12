@@ -26,14 +26,6 @@ const logger = createLogger()
 const content = applianceRecordContent.en
 
 /**
- * TESTING FLAG: Toggle this to test legacy vs non-legacy display
- * Set to true to display legacy record details
- * Set to false to display standard record details
- * TODO: Remove this and get isLegacyRecord from backend response once API is updated
- */
-const IS_LEGACY_RECORD = false
-
-/**
  * Returns the URL for appliance-records list page (return link destination).
  * @returns {string} Return URL path
  */
