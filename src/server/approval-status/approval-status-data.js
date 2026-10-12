@@ -27,28 +27,14 @@ export async function updateCertificationStatus(applianceId, country, status, de
   }
   
   const certificationField = certificationFieldMap[country]
-  
-  // Map user-facing 'uncertified' to schema value 'revoked'
-  const schemaStatus = status === 'uncertified' ? 'revoked' : status
-  
-  // Build the update payload with certification status and metadata
+
   const payload = {
     [certificationField]: {
-      status: schemaStatus,
+      status,
       decidedAt: new Date().toISOString(),
       decidedBy
     }
   }
-  
-  console.log(`[updateCertificationStatus] Sending PATCH to /appliances/${applianceId} with payload:`, JSON.stringify(payload, null, 2))
-  
-  try {
-    const result = await patchJson(`/appliances/${encodeURIComponent(applianceId)}`, payload)
-    console.log(`[updateCertificationStatus] Success! Response:`, JSON.stringify(result, null, 2))
-    return result
-  } catch (err) {
-    console.error(`[updateCertificationStatus] ERROR updating ${applianceId}:`, err.message)
-    console.error(`[updateCertificationStatus] Error details:`, err)
-    throw err
-  }
+
+  return patchJson(`/appliances/${encodeURIComponent(applianceId)}`, payload)
 }

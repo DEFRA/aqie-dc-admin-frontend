@@ -31,17 +31,15 @@ function getCertificationField(country) {
 }
 
 /**
- * Map user-facing status names to schema values
+ * Normalise stored status to the three supported display statuses
  */
 function mapStatusForDisplay(schemaStatus) {
   const statusMap = {
-    new: 'awaiting_decision',
     awaiting_decision: 'awaiting_decision',
     certified: 'certified',
-    revoked: 'uncertified',
-    rejected: 'uncertified'
+    uncertified: 'uncertified'
   }
-  return statusMap[schemaStatus] || schemaStatus
+  return statusMap[schemaStatus] || 'awaiting_decision'
 }
 
 /**
@@ -162,7 +160,7 @@ export const approvalsStatusController = {
           `Appliance not found for approval status page: ${applianceId}`
         )
         return h
-          .view('error/error', {
+          .view('error/index', {
             pageTitle: content.errorTitle,
             heading: content.errorTitle,
             message: content.errorLoadingAppliance
@@ -174,14 +172,14 @@ export const approvalsStatusController = {
 
       const certificationField = getCertificationField(country)
       const certification = appliance[certificationField] || {}
-      const currentStatus = certification.status || 'new'
+      const currentStatus = certification.status || 'awaiting_decision'
       const displayStatus = mapStatusForDisplay(currentStatus)
 
       const countryDisplay = countryDisplayNames[country]
       
       // Choose heading based on current status
       const heading =
-        currentStatus === 'awaiting_decision'
+        displayStatus === 'awaiting_decision'
           ? content.setHeading(appliance.modelName, countryDisplay)
           : content.changeHeading(appliance.modelName, countryDisplay)
       
@@ -213,7 +211,7 @@ export const approvalsStatusController = {
         error
       )
       return h
-        .view('error/error', {
+        .view('error/index', {
           pageTitle: content.errorTitle,
           heading: content.errorTitle,
           message: content.errorLoadingAppliance
@@ -231,8 +229,6 @@ export const approvalsStatusDecisionController = {
     const { applianceId, country } = request.params
     const { decision } = request.payload
 
-    logger.info(`[POST /approval-status] applianceId=${applianceId}, country=${country}, decision=${decision}`)
-
     try {
       const response = await getApplianceForApprovalStatus(applianceId)
 
@@ -241,7 +237,7 @@ export const approvalsStatusDecisionController = {
           `Appliance not found for approval status update: ${applianceId}`
         )
         return h
-          .view('error/error', {
+          .view('error/index', {
             pageTitle: content.errorTitle,
             heading: content.errorTitle,
             message: content.errorLoadingAppliance
@@ -253,7 +249,7 @@ export const approvalsStatusDecisionController = {
 
       const certificationField = getCertificationField(country)
       const certification = appliance[certificationField] || {}
-      const currentStatus = certification.status || 'new'
+      const currentStatus = certification.status || 'awaiting_decision'
 
       // If decision is 'no' (don't change), just redirect without updating
       if (decision === 'no') {
@@ -268,7 +264,7 @@ export const approvalsStatusDecisionController = {
           `Could not derive new status: ${applianceId}, ${country}, ${decision}`
         )
         return h
-          .view('error/error', {
+          .view('error/index', {
             pageTitle: content.errorTitle,
             heading: content.errorTitle,
             message: content.errorUpdatingStatus
@@ -283,16 +279,18 @@ export const approvalsStatusDecisionController = {
       }
 
       // Submit the update to the backend
-      logger.info(`[POST] Calling updateCertificationStatus with status=${newStatus}`)
-      const updateResult = await updateCertificationStatus(applianceId, country, newStatus, decidedBy)
-      logger.info(`[POST] Update response:`, updateResult)
+      await updateCertificationStatus(
+        applianceId,
+        country,
+        newStatus,
+        decidedBy
+      )
 
       logger.info(
         `Certification status updated: ${applianceId} (${country}: ${newStatus})`
       )
 
       // Redirect back to the appliance record page
-      logger.info(`[POST] Redirecting to /appliance-record/${applianceId}`)
       return h.redirect(`/appliance-record/${encodeURIComponent(applianceId)}`)
     } catch (error) {
       logger.error(
@@ -300,7 +298,7 @@ export const approvalsStatusDecisionController = {
         error
       )
       return h
-        .view('error/error', {
+        .view('error/index', {
           pageTitle: content.errorTitle,
           heading: content.errorTitle,
           message: content.errorUpdatingStatus

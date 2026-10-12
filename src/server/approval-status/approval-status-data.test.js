@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import * as approvalStatusData from '../approval-status-data.js'
+import * as approvalStatusData from './approval-status-data.js'
 
 // Mock the API module
-vi.mock('../../common/api/api.js', () => ({
+vi.mock('../common/api/api.js', () => ({
   fetchJson: vi.fn(),
   patchJson: vi.fn()
 }))
 
-import { fetchJson } from '../../common/api/api.js'
+import { fetchJson, patchJson } from '../common/api/api.js'
 
 describe('Approval Status Data Helper', () => {
   beforeEach(() => {
@@ -61,106 +61,106 @@ describe('Approval Status Data Helper', () => {
   })
 
   describe('updateCertificationStatus', () => {
-    it('should update certification status for a country', async () => {
+    const decidedBy = { name: 'Reviewer', email: 'reviewer@example.com' }
+
+    it('should patch the country certification field', async () => {
       const mockResponse = {
         id: 'APP-001',
         englandCertification: { status: 'certified' }
       }
 
-      fetchJson.mockResolvedValueOnce(mockResponse)
+      patchJson.mockResolvedValueOnce(mockResponse)
 
       const result = await approvalStatusData.updateCertificationStatus(
         'APP-001',
         'england',
-        'certified'
+        'certified',
+        decidedBy
       )
 
-      expect(fetchJson).toHaveBeenCalledWith(
-        '/appliances/APP-001/certification/england',
-        {
-          method: 'POST',
-          body: JSON.stringify({ status: 'certified' })
+      expect(patchJson).toHaveBeenCalledWith('/appliances/APP-001', {
+        englandCertification: {
+          status: 'certified',
+          decidedAt: expect.any(String),
+          decidedBy
         }
-      )
+      })
       expect(result).toEqual(mockResponse)
     })
 
-    it('should handle all valid countries', async () => {
-      fetchJson.mockResolvedValue({ success: true })
+    it('should map each country to its certification field', async () => {
+      patchJson.mockResolvedValue({ success: true })
 
-      const countries = ['england', 'scotland', 'wales', 'northern-ireland']
+      const countryFields = {
+        england: 'englandCertification',
+        scotland: 'scotlandCertification',
+        wales: 'walesCertification',
+        'northern-ireland': 'nIrelandCertification'
+      }
 
-      for (const country of countries) {
+      for (const [country, field] of Object.entries(countryFields)) {
         await approvalStatusData.updateCertificationStatus(
           'APP-001',
           country,
-          'certified'
+          'certified',
+          decidedBy
         )
 
-        expect(fetchJson).toHaveBeenCalledWith(
-          expect.stringContaining(`/certification/${country}`),
-          expect.any(Object)
+        expect(patchJson).toHaveBeenCalledWith(
+          '/appliances/APP-001',
+          expect.objectContaining({
+            [field]: expect.objectContaining({ status: 'certified' })
+          })
         )
       }
     })
 
-    it('should handle uncertified status', async () => {
-      fetchJson.mockResolvedValueOnce({ success: true })
+    it('should send uncertified without remapping', async () => {
+      patchJson.mockResolvedValueOnce({ success: true })
 
       await approvalStatusData.updateCertificationStatus(
         'APP-001',
         'england',
-        'uncertified'
+        'uncertified',
+        decidedBy
       )
 
-      expect(fetchJson).toHaveBeenCalledWith(
-        expect.any(String),
-        {
-          method: 'POST',
-          body: JSON.stringify({ status: 'uncertified' })
-        }
-      )
-    })
-
-    it('should handle awaiting_decision status', async () => {
-      fetchJson.mockResolvedValueOnce({ success: true })
-
-      await approvalStatusData.updateCertificationStatus(
-        'APP-001',
-        'england',
-        'awaiting_decision'
-      )
-
-      expect(fetchJson).toHaveBeenCalledWith(
-        expect.any(String),
-        {
-          method: 'POST',
-          body: JSON.stringify({ status: 'awaiting_decision' })
-        }
+      expect(patchJson).toHaveBeenCalledWith(
+        '/appliances/APP-001',
+        expect.objectContaining({
+          englandCertification: expect.objectContaining({
+            status: 'uncertified'
+          })
+        })
       )
     })
 
     it('should encode appliance ID in URL', async () => {
-      fetchJson.mockResolvedValueOnce({ success: true })
+      patchJson.mockResolvedValueOnce({ success: true })
 
       await approvalStatusData.updateCertificationStatus(
         'APP-001-ENCODED',
         'england',
-        'certified'
+        'certified',
+        decidedBy
       )
 
-      expect(fetchJson).toHaveBeenCalledWith(
+      expect(patchJson).toHaveBeenCalledWith(
         expect.stringContaining('APP-001-ENCODED'),
         expect.any(Object)
       )
     })
 
     it('should handle API errors', async () => {
-      const error = new Error('API error')
-      fetchJson.mockRejectedValueOnce(error)
+      patchJson.mockRejectedValueOnce(new Error('API error'))
 
       await expect(
-        approvalStatusData.updateCertificationStatus('APP-001', 'england', 'certified')
+        approvalStatusData.updateCertificationStatus(
+          'APP-001',
+          'england',
+          'certified',
+          decidedBy
+        )
       ).rejects.toThrow('API error')
     })
   })

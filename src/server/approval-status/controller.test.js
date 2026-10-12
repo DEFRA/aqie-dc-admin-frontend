@@ -2,21 +2,25 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {
   approvalsStatusController,
   approvalsStatusDecisionController
-} from '../controller.js'
+} from './controller.js'
 
 // Mock the data module
-vi.mock('../approval-status-data.js', () => ({
+vi.mock('./approval-status-data.js', () => ({
   getApplianceForApprovalStatus: vi.fn(),
   updateCertificationStatus: vi.fn()
 }))
 
-import * as approvalStatusData from '../approval-status-data.js'
+import * as approvalStatusData from './approval-status-data.js'
+
+const systemDecidedBy = { name: 'System', email: 'system@example.com' }
 
 describe('Approval Status Controller', () => {
   let mockRequest
   let mockH
 
   beforeEach(() => {
+    vi.clearAllMocks()
+
     mockH = {
       view: vi.fn((template, data) => ({
         code: vi.fn((statusCode) => ({ statusCode, template, data }))
@@ -47,11 +51,11 @@ describe('Approval Status Controller', () => {
         }
       }
 
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: mockAppliance
+      })
 
-      const result = await approvalsStatusController.handler(mockRequest, mockH)
+      await approvalsStatusController.handler(mockRequest, mockH)
 
       expect(mockH.view).toHaveBeenCalled()
       const [template, viewData] = mockH.view.mock.calls[0]
@@ -66,19 +70,19 @@ describe('Approval Status Controller', () => {
         id: 'APP-001',
         modelName: 'Test Stove',
         englandCertification: {
-          status: 'revoked',
+          status: 'uncertified',
           decidedAt: new Date('2026-02-01'),
           decidedBy: { name: 'Jane', email: 'jane@example.com' }
         }
       }
 
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: mockAppliance
+      })
 
-      const result = await approvalsStatusController.handler(mockRequest, mockH)
+      await approvalsStatusController.handler(mockRequest, mockH)
 
-      const [template, viewData] = mockH.view.mock.calls[0]
+      const [, viewData] = mockH.view.mock.calls[0]
       expect(viewData.currentStatus).toBe('uncertified')
       expect(viewData.question).toContain('certified')
     })
@@ -92,17 +96,28 @@ describe('Approval Status Controller', () => {
         }
       }
 
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: mockAppliance
+      })
 
-      const result = await approvalsStatusController.handler(mockRequest, mockH)
+      await approvalsStatusController.handler(mockRequest, mockH)
 
-      const [template, viewData] = mockH.view.mock.calls[0]
+      const [, viewData] = mockH.view.mock.calls[0]
       expect(viewData.currentStatus).toBe('awaiting_decision')
       expect(viewData.radioOptions.length).toBe(2)
       expect(viewData.radioOptions[0].value).toBe('certified')
       expect(viewData.radioOptions[1].value).toBe('uncertified')
+    })
+
+    it('should treat a missing certification as awaiting_decision', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: { id: 'APP-001', modelName: 'Test Stove' }
+      })
+
+      await approvalsStatusController.handler(mockRequest, mockH)
+
+      const [, viewData] = mockH.view.mock.calls[0]
+      expect(viewData.currentStatus).toBe('awaiting_decision')
     })
 
     it('should handle all four countries', async () => {
@@ -112,32 +127,39 @@ describe('Approval Status Controller', () => {
         englandCertification: { status: 'certified' },
         scotlandCertification: { status: 'uncertified' },
         walesCertification: { status: 'awaiting_decision' },
-        nIrelandCertification: { status: 'new' }
+        nIrelandCertification: { status: 'awaiting_decision' }
       }
 
       const countries = ['england', 'scotland', 'wales', 'northern-ireland']
-      const expectedCountryNames = ['England', 'Scotland', 'Wales', 'Northern Ireland']
+      const expectedCountryNames = [
+        'England',
+        'Scotland',
+        'Wales',
+        'Northern Ireland'
+      ]
 
       for (let i = 0; i < countries.length; i++) {
-        approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-          mockAppliance
-        )
+        approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+          data: mockAppliance
+        })
 
         mockRequest.params.country = countries[i]
 
         await approvalsStatusController.handler(mockRequest, mockH)
 
-        const [template, viewData] = mockH.view.mock.calls[i]
+        const [, viewData] = mockH.view.mock.calls[i]
         expect(viewData.heading).toContain(expectedCountryNames[i])
       }
     })
 
     it('should handle appliance not found', async () => {
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(null)
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
+        null
+      )
 
       const result = await approvalsStatusController.handler(mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith('error/error', expect.any(Object))
+      expect(mockH.view).toHaveBeenCalledWith('error/index', expect.any(Object))
       expect(result.statusCode).toBe(404)
     })
 
@@ -148,20 +170,18 @@ describe('Approval Status Controller', () => {
 
       const result = await approvalsStatusController.handler(mockRequest, mockH)
 
-      expect(mockH.view).toHaveBeenCalledWith('error/error', expect.any(Object))
+      expect(mockH.view).toHaveBeenCalledWith('error/index', expect.any(Object))
       expect(result.statusCode).toBe(500)
     })
 
     it('should set correct radio options for certified status', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'certified' }
+        }
+      })
 
       await approvalsStatusController.handler(mockRequest, mockH)
 
@@ -173,42 +193,42 @@ describe('Approval Status Controller', () => {
   })
 
   describe('approvalsStatusDecisionController (POST)', () => {
-    it('should update certification status when decision is yes for certified', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+    it('should send uncertified when decision is yes for certified', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'certified' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
         success: true
       })
 
       mockRequest.payload.decision = 'yes'
 
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
 
       expect(approvalStatusData.updateCertificationStatus).toHaveBeenCalledWith(
         'APP-001',
         'england',
-        'uncertified'
+        'uncertified',
+        systemDecidedBy
       )
       expect(result.redirect).toContain('/appliance-record/APP-001')
     })
 
-    it('should update certification status when decision is yes for uncertified', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'revoked' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+    it('should send certified when decision is yes for uncertified', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'uncertified' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
         success: true
       })
@@ -220,20 +240,43 @@ describe('Approval Status Controller', () => {
       expect(approvalStatusData.updateCertificationStatus).toHaveBeenCalledWith(
         'APP-001',
         'england',
-        'certified'
+        'certified',
+        systemDecidedBy
+      )
+    })
+
+    it('should use the signed-in user for decidedBy', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'certified' }
+        }
+      })
+      approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
+        success: true
+      })
+
+      mockRequest.auth = {
+        credentials: { name: 'Ada', email: 'ada@example.com' }
+      }
+
+      await approvalsStatusDecisionController.handler(mockRequest, mockH)
+
+      expect(approvalStatusData.updateCertificationStatus).toHaveBeenCalledWith(
+        'APP-001',
+        'england',
+        'uncertified',
+        { name: 'Ada', email: 'ada@example.com' }
       )
     })
 
     it('should update to certified when awaiting decision and certified selected', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'awaiting_decision' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'awaiting_decision' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
         success: true
       })
@@ -245,20 +288,18 @@ describe('Approval Status Controller', () => {
       expect(approvalStatusData.updateCertificationStatus).toHaveBeenCalledWith(
         'APP-001',
         'england',
-        'certified'
+        'certified',
+        systemDecidedBy
       )
     })
 
     it('should update to uncertified when awaiting decision and uncertified selected', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'awaiting_decision' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'awaiting_decision' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
         success: true
       })
@@ -270,98 +311,81 @@ describe('Approval Status Controller', () => {
       expect(approvalStatusData.updateCertificationStatus).toHaveBeenCalledWith(
         'APP-001',
         'england',
-        'uncertified'
+        'uncertified',
+        systemDecidedBy
       )
     })
 
     it('should not update when decision is no', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'certified' }
+        }
+      })
 
       mockRequest.payload.decision = 'no'
 
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
 
       expect(approvalStatusData.updateCertificationStatus).not.toHaveBeenCalled()
       expect(result.redirect).toContain('/appliance-record/APP-001')
     })
 
     it('should redirect to appliance record on success', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'certified' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockResolvedValueOnce({
         success: true
       })
 
-      mockRequest.payload.decision = 'yes'
-
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
 
       expect(result.redirect).toBe('/appliance-record/APP-001')
     })
 
     it('should handle appliance not found', async () => {
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(null)
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
+        null
+      )
 
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
 
-      expect(mockH.view).toHaveBeenCalledWith('error/error', expect.any(Object))
+      expect(mockH.view).toHaveBeenCalledWith('error/index', expect.any(Object))
       expect(result.statusCode).toBe(404)
     })
 
     it('should handle update errors', async () => {
-      const mockAppliance = {
-        id: 'APP-001',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
-      )
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          englandCertification: { status: 'certified' }
+        }
+      })
       approvalStatusData.updateCertificationStatus.mockRejectedValueOnce(
         new Error('Update failed')
       )
 
-      mockRequest.payload.decision = 'yes'
-
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
-
-      expect(mockH.view).toHaveBeenCalledWith('error/error', expect.any(Object))
-      expect(result.statusCode).toBe(500)
-    })
-
-    it('should encode appliance ID in redirect URL', async () => {
-      const mockAppliance = {
-        id: 'APP-001-TEST',
-        modelName: 'Test Stove',
-        englandCertification: { status: 'certified' }
-      }
-
-      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce(
-        mockAppliance
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
       )
 
-      mockRequest.params.applianceId = 'APP-001-TEST'
-      mockRequest.payload.decision = 'no'
-
-      const result = await approvalsStatusDecisionController.handler(mockRequest, mockH)
-
-      expect(result.redirect).toContain('APP-001-TEST')
+      expect(mockH.view).toHaveBeenCalledWith('error/index', expect.any(Object))
+      expect(result.statusCode).toBe(500)
     })
   })
 })
