@@ -114,7 +114,9 @@ export const applianceRecordContent = {
     },
 
     formatApplicationDetailsLabel: (applicationId) =>
-      applicationId ? `Application ${applicationId} details` : 'Application details',
+      applicationId
+        ? `Application ${applicationId} details`
+        : 'Application details',
 
     // Detail section items - references to related pages (Legacy records)
     legacyDetailsItems: {

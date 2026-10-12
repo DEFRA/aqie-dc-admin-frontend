@@ -153,7 +153,9 @@ describe('applianceRecord controller', () => {
       )
 
       const callArgs = h.view.mock.calls[0][1]
-      expect(callArgs.pageTitle).toBe('Appliance record for Test Appliance Model')
+      expect(callArgs.pageTitle).toBe(
+        'Appliance record for Test Appliance Model'
+      )
       expect(callArgs.pageHeading).toBe('Test Appliance Model')
     })
 

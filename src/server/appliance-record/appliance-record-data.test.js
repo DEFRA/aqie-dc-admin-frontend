@@ -57,7 +57,9 @@ describe('#getApplianceRecord', () => {
 
     await getApplianceRecord('APP/001')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/api/admin/appliances/APP%2F001')
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      '/api/admin/appliances/APP%2F001'
+    )
   })
 
   test('supports both status and applianceStatus backend fields', async () => {
@@ -198,7 +200,9 @@ describe('#getApplianceRecord', () => {
 
     const result = await getApplianceRecord('APP-001')
 
-    expect(result.data.details[3].label).toBe(content.formatApplicationDetailsLabel('0042'))
+    expect(result.data.details[3].label).toBe(
+      content.formatApplicationDetailsLabel('0042')
+    )
     expect(content.rejectedDetails.notSpecified).toBe('Not specified')
     expect(content.applianceStatus.rejected.label).toBe('Rejected')
   })

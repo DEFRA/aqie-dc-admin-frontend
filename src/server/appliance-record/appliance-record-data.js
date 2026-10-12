@@ -66,7 +66,9 @@ export async function getApplianceRecord(applianceId) {
     ([countryKey, countryName]) => {
       const certification = data.certifications?.[countryKey] || {}
       const certStatusLabel =
-        STATUS_LABEL_MAP[certification.status] || certification.status || 'Not certified'
+        STATUS_LABEL_MAP[certification.status] ||
+        certification.status ||
+        'Not certified'
 
       return {
         country: countryName,
@@ -145,8 +147,10 @@ export async function getApplianceRecord(applianceId) {
     details
   }
 
-  if (data.applicationId !== undefined) transformedData.applicationId = data.applicationId
-  if (data.isLegacyRecord !== undefined) transformedData.isLegacyRecord = data.isLegacyRecord
+  if (data.applicationId !== undefined)
+    transformedData.applicationId = data.applicationId
+  if (data.isLegacyRecord !== undefined)
+    transformedData.isLegacyRecord = data.isLegacyRecord
 
   return {
     success: true,

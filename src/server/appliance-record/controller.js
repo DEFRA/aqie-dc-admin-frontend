@@ -163,17 +163,19 @@ const buildRejectedDetailsRows = (appliance) => {
       value: {
         text: appliance.updatedAt
           ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          })
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric'
+            })
           : null
       }
     },
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
-        text: appliance.technicalReview?.reviewedBy || content.rejectedDetails.notSpecified
+        text:
+          appliance.technicalReview?.reviewedBy ||
+          content.rejectedDetails.notSpecified
       }
     }
   ]
