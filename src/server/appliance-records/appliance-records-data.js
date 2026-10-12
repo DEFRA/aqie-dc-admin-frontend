@@ -26,5 +26,5 @@ export async function getApplianceRecords({
     query.set('status', normalisedFilters.join(','))
   }
 
-  return fetchJson(`/api/appliances/search?${query.toString()}`)
+  return fetchJson(`/api/admin/appliances/search?${query.toString()}`)
 }
