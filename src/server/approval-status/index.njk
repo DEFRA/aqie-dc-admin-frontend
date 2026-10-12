@@ -1,0 +1,90 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ heading }}</h1>
+      <p class="govuk-body">Current status: {{ statusLabel | lower }}</p>
+      <p class="govuk-body">{{ disclaimer }}</p>
+
+      <!-- Certification Status Change Form -->
+      <form class="form" method="post">
+        <!-- CSRF token if needed -->
+        {% if csrfToken %}
+          <input type="hidden" name="crumb" value="{{ csrfToken }}">
+        {% endif %}
+
+        <!-- Dynamic Question and Radio Options -->
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">{{ question }}</h2>
+            </legend>
+
+            <div class="govuk-radios" data-module="govuk-radios">
+              {% if currentStatus === 'awaiting_decision' %}
+                <!-- Awaiting Decision: Show Certified/Uncertified with hints -->
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="decision-certified"
+                    name="decision"
+                    type="radio"
+                    value="certified"
+                    aria-describedby="decision-certified-hint">
+                  <label class="govuk-label govuk-radios__label" for="decision-certified">
+                    {{ content.optionCertified }}
+                  </label>
+                  <div id="decision-certified-hint" class="govuk-hint govuk-radios__hint">
+                    {{ content.optionCertifiedHint.replace('{country}', countryDisplay) }}
+                  </div>
+                </div>
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="decision-uncertified"
+                    name="decision"
+                    type="radio"
+                    value="uncertified"
+                    aria-describedby="decision-uncertified-hint">
+                  <label class="govuk-label govuk-radios__label" for="decision-uncertified">
+                    {{ content.optionUncertified }}
+                  </label>
+                  <div id="decision-uncertified-hint" class="govuk-hint govuk-radios__hint">
+                    {{ content.optionUncertifiedHint.replace('{country}', countryDisplay) }}
+                  </div>
+                </div>
+              {% else %}
+                <!-- Certified/Uncertified: Show Yes/No options -->
+                {% for option in radioOptions %}
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      id="decision-{{ loop.index0 }}"
+                      name="decision"
+                      type="radio"
+                      value="{{ option.value }}"
+                      {% if option.checked %}checked{% endif %}>
+                    <label class="govuk-label govuk-radios__label" for="decision-{{ loop.index0 }}">
+                      {{ option.text }}
+                    </label>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="govuk-button-group govuk-!-margin-top-7">
+          <button type="submit" class="govuk-button" data-module="govuk-button">
+            {{ content.buttonConfirm }}
+          </button>
+          <a href="record" class="govuk-link">
+            {{ content.buttonCancel }}
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
