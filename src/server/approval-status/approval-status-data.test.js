@@ -1,13 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import * as approvalStatusData from './approval-status-data.js'
+import { fetchJson, patchJson } from '../common/api/api.js'
 
 // Mock the API module
 vi.mock('../common/api/api.js', () => ({
   fetchJson: vi.fn(),
   patchJson: vi.fn()
 }))
-
-import { fetchJson, patchJson } from '../common/api/api.js'
 
 describe('Approval Status Data Helper', () => {
   beforeEach(() => {
@@ -24,18 +23,18 @@ describe('Approval Status Data Helper', () => {
 
       fetchJson.mockResolvedValueOnce(mockAppliance)
 
-      const result = await approvalStatusData.getApplianceForApprovalStatus('APP-001')
+      const result =
+        await approvalStatusData.getApplianceForApprovalStatus('APP-001')
 
-      expect(fetchJson).toHaveBeenCalledWith(
-        '/appliances/APP-001'
-      )
+      expect(fetchJson).toHaveBeenCalledWith('/appliances/APP-001')
       expect(result).toEqual(mockAppliance)
     })
 
     it('should handle appliance not found', async () => {
       fetchJson.mockResolvedValueOnce(null)
 
-      const result = await approvalStatusData.getApplianceForApprovalStatus('APP-999')
+      const result =
+        await approvalStatusData.getApplianceForApprovalStatus('APP-999')
 
       expect(result).toBeNull()
     })
@@ -63,10 +62,10 @@ describe('Approval Status Data Helper', () => {
   describe('updateCertificationStatus', () => {
     const decidedBy = { name: 'Reviewer', email: 'reviewer@example.com' }
 
-    it('should patch the country certification field', async () => {
+    it('should patch the country certification endpoint', async () => {
       const mockResponse = {
-        id: 'APP-001',
-        englandCertification: { status: 'certified' }
+        success: true,
+        data: { id: 'APP-001', englandCertification: { status: 'certified' } }
       }
 
       patchJson.mockResolvedValueOnce(mockResponse)
@@ -78,27 +77,19 @@ describe('Approval Status Data Helper', () => {
         decidedBy
       )
 
-      expect(patchJson).toHaveBeenCalledWith('/appliances/APP-001', {
-        englandCertification: {
-          status: 'certified',
-          decidedAt: expect.any(String),
-          decidedBy
-        }
-      })
+      expect(patchJson).toHaveBeenCalledWith(
+        '/appliances/APP-001/certification/england',
+        { status: 'certified', decidedBy }
+      )
       expect(result).toEqual(mockResponse)
     })
 
-    it('should map each country to its certification field', async () => {
+    it('should use the country in the path', async () => {
       patchJson.mockResolvedValue({ success: true })
 
-      const countryFields = {
-        england: 'englandCertification',
-        scotland: 'scotlandCertification',
-        wales: 'walesCertification',
-        'northern-ireland': 'nIrelandCertification'
-      }
+      const countries = ['england', 'scotland', 'wales', 'northern-ireland']
 
-      for (const [country, field] of Object.entries(countryFields)) {
+      for (const country of countries) {
         await approvalStatusData.updateCertificationStatus(
           'APP-001',
           country,
@@ -107,10 +98,8 @@ describe('Approval Status Data Helper', () => {
         )
 
         expect(patchJson).toHaveBeenCalledWith(
-          '/appliances/APP-001',
-          expect.objectContaining({
-            [field]: expect.objectContaining({ status: 'certified' })
-          })
+          `/appliances/APP-001/certification/${country}`,
+          expect.objectContaining({ status: 'certified' })
         )
       }
     })
@@ -126,12 +115,8 @@ describe('Approval Status Data Helper', () => {
       )
 
       expect(patchJson).toHaveBeenCalledWith(
-        '/appliances/APP-001',
-        expect.objectContaining({
-          englandCertification: expect.objectContaining({
-            status: 'uncertified'
-          })
-        })
+        '/appliances/APP-001/certification/england',
+        { status: 'uncertified', decidedBy }
       )
     })
 

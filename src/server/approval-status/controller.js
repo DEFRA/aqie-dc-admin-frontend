@@ -176,13 +176,13 @@ export const approvalsStatusController = {
       const displayStatus = mapStatusForDisplay(currentStatus)
 
       const countryDisplay = countryDisplayNames[country]
-      
+
       // Choose heading based on current status
       const heading =
         displayStatus === 'awaiting_decision'
           ? content.setHeading(appliance.modelName, countryDisplay)
           : content.changeHeading(appliance.modelName, countryDisplay)
-      
+
       const radioOptions = getRadioOptions(currentStatus)
       const question = getQuestion(currentStatus, country)
       const applianceRecordHref = `/appliance-record/${encodeURIComponent(applianceId)}`
@@ -253,7 +253,9 @@ export const approvalsStatusDecisionController = {
 
       // If decision is 'no' (don't change), just redirect without updating
       if (decision === 'no') {
-        return h.redirect(`/appliance-record/${encodeURIComponent(applianceId)}`)
+        return h.redirect(
+          `/appliance-record/${encodeURIComponent(applianceId)}`
+        )
       }
 
       // Otherwise, determine the new status and update

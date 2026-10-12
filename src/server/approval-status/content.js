@@ -32,10 +32,13 @@ export const approvalStatusContent = {
         buttonSubmit: 'Change status',
         buttonCancel: 'Cancel',
         // Success/Error messages
-        successMessage: (country) => `Certification status updated for ${country}`,
+        successMessage: (country) =>
+          `Certification status updated for ${country}`,
         errorTitle: 'Error',
-        errorUpdatingStatus: 'There was a problem updating the certification status',
-        errorLoadingAppliance: 'There was a problem loading the appliance details',
+        errorUpdatingStatus:
+          'There was a problem updating the certification status',
+        errorLoadingAppliance:
+          'There was a problem loading the appliance details',
         // Appliance details
         modelNameLabel: 'Model name:',
         applianceRecordsLink: 'Back to appliance record'

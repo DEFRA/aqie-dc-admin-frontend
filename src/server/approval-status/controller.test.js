@@ -3,14 +3,13 @@ import {
   approvalsStatusController,
   approvalsStatusDecisionController
 } from './controller.js'
+import * as approvalStatusData from './approval-status-data.js'
 
 // Mock the data module
 vi.mock('./approval-status-data.js', () => ({
   getApplianceForApprovalStatus: vi.fn(),
   updateCertificationStatus: vi.fn()
 }))
-
-import * as approvalStatusData from './approval-status-data.js'
 
 const systemDecidedBy = { name: 'System', email: 'system@example.com' }
 
@@ -331,7 +330,9 @@ describe('Approval Status Controller', () => {
         mockH
       )
 
-      expect(approvalStatusData.updateCertificationStatus).not.toHaveBeenCalled()
+      expect(
+        approvalStatusData.updateCertificationStatus
+      ).not.toHaveBeenCalled()
       expect(result.redirect).toContain('/appliance-record/APP-001')
     })
 
