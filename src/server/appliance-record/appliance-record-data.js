@@ -53,7 +53,7 @@ const formatDate = (dateString) => {
  */
 export async function getApplianceRecord(applianceId) {
   const response = await fetchJson(
-    `/admin-appliances/${encodeURIComponent(applianceId)}`
+    `/api/admin/appliances/${encodeURIComponent(applianceId)}`
   )
 
   if (!response.success) {
