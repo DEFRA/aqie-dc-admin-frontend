@@ -16,17 +16,17 @@ describe('#getApplianceRecord', () => {
   })
 
   describe('successful response', () => {
-    // NOTE: Tests in this section intentionally use applianceStatus: 'live' for most tests
+    // NOTE: Tests in this section intentionally use status: 'live' for most tests
     // because they verify status-INDEPENDENT features (country mapping, date formatting, URL encoding).
     // Status-SPECIFIC button and label tests are in the 'status display and visibility toggle' section below.
 
-    test('fetches appliance record from /admin-appliances/{id}', async () => {
+    test('fetches appliance record from /api/admin/appliances/{id}', async () => {
       fetchJsonMock.mockResolvedValue({
         success: true,
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified', lastCertifiedAt: null },
             scotland: { status: 'awaiting_decision', lastCertifiedAt: null },
@@ -38,7 +38,9 @@ describe('#getApplianceRecord', () => {
 
       await getApplianceRecord('APP-001')
 
-      expect(fetchJsonMock).toHaveBeenCalledWith('/admin-appliances/APP-001')
+      expect(fetchJsonMock).toHaveBeenCalledWith(
+        '/api/admin/appliances/APP-001'
+      )
     })
 
     test('encodes appliance id in the path', async () => {
@@ -47,7 +49,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP/001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -59,7 +61,9 @@ describe('#getApplianceRecord', () => {
 
       await getApplianceRecord('APP/001')
 
-      expect(fetchJsonMock).toHaveBeenCalledWith('/admin-appliances/APP%2F001')
+      expect(fetchJsonMock).toHaveBeenCalledWith(
+        '/api/admin/appliances/APP%2F001'
+      )
     })
 
     test('returns appliance record with all certifications', async () => {
@@ -68,7 +72,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Appliance',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified', lastCertifiedAt: null },
             scotland: { status: 'awaiting_decision', lastCertifiedAt: null },
@@ -94,7 +98,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -118,7 +122,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -142,7 +146,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified', lastCertifiedAt: '2026-10-01' },
             scotland: { status: 'awaiting_decision', lastCertifiedAt: null },
@@ -166,7 +170,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'awaiting_decision' },
             scotland: { status: 'awaiting_decision' },
@@ -189,7 +193,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -221,7 +225,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP/001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -244,7 +248,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -272,7 +276,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -308,7 +312,7 @@ describe('#getApplianceRecord', () => {
           id: 'APP-001',
           applicationId: '0042',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -330,7 +334,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -352,7 +356,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: '',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -373,7 +377,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: '',
+          status: '',
           canTogglePublicVisibility: false,
           certifications: {
             england: { status: 'certified' },
@@ -398,7 +402,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' }
@@ -420,7 +424,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'unknown_status' },
             scotland: { status: 'awaiting_decision' },
@@ -477,7 +481,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified', lastCertifiedAt: '2026-01-05' },
             scotland: { status: 'awaiting_decision', lastCertifiedAt: null },
@@ -498,7 +502,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified', lastCertifiedAt: '2000-01-01' },
             scotland: { status: 'awaiting_decision', lastCertifiedAt: null },
@@ -520,7 +524,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: applianceId,
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             england: { status: 'certified' },
             scotland: { status: 'awaiting_decision' },
@@ -541,7 +545,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           certifications: {
             northernIreland: { status: 'not_certified' },
             wales: { status: 'uncertified' },
@@ -576,7 +580,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'pending',
+          status: 'pending',
           canTogglePublicVisibility: false,
           certifications: {
             england: { status: 'awaiting_decision' },
@@ -604,7 +608,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -630,7 +634,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -656,7 +660,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: false,
           certifications: {
             england: { status: 'awaiting_decision' },
@@ -682,7 +686,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -704,7 +708,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP/001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -726,7 +730,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -753,7 +757,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'live',
+          status: 'live',
           canTogglePublicVisibility: true,
           certifications: {
             england: { status: 'certified' },
@@ -775,7 +779,7 @@ describe('#getApplianceRecord', () => {
         data: {
           id: 'APP-001',
           modelName: 'Test Model',
-          applianceStatus: 'pending',
+          status: 'pending',
           certifications: {
             england: { status: 'awaiting_decision' },
             scotland: { status: 'awaiting_decision' },

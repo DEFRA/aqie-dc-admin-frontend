@@ -36,7 +36,7 @@ const formatDate = (dateString) => {
  * Fetches and transforms appliance record from backend API.
  *
  * This function:
- * 1. Calls backend /admin-appliances/{id} endpoint
+ * 1. Calls backend /api/admin/appliances/{id} endpoint
  * 2. Transforms backend response to frontend format:
  *    - Maps country keys to display names (from content.js)
  *    - Maps certification statuses to display labels and tag colors (from content.js)
