@@ -65,8 +65,7 @@ export const router = {
         additionalConditions,
         applianceRecord,
         instructionManual,
-        testReports,
-        applianceRecord
+        testReports
       ])
 
       // Static assets
