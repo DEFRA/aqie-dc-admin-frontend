@@ -9,6 +9,7 @@ const content = applianceRecordContent.en
  */
 const STATUS_LABEL_MAP = {
   awaiting_decision: 'Awaiting decision',
+  new: 'Awaiting decision',
   certified: 'Certified',
   uncertified: 'Uncertified',
   not_certified: 'Not certified',
@@ -82,7 +83,7 @@ export async function getApplianceRecord(applianceId) {
         dateCertified: certification.lastCertifiedAt
           ? formatDate(certification.lastCertifiedAt)
           : null,
-        changeUrl: `/appliance-record/${encodeURIComponent(applianceId)}/certification/${countryKey}`
+        changeUrl: `/approval-status-${countryKey}`
       }
     }
   )
@@ -182,8 +183,8 @@ export async function getApplianceRecord(applianceId) {
       canTogglePublicVisibility: data.canTogglePublicVisibility || false,
       buttons,
       publicListingUrl: `/appliance-list/${encodeURIComponent(applianceId)}`,
-      hideFromPublicUrl: `/appliance-record/${encodeURIComponent(applianceId)}/hide-from-public`,
-      makePublicUrl: `/appliance-record/${encodeURIComponent(applianceId)}/make-public`,
+      hideFromPublicUrl: '/change-display-status',
+      makePublicUrl: '/change-display-status',
       certifications,
       details
     }

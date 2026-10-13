@@ -206,16 +206,16 @@ describe('#getApplianceRecord', () => {
       const result = await getApplianceRecord('APP-001')
 
       expect(result.data.certifications[0].changeUrl).toBe(
-        '/appliance-record/APP-001/certification/england'
+        '/approval-status-england'
       )
       expect(result.data.certifications[1].changeUrl).toBe(
-        '/appliance-record/APP-001/certification/scotland'
+        '/approval-status-scotland'
       )
       expect(result.data.certifications[2].changeUrl).toBe(
-        '/appliance-record/APP-001/certification/wales'
+        '/approval-status-wales'
       )
       expect(result.data.certifications[3].changeUrl).toBe(
-        '/appliance-record/APP-001/certification/northernIreland'
+        '/approval-status-northernIreland'
       )
     })
 
@@ -238,7 +238,7 @@ describe('#getApplianceRecord', () => {
       const result = await getApplianceRecord('APP/001')
 
       expect(result.data.certifications[0].changeUrl).toBe(
-        '/appliance-record/APP%2F001/certification/england'
+        '/approval-status-england'
       )
     })
 
@@ -743,12 +743,8 @@ describe('#getApplianceRecord', () => {
 
       const result = await getApplianceRecord('APP-001')
 
-      expect(result.data.hideFromPublicUrl).toBe(
-        '/appliance-record/APP-001/hide-from-public'
-      )
-      expect(result.data.makePublicUrl).toBe(
-        '/appliance-record/APP-001/make-public'
-      )
+      expect(result.data.hideFromPublicUrl).toBe('/change-display-status')
+      expect(result.data.makePublicUrl).toBe('/change-display-status')
     })
 
     test('passes canTogglePublicVisibility flag', async () => {

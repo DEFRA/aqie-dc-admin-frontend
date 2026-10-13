@@ -57,32 +57,32 @@ const mockApplianceRecord = {
       hideFromPublic: true
     },
     publicListingUrl: '/appliance-list/APP-123',
-    hideFromPublicUrl: '/appliance-record/APP-123/hide-from-public',
-    makePublicUrl: '/appliance-record/APP-123/make-public',
+    hideFromPublicUrl: '/change-display-status',
+    makePublicUrl: '/change-display-status',
     certifications: [
       {
         country: 'England',
         status: 'Certified',
         dateCertified: '01/10/2026',
-        changeUrl: '/appliance-record/APP-123/certification/england'
+        changeUrl: '/approval-status-england'
       },
       {
         country: 'Scotland',
         status: 'Awaiting decision',
         dateCertified: null,
-        changeUrl: '/appliance-record/APP-123/certification/scotland'
+        changeUrl: '/approval-status-scotland'
       },
       {
         country: 'Wales',
         status: 'Uncertified',
         dateCertified: null,
-        changeUrl: '/appliance-record/APP-123/certification/wales'
+        changeUrl: '/approval-status-wales'
       },
       {
         country: 'Northern Ireland',
         status: 'Awaiting decision',
         dateCertified: '04/10/2026',
-        changeUrl: '/appliance-record/APP-123/certification/northernIreland'
+        changeUrl: '/approval-status-northernIreland'
       }
     ],
     details: [
@@ -206,14 +206,14 @@ describe('applianceRecord controller', () => {
 
       const callArgs = h.view.mock.calls[0][1]
       expect(callArgs.certificationTableRows[0][3].html).toContain(
-        '/appliance-record/APP-123/certification/england'
+        '/approval-status-england'
       )
       expect(callArgs.certificationTableRows[0][3].html).toContain('Change')
       expect(callArgs.certificationTableRows[0][3].html).toContain(
         'certification for England'
       )
       expect(callArgs.certificationTableRows[1][3].html).toContain(
-        '/appliance-record/APP-123/certification/scotland'
+        '/approval-status-scotland'
       )
     })
 
@@ -327,9 +327,7 @@ describe('applianceRecord controller', () => {
       expect(callArgs.actions.buttons[0].text).toBe(
         'Hide appliance from public list'
       )
-      expect(callArgs.actions.buttons[0].href).toBe(
-        '/appliance-record/APP-123/hide-from-public'
-      )
+      expect(callArgs.actions.buttons[0].href).toBe('/change-display-status')
     })
 
     test('passes no public listing link or buttons for pending appliance', async () => {
@@ -385,9 +383,7 @@ describe('applianceRecord controller', () => {
       expect(callArgs.actions.buttons[0].text).toBe(
         'Make appliance live on public list'
       )
-      expect(callArgs.actions.buttons[0].href).toBe(
-        '/appliance-record/APP-123/make-public'
-      )
+      expect(callArgs.actions.buttons[0].href).toBe('/change-display-status')
       expect(callArgs.statusDisplay.label).toBe('Hidden from public list')
       expect(callArgs.statusDisplay.tagClass).toBe('govuk-tag--grey')
     })
