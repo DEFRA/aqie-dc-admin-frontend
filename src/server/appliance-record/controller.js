@@ -2,18 +2,18 @@
  * Appliance Record Controller
  *
  * Handles HTTP request/response for the appliance-record page.
- * Orchestrates data layer and view model preparation.
+ * Orchestrates data access and view-model preparation.
  *
  * Architecture:
  * 1. Request comes to handleGetApplianceRecordPage with applianceId param
- * 2. Calls getApplianceRecord (data layer) to fetch and transform backend data
- * 3. Builds view-specific data structures (certification rows, detail rows, buttons)
+ * 2. Calls getApplianceRecord (data layer) to fetch raw backend data
+ * 3. Builds view-specific data structures (status labels, certification rows, detail rows, buttons)
  * 4. Passes to template with all required context
  *
  * Key principles:
  * - All content/labels come from content.js (no hardcoding)
- * - Data transformation happens in data layer (appliance-record-data.js)
- * - Controller focuses on view model preparation
+ * - Data fetching stays in appliance-record-data.js
+ * - Controller owns UI-specific transformation and view-model preparation
  * - Template is pure rendering (no logic beyond iteration/conditionals)
  */
 
@@ -24,6 +24,34 @@ import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = applianceRecordContent.en
+
+const STATUS_LABEL_MAP = {
+  awaiting_decision: 'Awaiting decision',
+  new: 'Awaiting decision',
+  certified: 'Certified',
+  uncertified: 'Uncertified',
+  not_certified: 'Not certified',
+  rejected: 'Rejected'
+}
+
+const STATUS_DISPLAY_MAP = {
+  pending: content.applianceStatus.pending,
+  live: content.applianceStatus.live,
+  hidden: content.applianceStatus.hidden,
+  rejected: content.applianceStatus.rejected,
+  new: content.applianceStatus.pending,
+  awaiting_decision: content.applianceStatus.pending
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return null
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+}
 
 /**
  * Returns the URL for appliance-records list page (return link destination).
@@ -58,6 +86,89 @@ const renderServiceError = (h) =>
  * @param {Object} appliance - Transformed appliance data from data layer
  * @returns {Array} Array of row arrays, each containing 4 cell objects
  */
+const buildApplianceViewModel = (data, applianceId) => {
+  const certifications = Object.entries(content.countries).map(
+    ([countryKey, countryName]) => {
+      const certification = data.certifications?.[countryKey] || {}
+      const certStatusLabel =
+        STATUS_LABEL_MAP[certification.status] ||
+        certification.status ||
+        'Not certified'
+
+      return {
+        country: countryName,
+        status: certStatusLabel,
+        dateCertified: certification.lastCertifiedAt
+          ? formatDate(certification.lastCertifiedAt)
+          : null,
+        changeUrl: `/approval-status-${countryKey}`
+      }
+    }
+  )
+
+  const rawApplianceStatus = String(
+    data.status ?? data.applianceStatus ?? 'pending'
+  ).trim()
+  const applianceStatus =
+    rawApplianceStatus === 'new' || rawApplianceStatus === 'awaiting_decision'
+      ? 'pending'
+      : rawApplianceStatus
+  const statusDisplay =
+    STATUS_DISPLAY_MAP[applianceStatus] || STATUS_DISPLAY_MAP.pending
+
+  const buttons = {}
+  if (applianceStatus === 'live') {
+    buttons.showPublicListing = true
+    if (data.canTogglePublicVisibility) {
+      buttons.hideFromPublic = true
+    }
+  } else if (applianceStatus === 'hidden' && data.canTogglePublicVisibility) {
+    buttons.makePublic = true
+  }
+
+  const details = [
+    {
+      label: content.detailsItems.applianceDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/appliance-details`
+    },
+    {
+      label: content.detailsItems.testResults,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/test-reports`
+    },
+    {
+      label: content.detailsItems.instructionManual,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/instruction-manual`
+    },
+    {
+      label: data.applicationId
+        ? content.formatApplicationDetailsLabel(data.applicationId)
+        : content.detailsItems.applicationDetails,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
+    },
+    {
+      label: content.detailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/action-history`
+    }
+  ]
+
+  return {
+    id: data.id,
+    modelName: data.modelName || content.defaultModelName,
+    applianceStatus,
+    statusDisplay: {
+      label: statusDisplay.label,
+      tagClass: statusDisplay.tagClass
+    },
+    canTogglePublicVisibility: data.canTogglePublicVisibility || false,
+    buttons,
+    publicListingUrl: `/appliance-list/${encodeURIComponent(applianceId)}`,
+    hideFromPublicUrl: '/change-display-status',
+    makePublicUrl: '/change-display-status',
+    certifications,
+    details
+  }
+}
+
 const buildCertificationTableRows = (appliance) =>
   appliance.certifications.map((cert) => {
     const statusTagColor = content.certificationStatus[cert.status]
@@ -201,7 +312,8 @@ export const handleGetApplianceRecordPage = async (request, h) => {
       return renderServiceError(h)
     }
 
-    const { data: appliance } = applianceRecord
+    const { data: backendData } = applianceRecord
+    const appliance = buildApplianceViewModel(backendData, applianceId)
 
     return h.view('appliance-record/index', {
       ...content,

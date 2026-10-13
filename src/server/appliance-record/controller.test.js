@@ -294,6 +294,30 @@ describe('applianceRecord controller', () => {
       expect(callArgs.returnLinkUrl).toBe('/appliance-records')
     })
 
+    test('normalizes new backend status to pending display state', async () => {
+      fetchJsonMock.mockResolvedValue({
+        ...mockBackendResponse,
+        data: {
+          ...mockBackendResponse.data,
+          status: 'new',
+          canTogglePublicVisibility: false
+        }
+      })
+      const h = toolkit()
+
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-123' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      expect(callArgs.statusDisplay).toEqual({
+        label: 'Pending government approval',
+        tagClass: 'govuk-tag--yellow'
+      })
+      expect(callArgs.appliance.applianceStatus).toBe('pending')
+    })
+
     test('passes status display with correct color for live status', async () => {
       fetchJsonMock.mockResolvedValue(mockBackendResponse)
       const h = toolkit()

@@ -16,6 +16,9 @@ export const applianceRecordContent = {
     // Page metadata
     pageHeading: (modelName) => modelName,
     pageTitle: (modelName) => `Appliance record for ${modelName}`,
+    defaultModelName: 'Unknown model',
+    formatApplicationDetailsLabel: (applicationId) =>
+      `Application ${applicationId} details`,
 
     // Section titles
     certificationStatusTitle: 'Certification status',
@@ -80,6 +83,10 @@ export const applianceRecordContent = {
       hidden: {
         label: 'Hidden from public list',
         tagClass: 'govuk-tag--grey'
+      },
+      rejected: {
+        label: 'Rejected',
+        tagClass: 'govuk-tag--red'
       }
     },
 
