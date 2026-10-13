@@ -19,6 +19,7 @@
 
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { getApplianceRecord } from './appliance-record-data.js'
+import { buildApplianceRecordData } from './appliance-record-helpers.js'
 import { applianceRecordContent } from './content.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
@@ -163,10 +164,10 @@ const buildRejectedDetailsRows = (appliance) => {
       value: {
         text: appliance.updatedAt
           ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
           : null
       }
     },
@@ -300,7 +301,10 @@ export const handleGetApplianceRecordPage = async (request, h) => {
       return renderServiceError(h)
     }
 
-    const { data: appliance } = applianceRecord
+    const appliance = buildApplianceRecordData(
+      applianceId,
+      applianceRecord.data
+    )
 
     return h.view('appliance-record/index', {
       ...content,
