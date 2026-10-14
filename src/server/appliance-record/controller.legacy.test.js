@@ -65,11 +65,11 @@ describe('applianceRecord controller - Legacy Records', () => {
   })
 
   describe('Standard (Non-Legacy) Record Details', () => {
-    test('passes standard details rows with correct labels', async () => {
+    test('passes non-legacy details rows with correct labels', async () => {
       fetchJsonMock.mockResolvedValue(mockBackendResponse)
       const h = toolkit()
 
-      // NOTE: Standard details are shown by default (IS_LEGACY_RECORD = false in controller)
+      // NOTE: Non-legacy details are shown by default (IS_LEGACY_RECORD = false in controller)
       await handleGetApplianceRecordPage(
         { params: { applianceId: 'APP-LEGACY-123' } },
         h
@@ -79,7 +79,7 @@ describe('applianceRecord controller - Legacy Records', () => {
       expect(callArgs.detailsRows).toBeDefined()
       expect(callArgs.detailsRows).toHaveLength(5)
 
-      // Verify standard details items are present
+      // Verify non-legacy details items are present
       const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
       expect(detailLabels).toContain('Appliance details')
       expect(detailLabels).toContain('Test results')
@@ -88,7 +88,7 @@ describe('applianceRecord controller - Legacy Records', () => {
       expect(detailLabels).toContain('Action history')
     })
 
-    test('passes standard details with correct view URLs', async () => {
+    test('passes non-legacy details with correct view URLs', async () => {
       fetchJsonMock.mockResolvedValue(mockBackendResponse)
       const h = toolkit()
 
@@ -100,7 +100,7 @@ describe('applianceRecord controller - Legacy Records', () => {
       const callArgs = h.view.mock.calls[0][1]
       const detailRows = callArgs.detailsRows
 
-      // Verify URLs for each standard detail
+      // Verify URLs for each non-legacy detail
       expect(detailRows[0].actions.items[0].href).toBe(
         '/appliance-record/APP-LEGACY-123/appliance-details'
       )
@@ -118,7 +118,7 @@ describe('applianceRecord controller - Legacy Records', () => {
       )
     })
 
-    test('passes standard details title to template', async () => {
+    test('passes non-legacy details title to template', async () => {
       fetchJsonMock.mockResolvedValue(mockBackendResponse)
       const h = toolkit()
 
