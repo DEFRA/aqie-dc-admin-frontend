@@ -75,11 +75,11 @@ export const applianceRecordContent = {
         tagClass: 'govuk-tag--yellow'
       },
       live: {
-        label: 'Live',
+        label: 'Live on public list',
         tagClass: 'govuk-tag--green'
       },
       hidden: {
-        label: 'Hidden',
+        label: 'Hidden from public list',
         tagClass: 'govuk-tag--grey'
       },
       rejected: {
