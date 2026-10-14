@@ -49,46 +49,37 @@ export const applianceRecordContent = {
       northernIreland: 'Northern Ireland'
     },
 
-    // Certification status labels with GOV.UK tag colors
-    // Keys are display labels returned by data transformation layer
+    // Certification status labels with GOV.UK tag colors, keyed by backend value
     certificationStatus: {
-      'Awaiting decision': {
+      awaiting_decision: {
         label: 'Awaiting decision',
         tagClass: 'govuk-tag--yellow'
       },
-      Certified: {
+      certified: {
         label: 'Certified',
         tagClass: 'govuk-tag--green'
       },
-      Uncertified: {
+      uncertified: {
         label: 'Uncertified',
         tagClass: 'govuk-tag--grey'
-      },
-      'Not certified': {
-        label: 'Not certified',
-        tagClass: 'govuk-tag--grey'
-      },
-      Rejected: {
-        label: 'Rejected',
-        tagClass: 'govuk-tag--red'
-      },
-      notCertified: {
-        label: 'Not certified'
       }
     },
+
+    // Shown in the date column when a country has no certification date
+    notCertifiedText: 'Not certified',
 
     // Appliance status (pending, live, hidden, rejected) with GOV.UK tag colors
     applianceStatus: {
       pending: {
-        label: 'Pending government approval',
+        label: 'Pending Government Approval',
         tagClass: 'govuk-tag--yellow'
       },
       live: {
-        label: 'Live on public list',
+        label: 'Live',
         tagClass: 'govuk-tag--green'
       },
       hidden: {
-        label: 'Hidden from public list',
+        label: 'Hidden',
         tagClass: 'govuk-tag--grey'
       },
       rejected: {

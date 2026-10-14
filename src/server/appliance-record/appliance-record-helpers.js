@@ -2,40 +2,9 @@ import { applianceRecordContent } from './content.js'
 
 const content = applianceRecordContent.en
 
-export const STATUS_LABEL_MAP = {
-  awaiting_decision: 'Awaiting decision',
-  pending: 'Awaiting decision',
-  new: 'Awaiting decision',
-  certified: 'Certified',
-  uncertified: 'Uncertified',
-  not_certified: 'Not certified',
-  revoked: 'Rejected',
-  rejected: 'Rejected'
-}
-
-export const normalizeStatusKey = (value) =>
-  String(value ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-
-export const normalizeApplianceStatus = (status) => {
-  const normalized = normalizeStatusKey(status)
-
-  if (['new', 'awaiting_decision', 'pending'].includes(normalized)) {
-    return 'pending'
-  }
-
-  if (['uncertified', 'not_certified', 'revoked'].includes(normalized)) {
-    return 'hidden'
-  }
-
-  if (['live', 'hidden', 'rejected'].includes(normalized)) {
-    return normalized
-  }
-
-  return normalized || 'pending'
-}
+// Backend returns applianceStatus as live | hidden | pending | rejected
+export const normalizeApplianceStatus = (status) =>
+  content.applianceStatus[status] ? status : content.statusValues.pending
 
 export const formatDate = (dateString) => {
   if (!dateString) return null
@@ -49,9 +18,10 @@ export const formatDate = (dateString) => {
 
 export const buildCertificationTableRows = (appliance) =>
   appliance.certifications.map((cert) => {
-    const statusTagColor = content.certificationStatus[cert.status]
-    const dateText =
-      cert.dateCertified || content.certificationStatus.notCertified.label
+    const statusTagColor =
+      content.certificationStatus[cert.status] ||
+      content.certificationStatus.uncertified
+    const dateText = cert.dateCertified || content.notCertifiedText
 
     return [
       { text: cert.country },
@@ -193,17 +163,11 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
   const certifications = Object.entries(content.countries).map(
     ([countryKey, countryName]) => {
       const certification = data.certifications?.[countryKey] || {}
-      const normalizedCertificationStatus = normalizeStatusKey(
-        certification.status
-      )
-      const certStatusLabel =
-        STATUS_LABEL_MAP[normalizedCertificationStatus] ||
-        certification.status ||
-        'Not certified'
 
+      // Backend returns certification status as awaiting_decision | certified | uncertified
       return {
         country: countryName,
-        status: certStatusLabel,
+        status: certification.status || 'uncertified',
         dateCertified: certification.lastCertifiedAt
           ? formatDate(certification.lastCertifiedAt)
           : null,
@@ -212,17 +176,8 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     }
   )
 
-  const applianceStatus = normalizeApplianceStatus(
-    data.status || data.applianceStatus || content.statusValues.pending
-  )
-  const baseStatusDisplay =
-    content.applianceStatus[applianceStatus] || content.applianceStatus.pending
-  const statusDisplay = { ...baseStatusDisplay }
-
-  if (applianceStatus === content.statusValues.rejected) {
-    statusDisplay.label = content.applianceStatus.rejected.label
-    statusDisplay.tagClass = content.applianceStatus.rejected.tagClass
-  }
+  const applianceStatus = normalizeApplianceStatus(data.applianceStatus)
+  const statusDisplay = content.applianceStatus[applianceStatus]
 
   const buttons = {}
   if (applianceStatus === content.statusValues.live) {
