@@ -27,17 +27,10 @@
         <!-- Back link for browser navigation -->
         <a href="/appliance-records" class="govuk-back-link">{{ backLinkText }}</a>
 
-        <!-- Page heading with dynamic status tag as caption -->
-        <!-- Status label shown as GOV.UK caption within the heading -->
-        <h1 class="govuk-heading-xl">
-            <span class="govuk-caption-xl">
-                <strong class="govuk-tag {{ statusDisplay.tagClass }}"
-                    style="display: inline-block !important; white-space: nowrap !important; padding: 3px 6px !important; line-height: 1.4 !important; width: auto !important; max-width: none !important;">
-                    {{ statusDisplay.label }}
-                </strong>
-            </span>
-            {{ appliance.modelName }}
-        </h1>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">{{ appliance.modelName }}</h1>
+        <p class="govuk-body">
+            <strong class="govuk-tag app-tag--nowrap {{ statusDisplay.tagClass }}">{{ statusDisplay.label }}</strong>
+        </p>
 
         <!-- Public listing section: shows link to view public listing -->
         <!-- Only shown for live appliances -->

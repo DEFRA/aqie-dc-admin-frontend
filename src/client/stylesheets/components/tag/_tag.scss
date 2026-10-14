@@ -1,0 +1,5 @@
+// govuk-tag caps max-width at 160px, which wraps longer status labels
+.app-tag--nowrap {
+  max-width: none;
+  white-space: nowrap;
+}

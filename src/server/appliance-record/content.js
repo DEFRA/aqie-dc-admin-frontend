@@ -71,7 +71,7 @@ export const applianceRecordContent = {
     // Appliance status (pending, live, hidden, rejected) with GOV.UK tag colors
     applianceStatus: {
       pending: {
-        label: 'Pending Government Approval',
+        label: 'Pending government approval',
         tagClass: 'govuk-tag--yellow'
       },
       live: {
