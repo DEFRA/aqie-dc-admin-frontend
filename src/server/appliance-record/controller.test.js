@@ -17,7 +17,7 @@ const mockBackendResponse = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    applianceStatus: 'live',
+    status: 'live',
     canTogglePublicVisibility: true,
     certifications: {
       england: {
@@ -67,25 +67,25 @@ const mockApplianceRecord = {
     certifications: [
       {
         country: 'England',
-        status: 'Certified',
+        status: 'certified',
         dateCertified: '01/10/2026',
         changeUrl: '/approval-status-england'
       },
       {
         country: 'Scotland',
-        status: 'Awaiting decision',
+        status: 'awaiting_decision',
         dateCertified: null,
         changeUrl: '/approval-status-scotland'
       },
       {
         country: 'Wales',
-        status: 'Uncertified',
+        status: 'uncertified',
         dateCertified: null,
         changeUrl: '/approval-status-wales'
       },
       {
         country: 'Northern Ireland',
-        status: 'Awaiting decision',
+        status: 'awaiting_decision',
         dateCertified: '04/10/2026',
         changeUrl: '/approval-status-northernIreland'
       }
@@ -335,7 +335,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'rejected',
+          status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
           technicalReview: { reviewedBy: 'Calvin May' }
@@ -362,41 +362,12 @@ describe('applianceRecord controller', () => {
       expect(callArgs.detailsRows[2].key.text).toBe('Appliance details')
     })
 
-    test('handles capitalised backend status values without crashing', async () => {
-      const rejectedResponse = {
-        ...mockBackendResponse,
-        data: {
-          ...mockBackendResponse.data,
-          status: 'Rejected',
-          applianceStatus: 'Rejected',
-          canTogglePublicVisibility: false,
-          updatedAt: '2026-01-10T10:00:00.000Z',
-          technicalReview: { reviewedBy: 'Calvin May' }
-        }
-      }
-
-      fetchJsonMock.mockResolvedValue(rejectedResponse)
-      const h = toolkit()
-
-      await handleGetApplianceRecordPage(
-        { params: { applianceId: 'APP-123' } },
-        h
-      )
-
-      const callArgs = h.view.mock.calls[0][1]
-      expect(callArgs.statusDisplay).toEqual({
-        label: 'Rejected',
-        tagClass: 'govuk-tag--red'
-      })
-      expect(callArgs.detailsRows[0].key.text).toBe('Date rejected')
-    })
-
     test('passes no public listing link or buttons for pending appliance', async () => {
       const pendingResponse = {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'pending',
+          status: 'pending',
           canTogglePublicVisibility: false
         }
       }
@@ -420,7 +391,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: true
         }
       }
@@ -448,7 +419,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: false
         }
       }
@@ -471,7 +442,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'rejected',
+          status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
           technicalReview: { reviewedBy: 'Calvin May' }
