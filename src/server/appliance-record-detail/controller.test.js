@@ -285,12 +285,8 @@ describe('#handleApplianceRecordDetailRequest', () => {
     )
 
     const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.backLink.href).toBe(
-      '/manage-certification/appliance-record/APP-1'
-    )
-    expect(viewModel.returnHref).toBe(
-      '/manage-certification/appliance-record/APP-1'
-    )
+    expect(viewModel.backLink.href).toBe('/appliance-record/APP-1')
+    expect(viewModel.returnHref).toBe('/appliance-record/APP-1')
   })
 
   test('renders error page when API fetch fails', async () => {
