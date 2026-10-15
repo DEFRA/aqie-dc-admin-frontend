@@ -52,7 +52,7 @@ describe('appliance record helpers', () => {
     const liveAppliance = {
       applianceStatus: 'live',
       publicListingUrl: '/appliance-list/APP-123',
-      hideFromPublicUrl: '/change-display-status',
+      hideFromPublicUrl: '/appliance-record/APP-123/change-display-status',
       buttons: { hideFromPublic: true }
     }
 
@@ -65,7 +65,7 @@ describe('appliance record helpers', () => {
       buttons: [
         {
           text: 'Hide appliance from public list',
-          href: '/change-display-status',
+          href: '/appliance-record/APP-123/change-display-status',
           classes: 'govuk-button govuk-button--secondary'
         }
       ]

@@ -1,0 +1,49 @@
+{% extends "layouts/page.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block pageTitle %}
+{{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+{#
+  Confirmation page used to update an appliance's visibility on the public list.
+  The submitted boolean drives the backend PATCH endpoint and then redirects back to the
+  individual appliance record page.
+#}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+        <p class="govuk-body">{{ description }}</p>
+
+        <form method="post" action="{{ formAction }}" novalidate>
+            <input type="hidden" name="applianceId" value="{{ applianceId }}">
+
+            <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h2 class="govuk-fieldset__heading">{{ question }}</h2>
+                    </legend>
+
+                    {{ govukRadios({
+                        idPrefix: 'isVisibleToPublic',
+                        name: 'isVisibleToPublic',
+                        items: visibilityItems
+                    }) }}
+                </fieldset>
+            </div>
+
+            <div class="govuk-button-group govuk-!-margin-top-7">
+                {{ govukButton({
+          text: confirmText
+        }) }}
+
+                <a class="govuk-link" href="{{ cancelHref }}">{{ cancelText }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
