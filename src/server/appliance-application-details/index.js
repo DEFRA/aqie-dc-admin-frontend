@@ -23,7 +23,7 @@ export const applianceApplicationDetails = {
       server.route([
         {
           method: 'GET',
-          path: '/manage-certification/appliance-record/{applianceId}/application-details',
+          path: '/appliance-record/{applianceId}/application-details',
           ...applianceApplicationDetailsController,
           options: {
             validate: { params: paramsSchema }
