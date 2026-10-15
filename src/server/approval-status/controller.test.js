@@ -316,6 +316,77 @@ describe('Approval Status Controller', () => {
       )
     })
 
+    it('should show an error and not update when nothing is selected (yes/no)', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'certified' }
+        }
+      })
+
+      mockRequest.payload = {}
+
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
+
+      expect(
+        approvalStatusData.updateCertificationStatus
+      ).not.toHaveBeenCalled()
+      expect(result.statusCode).toBe(400)
+      expect(result.template).toBe('approval-status/index')
+      expect(result.data.error).toEqual({
+        message: 'Please select an Option',
+        href: '#decision-0'
+      })
+      expect(result.data.pageTitle).toMatch(/^Error: /)
+      expect(result.data.radioOptions.map((o) => o.value)).toEqual([
+        'yes',
+        'no'
+      ])
+    })
+
+    it('should link the error to the first radio when awaiting a decision', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'awaiting_decision' }
+        }
+      })
+
+      mockRequest.payload = {}
+
+      const result = await approvalsStatusDecisionController.handler(
+        mockRequest,
+        mockH
+      )
+
+      expect(result.statusCode).toBe(400)
+      expect(result.data.error.href).toBe('#decision-certified')
+      expect(
+        approvalStatusData.updateCertificationStatus
+      ).not.toHaveBeenCalled()
+    })
+
+    it('should not show an error on a normal GET', async () => {
+      approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
+        data: {
+          id: 'APP-001',
+          modelName: 'Test Stove',
+          englandCertification: { status: 'certified' }
+        }
+      })
+
+      await approvalsStatusController.handler(mockRequest, mockH)
+
+      const [, viewData] = mockH.view.mock.calls[0]
+      expect(viewData.error).toBeNull()
+      expect(viewData.pageTitle).not.toMatch(/^Error: /)
+    })
+
     it('should not update when decision is no', async () => {
       approvalStatusData.getApplianceForApprovalStatus.mockResolvedValueOnce({
         data: {

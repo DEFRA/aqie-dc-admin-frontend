@@ -3,6 +3,18 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: content.errorSummaryTitle,
+          errorList: [
+            {
+              text: error.message,
+              href: error.href
+            }
+          ]
+        }) }}
+      {% endif %}
+
       <h1 class="govuk-heading-xl">{{ heading }}</h1>
       <p class="govuk-body">Current status: {{ statusLabel | lower }}</p>
       <p class="govuk-body">{{ disclaimer }}</p>
@@ -15,11 +27,17 @@
         {% endif %}
 
         <!-- Dynamic Question and Radio Options -->
-        <div class="govuk-form-group">
-          <fieldset class="govuk-fieldset">
+        <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset"{% if error %} aria-describedby="decision-error"{% endif %}>
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading">{{ question }}</h2>
             </legend>
+
+            {% if error %}
+              <p id="decision-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ error.message }}
+              </p>
+            {% endif %}
 
             <div class="govuk-radios" data-module="govuk-radios">
               {% if currentStatus === 'awaiting_decision' %}

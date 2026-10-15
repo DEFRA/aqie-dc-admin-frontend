@@ -37,7 +37,7 @@ export const approvalStatus = {
               payload: Joi.object({
                 decision: Joi.string()
                   .valid('yes', 'no', 'certified', 'uncertified')
-                  .required()
+                  .optional()
               })
             }
           }

@@ -146,6 +146,46 @@ function deriveNewStatus(currentStatus, selectedValue) {
 }
 
 /**
+ * Build the view model for the approval status form.
+ * With `showError` it carries the "nothing selected" validation error.
+ */
+function buildFormView(appliance, applianceId, country, showError = false) {
+  const certification = appliance[getCertificationField(country)] || {}
+  const currentStatus = certification.status || 'awaiting_decision'
+  const displayStatus = mapStatusForDisplay(currentStatus)
+  const countryDisplay = countryDisplayNames[country]
+
+  const heading =
+    displayStatus === 'awaiting_decision'
+      ? content.setHeading(appliance.modelName, countryDisplay)
+      : content.changeHeading(appliance.modelName, countryDisplay)
+
+  // The summary link must target the first radio, whose id differs by variant.
+  const firstRadioHref =
+    displayStatus === 'awaiting_decision'
+      ? '#decision-certified'
+      : '#decision-0'
+
+  return {
+    pageTitle: showError ? `Error: ${heading}` : heading,
+    heading,
+    content,
+    appliance,
+    country,
+    countryDisplay,
+    currentStatus: displayStatus,
+    statusLabel: content[getStatusContentKey(displayStatus)],
+    disclaimer: content.disclaimerText(countryDisplay),
+    question: getQuestion(currentStatus, country),
+    radioOptions: getRadioOptions(currentStatus),
+    applianceRecordHref: `/appliance-record/${encodeURIComponent(applianceId)}`,
+    error: showError
+      ? { message: content.errorSelectOption, href: firstRadioHref }
+      : null
+  }
+}
+
+/**
  * GET handler - Display the approval status change form
  */
 export const approvalsStatusController = {
@@ -168,43 +208,10 @@ export const approvalsStatusController = {
           .code(statusCodes.notFound)
       }
 
-      const appliance = response.data
-
-      const certificationField = getCertificationField(country)
-      const certification = appliance[certificationField] || {}
-      const currentStatus = certification.status || 'awaiting_decision'
-      const displayStatus = mapStatusForDisplay(currentStatus)
-
-      const countryDisplay = countryDisplayNames[country]
-
-      // Choose heading based on current status
-      const heading =
-        displayStatus === 'awaiting_decision'
-          ? content.setHeading(appliance.modelName, countryDisplay)
-          : content.changeHeading(appliance.modelName, countryDisplay)
-
-      const radioOptions = getRadioOptions(currentStatus)
-      const question = getQuestion(currentStatus, country)
-      const applianceRecordHref = `/appliance-record/${encodeURIComponent(applianceId)}`
-
-      const statusContentKey = getStatusContentKey(displayStatus)
-      const statusLabel = content[statusContentKey]
-      const disclaimer = content.disclaimerText(countryDisplay)
-
-      return h.view('approval-status/index', {
-        pageTitle: heading,
-        heading,
-        content,
-        appliance,
-        country,
-        countryDisplay,
-        currentStatus: displayStatus,
-        statusLabel,
-        disclaimer,
-        question,
-        radioOptions,
-        applianceRecordHref
-      })
+      return h.view(
+        'approval-status/index',
+        buildFormView(response.data, applianceId, country)
+      )
     } catch (error) {
       logger.error(
         `Error loading approval status page for ${applianceId}:`,
@@ -246,6 +253,16 @@ export const approvalsStatusDecisionController = {
       }
 
       const appliance = response.data
+
+      // Nothing selected: show the form again with a validation error
+      if (!decision) {
+        return h
+          .view(
+            'approval-status/index',
+            buildFormView(appliance, applianceId, country, true)
+          )
+          .code(statusCodes.badRequest)
+      }
 
       const certificationField = getCertificationField(country)
       const certification = appliance[certificationField] || {}

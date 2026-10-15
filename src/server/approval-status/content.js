@@ -35,6 +35,8 @@ export const approvalStatusContent = {
         successMessage: (country) =>
           `Certification status updated for ${country}`,
         errorTitle: 'Error',
+        errorSummaryTitle: 'There is a problem',
+        errorSelectOption: 'Please select an Option',
         errorUpdatingStatus:
           'There was a problem updating the certification status',
         errorLoadingAppliance:
