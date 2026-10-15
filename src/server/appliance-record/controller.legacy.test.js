@@ -25,7 +25,7 @@ const mockBackendResponse = {
   data: {
     id: 'APP-LEGACY-123',
     modelName: 'Legacy Test Appliance',
-    applianceStatus: 'live',
+    status: 'live',
     canTogglePublicVisibility: true,
     certifications: {
       england: {
@@ -184,7 +184,7 @@ describe('applianceRecord controller - Legacy Records', () => {
           applicationId: '0042',
           isLegacyRecord: true,
           modelName: 'Legacy Record Model',
-          applianceStatus: 'live'
+          status: 'live'
         }
       })
 
