@@ -62,6 +62,7 @@ describe('Approval Status Controller', () => {
       expect(viewData.appliance).toEqual(mockAppliance)
       expect(viewData.currentStatus).toBe('certified')
       expect(viewData.question).toContain('uncertified')
+      expect(viewData.applianceRecordHref).toBe('/appliance-record/APP-001')
     })
 
     it('should render approval status form for uncertified appliance', async () => {

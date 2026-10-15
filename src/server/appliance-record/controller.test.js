@@ -69,25 +69,25 @@ const mockApplianceRecord = {
         country: 'England',
         status: 'certified',
         dateCertified: '01/10/2026',
-        changeUrl: '/approval-status-england'
+        changeUrl: 'APP-123/approval-status-england'
       },
       {
         country: 'Scotland',
         status: 'awaiting_decision',
         dateCertified: null,
-        changeUrl: '/approval-status-scotland'
+        changeUrl: 'APP-123/approval-status-scotland'
       },
       {
         country: 'Wales',
         status: 'uncertified',
         dateCertified: null,
-        changeUrl: '/approval-status-wales'
+        changeUrl: 'APP-123/approval-status-wales'
       },
       {
         country: 'Northern Ireland',
         status: 'awaiting_decision',
         dateCertified: '04/10/2026',
-        changeUrl: '/approval-status-northernIreland'
+        changeUrl: 'APP-123/approval-status-northern-ireland'
       }
     ],
     details: [
@@ -206,14 +206,17 @@ describe('applianceRecord controller', () => {
 
       const callArgs = h.view.mock.calls[0][1]
       expect(callArgs.certificationTableRows[0][3].html).toContain(
-        '/approval-status-england'
+        'href="APP-123/approval-status-england"'
       )
       expect(callArgs.certificationTableRows[0][3].html).toContain('Change')
       expect(callArgs.certificationTableRows[0][3].html).toContain(
         'certification for England'
       )
       expect(callArgs.certificationTableRows[1][3].html).toContain(
-        '/approval-status-scotland'
+        'href="APP-123/approval-status-scotland"'
+      )
+      expect(callArgs.certificationTableRows[3][3].html).toContain(
+        'href="APP-123/approval-status-northern-ireland"'
       )
     })
 
