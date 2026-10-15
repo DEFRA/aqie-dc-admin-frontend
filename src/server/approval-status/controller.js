@@ -4,186 +4,15 @@ import {
   getApplianceForApprovalStatus,
   updateCertificationStatus
 } from './approval-status-data.js'
+import {
+  buildFormView,
+  deriveNewStatus,
+  getCurrentStatus
+} from './approval-status-helper.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = approvalStatusContent.en.pages.approvalStatus
-
-// Map country path segment to full country name
-const countryDisplayNames = {
-  england: 'England',
-  scotland: 'Scotland',
-  wales: 'Wales',
-  'northern-ireland': 'Northern Ireland'
-}
-
-/**
- * Get the certification field name for a country
- */
-function getCertificationField(country) {
-  const fieldMap = {
-    england: 'englandCertification',
-    scotland: 'scotlandCertification',
-    wales: 'walesCertification',
-    'northern-ireland': 'nIrelandCertification'
-  }
-  return fieldMap[country]
-}
-
-/**
- * Normalise stored status to the three supported display statuses
- */
-function mapStatusForDisplay(schemaStatus) {
-  const statusMap = {
-    awaiting_decision: 'awaiting_decision',
-    certified: 'certified',
-    uncertified: 'uncertified'
-  }
-  return statusMap[schemaStatus] || 'awaiting_decision'
-}
-
-/**
- * Generate radio options based on current status
- */
-function getRadioOptions(currentStatus, selectedValue = null) {
-  const displayStatus = mapStatusForDisplay(currentStatus)
-
-  if (displayStatus === 'certified') {
-    // Certified: ask if they want to change to uncertified
-    return [
-      {
-        value: 'yes',
-        text: content.optionYes,
-        checked: selectedValue === 'yes'
-      },
-      {
-        value: 'no',
-        text: content.optionNo,
-        checked: selectedValue === 'no'
-      }
-    ]
-  } else if (displayStatus === 'uncertified') {
-    // Uncertified: ask if they want to change to certified
-    return [
-      {
-        value: 'yes',
-        text: content.optionYes,
-        checked: selectedValue === 'yes'
-      },
-      {
-        value: 'no',
-        text: content.optionNo,
-        checked: selectedValue === 'no'
-      }
-    ]
-  } else if (displayStatus === 'awaiting_decision') {
-    // Awaiting decision: ask them to select certified or uncertified
-    return [
-      {
-        value: 'certified',
-        text: content.optionCertified,
-        checked: selectedValue === 'certified'
-      },
-      {
-        value: 'uncertified',
-        text: content.optionUncertified,
-        checked: selectedValue === 'uncertified'
-      }
-    ]
-  }
-
-  return []
-}
-
-/**
- * Map display status to content key
- */
-function getStatusContentKey(displayStatus) {
-  const keyMap = {
-    certified: 'statusCertified',
-    uncertified: 'statusUncertified',
-    awaiting_decision: 'statusAwaitingDecision'
-  }
-  return keyMap[displayStatus] || displayStatus
-}
-
-/**
- * Get the question text based on current status
- */
-function getQuestion(currentStatus, country) {
-  const displayStatus = mapStatusForDisplay(currentStatus)
-  const countryDisplay = countryDisplayNames[country]
-
-  if (displayStatus === 'certified') {
-    return content.questionCertified(countryDisplay)
-  } else if (displayStatus === 'uncertified') {
-    return content.questionUncertified(countryDisplay)
-  } else if (displayStatus === 'awaiting_decision') {
-    return content.questionAwaitingDecision(countryDisplay)
-  }
-
-  return ''
-}
-
-/**
- * Convert yes/no response and awaiting_decision status to new certification status
- */
-function deriveNewStatus(currentStatus, selectedValue) {
-  const displayStatus = mapStatusForDisplay(currentStatus)
-
-  if (displayStatus === 'certified') {
-    // Certified: Yes means change to uncertified, No means stay certified
-    return selectedValue === 'yes' ? 'uncertified' : 'certified'
-  } else if (displayStatus === 'uncertified') {
-    // Uncertified: Yes means change to certified, No means stay uncertified
-    return selectedValue === 'yes' ? 'certified' : 'uncertified'
-  } else if (displayStatus === 'awaiting_decision') {
-    // Awaiting decision: select certified or uncertified
-    return selectedValue
-  }
-
-  return null
-}
-
-/**
- * Build the view model for the approval status form.
- * With `showError` it carries the "nothing selected" validation error.
- */
-function buildFormView(appliance, applianceId, country, showError = false) {
-  const certification = appliance[getCertificationField(country)] || {}
-  const currentStatus = certification.status || 'awaiting_decision'
-  const displayStatus = mapStatusForDisplay(currentStatus)
-  const countryDisplay = countryDisplayNames[country]
-
-  const heading =
-    displayStatus === 'awaiting_decision'
-      ? content.setHeading(appliance.modelName, countryDisplay)
-      : content.changeHeading(appliance.modelName, countryDisplay)
-
-  // The summary link must target the first radio, whose id differs by variant.
-  const firstRadioHref =
-    displayStatus === 'awaiting_decision'
-      ? '#decision-certified'
-      : '#decision-0'
-
-  return {
-    pageTitle: showError ? `Error: ${heading}` : heading,
-    heading,
-    content,
-    appliance,
-    country,
-    countryDisplay,
-    currentStatus: displayStatus,
-    statusLabel: content[getStatusContentKey(displayStatus)],
-    disclaimer: content.disclaimerText(countryDisplay),
-    question: getQuestion(currentStatus, country),
-    radioOptions: getRadioOptions(currentStatus),
-    applianceRecordHref: `/appliance-record/${encodeURIComponent(applianceId)}`,
-    error: showError
-      ? { message: content.errorSelectOption, href: firstRadioHref }
-      : null
-  }
-}
 
 /**
  * GET handler - Display the approval status change form
@@ -195,7 +24,7 @@ export const approvalsStatusController = {
     try {
       const response = await getApplianceForApprovalStatus(applianceId)
 
-      if (!response || !response.data) {
+      if (!response?.data) {
         logger.warn(
           `Appliance not found for approval status page: ${applianceId}`
         )
@@ -239,7 +68,7 @@ export const approvalsStatusDecisionController = {
     try {
       const response = await getApplianceForApprovalStatus(applianceId)
 
-      if (!response || !response.data) {
+      if (!response?.data) {
         logger.warn(
           `Appliance not found for approval status update: ${applianceId}`
         )
@@ -264,10 +93,6 @@ export const approvalsStatusDecisionController = {
           .code(statusCodes.badRequest)
       }
 
-      const certificationField = getCertificationField(country)
-      const certification = appliance[certificationField] || {}
-      const currentStatus = certification.status || 'awaiting_decision'
-
       // If decision is 'no' (don't change), just redirect without updating
       if (decision === 'no') {
         return h.redirect(
@@ -276,7 +101,10 @@ export const approvalsStatusDecisionController = {
       }
 
       // Otherwise, determine the new status and update
-      const newStatus = deriveNewStatus(currentStatus, decision)
+      const newStatus = deriveNewStatus(
+        getCurrentStatus(appliance, country),
+        decision
+      )
 
       if (!newStatus) {
         logger.warn(
