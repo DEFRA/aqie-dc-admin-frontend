@@ -12,7 +12,7 @@ const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
 
 function buildViewModel(appliance, application, applianceId) {
-  const returnHref = `/manage-certification/appliance-record/${encodeURIComponent(applianceId)}`
+  const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
 
   return {
     pageTitle: `Application ${application.id} details`,
@@ -24,10 +24,7 @@ function buildViewModel(appliance, application, applianceId) {
     returnHref,
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },
-      {
-        text: 'Appliance records',
-        href: '/manage-certification/appliance-record'
-      },
+      { text: 'Appliance records', href: '/appliance-records' },
       { text: appliance.modelName, href: returnHref }
     ]
   }
