@@ -49,7 +49,7 @@ const mockApplianceRecord = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    status: 'live',
+    applianceStatus: 'live',
     updatedAt: null,
     technicalReview: null,
     statusDisplay: {
