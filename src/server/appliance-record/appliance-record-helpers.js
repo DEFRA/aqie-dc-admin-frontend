@@ -167,7 +167,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
       // Backend returns certification status as awaiting_decision | certified | uncertified
       return {
         country: countryName,
-        status: certification.status || 'uncertified',
+        status: certification.status || 'awaiting_decision',
         dateCertified: certification.lastCertifiedAt
           ? formatDate(certification.lastCertifiedAt)
           : null,
