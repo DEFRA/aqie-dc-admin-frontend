@@ -1,0 +1,25 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+    {{ govukSummaryList({
+      rows: summaryRows
+    }) }}
+
+    <p>
+      <a class="govuk-link" href="{{ returnHref }}">Return to record</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
