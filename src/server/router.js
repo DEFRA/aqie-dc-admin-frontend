@@ -23,6 +23,7 @@ import { modelNumber } from './model-number/index.js'
 import { applianceType } from './appliance-type/index.js'
 import { otherApplianceType } from './other-appliance-type/index.js'
 import { variantAppliance } from './variant-appliance/index.js'
+import { approvalStatus } from './approval-status/index.js'
 import { applianceRecord } from './appliance-record/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
@@ -62,6 +63,7 @@ export const router = {
         applianceType,
         otherApplianceType,
         variantAppliance,
+        approvalStatus,
         conformityMark,
         technicalDrawings,
         additionalConditions,
