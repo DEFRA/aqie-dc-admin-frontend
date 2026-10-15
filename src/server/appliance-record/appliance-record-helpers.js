@@ -2,7 +2,7 @@ import { applianceRecordContent } from './content.js'
 
 const content = applianceRecordContent.en
 
-// Backend returns applianceStatus as live | hidden | pending | rejected
+// Backend returns appliance status as live | hidden | pending | rejected
 export const normalizeApplianceStatus = (status) =>
   content.applianceStatus[status] ? status : content.statusValues.pending
 
@@ -176,7 +176,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     }
   )
 
-  const applianceStatus = normalizeApplianceStatus(data.applianceStatus)
+  const applianceStatus = normalizeApplianceStatus(data.status)
   const statusDisplay = content.applianceStatus[applianceStatus]
 
   const buttons = {}

@@ -17,7 +17,7 @@ const mockBackendResponse = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    applianceStatus: 'live',
+    status: 'live',
     canTogglePublicVisibility: true,
     certifications: {
       england: {
@@ -49,7 +49,7 @@ const mockApplianceRecord = {
   data: {
     id: 'APP-123',
     modelName: 'Test Appliance Model',
-    applianceStatus: 'live',
+    status: 'live',
     updatedAt: null,
     technicalReview: null,
     statusDisplay: {
@@ -335,7 +335,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'rejected',
+          status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
           technicalReview: { reviewedBy: 'Calvin May' }
@@ -367,7 +367,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'pending',
+          status: 'pending',
           canTogglePublicVisibility: false
         }
       }
@@ -391,7 +391,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: true
         }
       }
@@ -419,7 +419,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'hidden',
+          status: 'hidden',
           canTogglePublicVisibility: false
         }
       }
@@ -442,7 +442,7 @@ describe('applianceRecord controller', () => {
         ...mockBackendResponse,
         data: {
           ...mockBackendResponse.data,
-          applianceStatus: 'rejected',
+          status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
           technicalReview: { reviewedBy: 'Calvin May' }

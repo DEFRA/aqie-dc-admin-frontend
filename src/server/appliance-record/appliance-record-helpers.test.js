@@ -21,7 +21,7 @@ describe('appliance record helpers', () => {
       id: 'APP-123',
       modelName: 'Test Model',
       applicationId: '0042',
-      applianceStatus: 'rejected',
+      status: 'rejected',
       updatedAt: '2026-01-10T10:00:00.000Z',
       technicalReview: { reviewedBy: 'Calvin May' },
       canTogglePublicVisibility: false,
