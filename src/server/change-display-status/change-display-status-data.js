@@ -13,7 +13,7 @@ import { fetchJson, patchJson } from '../common/api/api.js'
  * @returns {Promise<object>} The admin appliance payload returned by the backend.
  */
 export async function getApplianceVisibilityState(applianceId) {
-  return fetchJson(`/api/admin/appliances/${encodeURIComponent(applianceId)}`)
+  return fetchJson(`/appliances/${encodeURIComponent(applianceId)}`)
 }
 
 /**
