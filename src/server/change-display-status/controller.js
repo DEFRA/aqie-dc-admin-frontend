@@ -128,8 +128,9 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
         h,
         applianceId,
         appliance,
-        error
-      ).code(statusCodes.badRequest)
+        error,
+        rawValue
+      )
     }
 
     const isVisibleToPublic = rawValue === true || rawValue === 'true'

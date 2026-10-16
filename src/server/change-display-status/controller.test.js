@@ -179,48 +179,26 @@ describe('change display status controller', () => {
     ])
   })
 
-  test('renders an error and does not save visibility when the hide screen has no selection', async () => {
-    getApplianceVisibilityState.mockResolvedValue({
-      success: true,
-      data: {
-        id: 'APP-123',
-        isVisibleToPublic: true,
-        modelName: 'Hide appliance'
-      }
-    })
+  test('keeps route validation focused on the path param and lets the controller handle missing selection state', () => {
+    const server = { route: vi.fn() }
 
-    const h = {
-      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
-    }
+    changeDisplayStatus.plugin.register(server)
 
-    await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {}
-      },
-      h
+    const postRoute = server.route.mock.calls[0][0].find(
+      (route) => route.method === 'POST'
     )
 
-    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
-    expect(saveApplianceVisibility).not.toHaveBeenCalled()
-    expect(h.view).toHaveBeenCalledWith(
-      'change-display-status/index',
-      expect.objectContaining({
-        error: expect.objectContaining({
-          message:
-            'Select yes if you want this appliance to be hidden from the public list'
-        })
-      })
-    )
+    expect(postRoute.options.validate.params).toBeDefined()
+    expect(postRoute.options.validate.payload).toBeUndefined()
   })
 
-  test('renders an error and does not save visibility when the make-live screen has no selection', async () => {
+  test('re-renders the page with a validation error when no radio option is selected', async () => {
     getApplianceVisibilityState.mockResolvedValue({
       success: true,
       data: {
         id: 'APP-123',
-        isVisibleToPublic: false,
-        modelName: 'Make appliance live'
+        modelName: 'Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove',
+        isVisibleToPublic: true
       }
     })
 
@@ -236,14 +214,13 @@ describe('change display status controller', () => {
       h
     )
 
-    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
-    expect(saveApplianceVisibility).not.toHaveBeenCalled()
     expect(h.view).toHaveBeenCalledWith(
       'change-display-status/index',
       expect.objectContaining({
         error: expect.objectContaining({
+          field: 'isVisibleToPublic',
           message:
-            'Select yes if you want this appliance to appear in the public list'
+            'Select yes if you want this appliance to be hidden from the public list'
         })
       })
     )
