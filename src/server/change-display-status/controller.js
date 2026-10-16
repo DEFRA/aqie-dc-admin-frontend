@@ -15,16 +15,11 @@ import {
 const logger = createLogger()
 const content = changeDisplayStatusContent.en
 
-/**
- * Resolves the appliance id from route params, query string, or form payload.
- *
- * @param {object} request - The Hapi request object.
- * @returns {string|undefined} The appliance id when present.
- */
-const getApplianceId = (request) =>
-  request.params?.applianceId ??
-  request.query?.applianceId ??
-  request.payload?.applianceId
+const applianceRecordPath = (applianceId) =>
+  `/appliance-record/${encodeURIComponent(applianceId)}`
+
+const changeDisplayStatusPath = (applianceId) =>
+  `${applianceRecordPath(applianceId)}/change-display-status`
 
 /**
  * Renders the yes/no confirmation screen for the current visibility state.
@@ -35,7 +30,7 @@ const getApplianceId = (request) =>
  */
 export const handleGetChangeDisplayStatusPage = async (request, h) => {
   try {
-    const applianceId = getApplianceId(request)
+    const { applianceId } = request.params || {}
 
     if (!applianceId) {
       return h.redirect('/appliance-records')
@@ -45,6 +40,7 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
     const appliance = response?.data || {}
     const isVisibleToPublic = Boolean(appliance.isVisibleToPublic)
     const modelName = appliance.modelName || content.defaultModelName
+    const returnHref = applianceRecordPath(applianceId)
 
     return h.view('change-display-status/index', {
       pageTitle: content.pageTitle,
@@ -55,8 +51,8 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
       noText: content.no,
       confirmText: content.confirm,
       cancelText: content.cancel,
-      cancelHref: `/appliance-record/${encodeURIComponent(applianceId)}`,
-      formAction: `/appliance-record/${encodeURIComponent(applianceId)}/change-display-status`,
+      cancelHref: returnHref,
+      formAction: changeDisplayStatusPath(applianceId),
       applianceId,
       isVisibleToPublic,
       visibilityItems: content.visibilityItems(isVisibleToPublic)
@@ -80,18 +76,24 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
  */
 export const handlePostChangeDisplayStatusPage = async (request, h) => {
   try {
-    const applianceId = getApplianceId(request)
+    const { applianceId } = request.params || {}
 
     if (!applianceId) {
       return h.redirect('/appliance-records')
     }
 
     const rawValue = request.payload?.isVisibleToPublic
+    const returnHref = applianceRecordPath(applianceId)
+
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+      return h.redirect(returnHref)
+    }
+
     const isVisibleToPublic = rawValue === true || rawValue === 'true'
 
     await saveApplianceVisibility(applianceId, isVisibleToPublic)
 
-    return h.redirect(`/appliance-record/${encodeURIComponent(applianceId)}`)
+    return h.redirect(returnHref)
   } catch (error) {
     logger.error(
       `[change-display-status.POST] Failed to submit change display status: ${error.message}`

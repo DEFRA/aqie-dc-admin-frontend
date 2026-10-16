@@ -55,7 +55,7 @@ describe('change display status controller', () => {
     }
 
     const result = await handleGetChangeDisplayStatusPage(
-      { query: { applianceId: 'APP-123' } },
+      { params: { applianceId: 'APP-123' } },
       h
     )
 
@@ -77,12 +77,12 @@ describe('change display status controller', () => {
     expect(result.context.cancelHref).toBe('/appliance-record/APP-123')
   })
 
-  test('uses the payload appliance id when route params and query are missing on GET', async () => {
+  test('uses the route appliance id on GET', async () => {
     getApplianceVisibilityState.mockResolvedValue({
       success: true,
       data: {
         id: 'APP-123',
-        modelName: 'Payload appliance',
+        modelName: 'Route appliance',
         isVisibleToPublic: true
       }
     })
@@ -92,14 +92,12 @@ describe('change display status controller', () => {
     }
 
     const result = await handleGetChangeDisplayStatusPage(
-      { payload: { applianceId: 'APP-123' } },
+      { params: { applianceId: 'APP-123' } },
       h
     )
 
     expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
-    expect(result.context.heading).toBe(
-      'Hide Payload appliance from public list'
-    )
+    expect(result.context.heading).toBe('Hide Route appliance from public list')
   })
 
   test('uses a default model name when the backend returns no payload data', async () => {
@@ -165,7 +163,7 @@ describe('change display status controller', () => {
     }
 
     const result = await handleGetChangeDisplayStatusPage(
-      { query: { applianceId: 'APP-123' } },
+      { params: { applianceId: 'APP-123' } },
       h
     )
 
@@ -181,6 +179,23 @@ describe('change display status controller', () => {
     ])
   })
 
+  test('does not save visibility when the form has no selection', async () => {
+    const h = {
+      redirect: vi.fn().mockReturnThis()
+    }
+
+    await handlePostChangeDisplayStatusPage(
+      {
+        params: { applianceId: 'APP-123' },
+        payload: {}
+      },
+      h
+    )
+
+    expect(saveApplianceVisibility).not.toHaveBeenCalled()
+    expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
+  })
+
   test('saves the exact boolean visibility state selected by the user', async () => {
     saveApplianceVisibility.mockResolvedValue({ success: true })
 
@@ -190,8 +205,8 @@ describe('change display status controller', () => {
 
     await handlePostChangeDisplayStatusPage(
       {
+        params: { applianceId: 'APP-123' },
         payload: {
-          applianceId: 'APP-123',
           isVisibleToPublic: 'false'
         }
       },
@@ -202,7 +217,7 @@ describe('change display status controller', () => {
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
   })
 
-  test('uses the payload appliance id when route params and query are missing on POST', async () => {
+  test('uses the route appliance id on POST', async () => {
     saveApplianceVisibility.mockResolvedValue({ success: true })
 
     const h = {
@@ -211,8 +226,8 @@ describe('change display status controller', () => {
 
     const result = await handlePostChangeDisplayStatusPage(
       {
+        params: { applianceId: 'APP-123' },
         payload: {
-          applianceId: 'APP-123',
           isVisibleToPublic: 'true'
         }
       },
@@ -244,8 +259,8 @@ describe('change display status controller', () => {
 
     await handlePostChangeDisplayStatusPage(
       {
+        params: { applianceId: 'APP-123' },
         payload: {
-          applianceId: 'APP-123',
           isVisibleToPublic: true
         }
       },
@@ -267,8 +282,8 @@ describe('change display status controller', () => {
 
     await handlePostChangeDisplayStatusPage(
       {
+        params: { applianceId: 'APP-123' },
         payload: {
-          applianceId: 'APP-123',
           isVisibleToPublic: 'true'
         }
       },
