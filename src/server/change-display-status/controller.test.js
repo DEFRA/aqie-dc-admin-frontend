@@ -118,17 +118,6 @@ describe('change display status controller', () => {
     )
   })
 
-  test('redirects to appliance records when appliance id is missing on GET', async () => {
-    const h = {
-      redirect: vi.fn().mockReturnValue('redirected')
-    }
-
-    const result = await handleGetChangeDisplayStatusPage({}, h)
-
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-records')
-    expect(result).toBe('redirected')
-  })
-
   test('renders the generic error page when GET fails', async () => {
     getApplianceVisibilityState.mockRejectedValue(new Error('backend down'))
 
@@ -266,17 +255,6 @@ describe('change display status controller', () => {
 
     expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
-    expect(result).toBe('redirected')
-  })
-
-  test('redirects to appliance records when appliance id is missing on POST', async () => {
-    const h = {
-      redirect: vi.fn().mockReturnValue('redirected')
-    }
-
-    const result = await handlePostChangeDisplayStatusPage({}, h)
-
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-records')
     expect(result).toBe('redirected')
   })
 

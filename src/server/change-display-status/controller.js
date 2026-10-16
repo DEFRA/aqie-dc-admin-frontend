@@ -75,11 +75,7 @@ const renderChangeDisplayStatusPage = (
  */
 export const handleGetChangeDisplayStatusPage = async (request, h) => {
   try {
-    const { applianceId } = request.params || {}
-
-    if (!applianceId) {
-      return h.redirect('/appliance-records')
-    }
+    const { applianceId } = request.params
 
     const response = await getApplianceVisibilityState(applianceId)
     const appliance = response?.data || {}
@@ -104,11 +100,7 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
  */
 export const handlePostChangeDisplayStatusPage = async (request, h) => {
   try {
-    const { applianceId } = request.params || {}
-
-    if (!applianceId) {
-      return h.redirect('/appliance-records')
-    }
+    const { applianceId } = request.params
 
     const rawValue = request.payload?.isVisibleToPublic
     const returnHref = applianceRecordPath(applianceId)
