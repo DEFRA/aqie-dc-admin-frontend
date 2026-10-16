@@ -99,7 +99,6 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
         ),
         href: '#isVisibleToPublic'
       }
-
       return h
         .view(
           'change-display-status/index',
