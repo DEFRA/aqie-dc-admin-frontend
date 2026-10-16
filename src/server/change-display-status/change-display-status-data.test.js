@@ -17,7 +17,7 @@ vi.mock('../common/api/api.js', () => ({
 }))
 
 describe('change display status data', () => {
-  test('loads the current appliance visibility state from the admin endpoint', async () => {
+  test('loads the current appliance visibility state from the applainces endpoint', async () => {
     fetchJson.mockResolvedValue({
       success: true,
       data: {
@@ -29,7 +29,7 @@ describe('change display status data', () => {
 
     const result = await getApplianceVisibilityState('APP-123')
 
-    expect(fetchJson).toHaveBeenCalledWith('/api/admin/appliances/APP-123')
+    expect(fetchJson).toHaveBeenCalledWith('/appliances/APP-123')
     expect(result.data.isVisibleToPublic).toBe(true)
   })
 
