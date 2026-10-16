@@ -21,6 +21,51 @@ const applianceRecordPath = (applianceId) =>
 const changeDisplayStatusPath = (applianceId) =>
   `${applianceRecordPath(applianceId)}/change-display-status`
 
+const renderChangeDisplayStatusPage = (
+  h,
+  applianceId,
+  appliance,
+  error,
+  formValue
+) => {
+  const isVisibleToPublic = Boolean(appliance?.isVisibleToPublic)
+  const modelName = appliance?.modelName || content.defaultModelName
+  const heading = content.heading(modelName, isVisibleToPublic)
+  const visibilityItems = content
+    .visibilityItems(isVisibleToPublic)
+    .map((item) => {
+      if (formValue === undefined || formValue === null) {
+        return item
+      }
+
+      return {
+        ...item,
+        checked: formValue === item.value
+      }
+    })
+
+  return h.view('change-display-status/index', {
+    pageTitle: error ? `Error: ${heading}` : content.pageTitle,
+    heading,
+    description: content.description(isVisibleToPublic),
+    question: content.question(isVisibleToPublic),
+    yesText: content.yes,
+    noText: content.no,
+    confirmText: content.confirm,
+    cancelText: content.cancel,
+    cancelHref: applianceRecordPath(applianceId),
+    formAction: changeDisplayStatusPath(applianceId),
+    applianceId,
+    isVisibleToPublic,
+    visibilityItems,
+    error: error && {
+      field: error.field,
+      message: error.message,
+      href: error.href
+    }
+  })
+}
+
 /**
  * Renders the yes/no confirmation screen for the current visibility state.
  *
@@ -38,25 +83,8 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
 
     const response = await getApplianceVisibilityState(applianceId)
     const appliance = response?.data || {}
-    const isVisibleToPublic = Boolean(appliance.isVisibleToPublic)
-    const modelName = appliance.modelName || content.defaultModelName
-    const returnHref = applianceRecordPath(applianceId)
 
-    return h.view('change-display-status/index', {
-      pageTitle: content.pageTitle,
-      heading: content.heading(modelName, isVisibleToPublic),
-      description: content.description(isVisibleToPublic),
-      question: content.question(isVisibleToPublic),
-      yesText: content.yes,
-      noText: content.no,
-      confirmText: content.confirm,
-      cancelText: content.cancel,
-      cancelHref: returnHref,
-      formAction: changeDisplayStatusPath(applianceId),
-      applianceId,
-      isVisibleToPublic,
-      visibilityItems: content.visibilityItems(isVisibleToPublic)
-    })
+    return renderChangeDisplayStatusPage(h, applianceId, appliance)
   } catch (error) {
     logger.error(
       `[change-display-status.GET] Failed to render change display status page: ${error.message}`
@@ -86,7 +114,22 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
     const returnHref = applianceRecordPath(applianceId)
 
     if (rawValue === undefined || rawValue === null || rawValue === '') {
-      return h.redirect(returnHref)
+      const response = await getApplianceVisibilityState(applianceId)
+      const appliance = response?.data || {}
+      const error = {
+        field: 'isVisibleToPublic',
+        message: content.errors.selectionRequired(
+          Boolean(appliance.isVisibleToPublic)
+        ),
+        href: '#isVisibleToPublic'
+      }
+
+      return renderChangeDisplayStatusPage(
+        h,
+        applianceId,
+        appliance,
+        error
+      ).code(statusCodes.badRequest)
     }
 
     const isVisibleToPublic = rawValue === true || rawValue === 'true'

@@ -179,9 +179,18 @@ describe('change display status controller', () => {
     ])
   })
 
-  test('does not save visibility when the form has no selection', async () => {
+  test('renders an error and does not save visibility when the hide screen has no selection', async () => {
+    getApplianceVisibilityState.mockResolvedValue({
+      success: true,
+      data: {
+        id: 'APP-123',
+        isVisibleToPublic: true,
+        modelName: 'Hide appliance'
+      }
+    })
+
     const h = {
-      redirect: vi.fn().mockReturnThis()
+      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
     }
 
     await handlePostChangeDisplayStatusPage(
@@ -192,8 +201,52 @@ describe('change display status controller', () => {
       h
     )
 
+    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
     expect(saveApplianceVisibility).not.toHaveBeenCalled()
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
+    expect(h.view).toHaveBeenCalledWith(
+      'change-display-status/index',
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message:
+            'Select yes if you want this appliance to be hidden from the public list'
+        })
+      })
+    )
+  })
+
+  test('renders an error and does not save visibility when the make-live screen has no selection', async () => {
+    getApplianceVisibilityState.mockResolvedValue({
+      success: true,
+      data: {
+        id: 'APP-123',
+        isVisibleToPublic: false,
+        modelName: 'Make appliance live'
+      }
+    })
+
+    const h = {
+      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
+    }
+
+    await handlePostChangeDisplayStatusPage(
+      {
+        params: { applianceId: 'APP-123' },
+        payload: {}
+      },
+      h
+    )
+
+    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
+    expect(saveApplianceVisibility).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'change-display-status/index',
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message:
+            'Select yes if you want this appliance to appear in the public list'
+        })
+      })
+    )
   })
 
   test('saves the exact boolean visibility state selected by the user', async () => {

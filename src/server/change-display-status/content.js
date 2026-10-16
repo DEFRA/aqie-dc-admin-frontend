@@ -13,7 +13,12 @@ export const changeDisplayStatusContent = {
     cancel: 'Cancel',
     defaultModelName: 'appliance',
     errors: {
-      generic: 'Sorry, there is a problem with the service'
+      generic: 'Sorry, there is a problem with the service',
+      summaryTitle: 'There is a problem',
+      selectionRequired: (isVisibleToPublic) =>
+        isVisibleToPublic
+          ? 'Select yes if you want this appliance to be hidden from the public list'
+          : 'Select yes if you want this appliance to appear in the public list'
     },
     /**
      * Builds the heading based on the current visibility state.

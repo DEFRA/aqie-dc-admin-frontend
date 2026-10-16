@@ -1,5 +1,6 @@
 {% extends "layouts/page.njk" %}
 
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
@@ -15,6 +16,18 @@
 #}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        {% if error %}
+        {{ govukErrorSummary({
+                titleText: content.errors.summaryTitle,
+                errorList: [
+                    {
+                        text: error.message,
+                        href: error.href
+                    }
+                ]
+            }) }}
+        {% endif %}
+
         <h1 class="govuk-heading-xl">{{ heading }}</h1>
 
         <p class="govuk-body">{{ description }}</p>
@@ -22,7 +35,7 @@
         <form method="post" action="{{ formAction }}" novalidate>
             <input type="hidden" name="applianceId" value="{{ applianceId }}">
 
-            <div class="govuk-form-group">
+            <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h2 class="govuk-fieldset__heading">{{ question }}</h2>
@@ -31,6 +44,7 @@
                     {{ govukRadios({
                         idPrefix: 'isVisibleToPublic',
                         name: 'isVisibleToPublic',
+                        errorMessage: error and { text: error.message } or null,
                         items: visibilityItems
                     }) }}
                 </fieldset>
