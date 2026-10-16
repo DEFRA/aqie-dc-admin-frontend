@@ -21,30 +21,12 @@ const applianceRecordPath = (applianceId) =>
 const changeDisplayStatusPath = (applianceId) =>
   `${applianceRecordPath(applianceId)}/change-display-status`
 
-const renderChangeDisplayStatusPage = (
-  h,
-  applianceId,
-  appliance,
-  error,
-  formValue
-) => {
+const buildViewModel = ({ applianceId, appliance, error }) => {
   const isVisibleToPublic = Boolean(appliance?.isVisibleToPublic)
   const modelName = appliance?.modelName || content.defaultModelName
   const heading = content.heading(modelName, isVisibleToPublic)
-  const visibilityItems = content
-    .visibilityItems(isVisibleToPublic)
-    .map((item) => {
-      if (formValue === undefined || formValue === null) {
-        return item
-      }
 
-      return {
-        ...item,
-        checked: formValue === item.value
-      }
-    })
-
-  return h.view('change-display-status/index', {
+  return {
     pageTitle: error ? `Error: ${heading}` : content.pageTitle,
     heading,
     description: content.description(isVisibleToPublic),
@@ -57,13 +39,13 @@ const renderChangeDisplayStatusPage = (
     formAction: changeDisplayStatusPath(applianceId),
     applianceId,
     isVisibleToPublic,
-    visibilityItems,
+    visibilityItems: content.visibilityItems(isVisibleToPublic),
     error: error && {
       field: error.field,
       message: error.message,
       href: error.href
     }
-  })
+  }
 }
 
 /**
@@ -80,7 +62,10 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
     const response = await getApplianceVisibilityState(applianceId)
     const appliance = response?.data || {}
 
-    return renderChangeDisplayStatusPage(h, applianceId, appliance)
+    return h.view(
+      'change-display-status/index',
+      buildViewModel({ applianceId, appliance })
+    )
   } catch (error) {
     logger.error(
       `[change-display-status.GET] Failed to render change display status page: ${error.message}`
@@ -107,13 +92,20 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
       const response = await getApplianceVisibilityState(applianceId)
       const appliance = response?.data || {}
 
-      return renderChangeDisplayStatusPage(h, applianceId, appliance, {
+      const error = {
         field: 'isVisibleToPublic',
         message: content.errors.selectionRequired(
           Boolean(appliance.isVisibleToPublic)
         ),
         href: '#isVisibleToPublic'
-      }).code(statusCodes.badRequest)
+      }
+
+      return h
+        .view(
+          'change-display-status/index',
+          buildViewModel({ applianceId, appliance, error })
+        )
+        .code(statusCodes.badRequest)
     } catch (error) {
       logger.error(
         `[change-display-status.POST] Failed to render selection error for ${applianceId}: ${error.message}`
