@@ -99,37 +99,35 @@ export const handleGetChangeDisplayStatusPage = async (request, h) => {
  * @returns {object} Redirect back to the appliance record or an error page.
  */
 export const handlePostChangeDisplayStatusPage = async (request, h) => {
-  try {
-    const { applianceId } = request.params
+  const { applianceId } = request.params
+  const { isVisibleToPublic } = request.payload
 
-    const rawValue = request.payload?.isVisibleToPublic
-    const returnHref = applianceRecordPath(applianceId)
-
-    if (rawValue === undefined || rawValue === null || rawValue === '') {
+  if (isVisibleToPublic === undefined) {
+    try {
       const response = await getApplianceVisibilityState(applianceId)
       const appliance = response?.data || {}
-      const error = {
+
+      return renderChangeDisplayStatusPage(h, applianceId, appliance, {
         field: 'isVisibleToPublic',
         message: content.errors.selectionRequired(
           Boolean(appliance.isVisibleToPublic)
         ),
         href: '#isVisibleToPublic'
-      }
-
-      return renderChangeDisplayStatusPage(
-        h,
-        applianceId,
-        appliance,
-        error,
-        rawValue
+      }).code(statusCodes.badRequest)
+    } catch (error) {
+      logger.error(
+        `[change-display-status.POST] Failed to render selection error for ${applianceId}: ${error.message}`
       )
+      return h
+        .view('error/index', { message: content.errors.generic })
+        .code(statusCodes.internalServerError)
     }
+  }
 
-    const isVisibleToPublic = rawValue === true || rawValue === 'true'
+  try {
+    await saveApplianceVisibility(applianceId, isVisibleToPublic === 'true')
 
-    await saveApplianceVisibility(applianceId, isVisibleToPublic)
-
-    return h.redirect(returnHref)
+    return h.redirect(applianceRecordPath(applianceId))
   } catch (error) {
     logger.error(
       `[change-display-status.POST] Failed to submit change display status: ${error.message}`

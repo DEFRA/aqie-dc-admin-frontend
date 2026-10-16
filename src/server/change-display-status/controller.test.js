@@ -168,7 +168,7 @@ describe('change display status controller', () => {
     ])
   })
 
-  test('keeps route validation focused on the path param and lets the controller handle missing selection state', () => {
+  test('validates the payload on the POST route without a failAction', () => {
     const server = { route: vi.fn() }
 
     changeDisplayStatus.plugin.register(server)
@@ -176,9 +176,12 @@ describe('change display status controller', () => {
     const postRoute = server.route.mock.calls[0][0].find(
       (route) => route.method === 'POST'
     )
+    const { payload } = postRoute.options.validate
 
     expect(postRoute.options.validate.params).toBeDefined()
-    expect(postRoute.options.validate.payload).toBeUndefined()
+    expect(postRoute.options.validate.failAction).toBeUndefined()
+    expect(payload.validate({}).error).toBeUndefined()
+    expect(payload.validate({ isVisibleToPublic: 'maybe' }).error).toBeDefined()
   })
 
   test('re-renders the page with a validation error when no radio option is selected', async () => {
@@ -191,18 +194,17 @@ describe('change display status controller', () => {
       }
     })
 
+    const code = vi.fn().mockReturnThis()
     const h = {
-      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
+      view: vi.fn().mockReturnValue({ code })
     }
 
     await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {}
-      },
+      { params: { applianceId: 'APP-123' }, payload: {} },
       h
     )
 
+    expect(code).toHaveBeenCalledWith(400)
     expect(h.view).toHaveBeenCalledWith(
       'change-display-status/index',
       expect.objectContaining({
@@ -256,27 +258,6 @@ describe('change display status controller', () => {
     expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
     expect(result).toBe('redirected')
-  })
-
-  test('saves true when the form sends a boolean true value', async () => {
-    saveApplianceVisibility.mockResolvedValue({ success: true })
-
-    const h = {
-      redirect: vi.fn().mockReturnThis()
-    }
-
-    await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {
-          isVisibleToPublic: true
-        }
-      },
-      h
-    )
-
-    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
   })
 
   test('renders the generic error page when POST fails', async () => {

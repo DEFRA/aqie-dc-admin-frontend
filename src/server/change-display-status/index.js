@@ -19,6 +19,10 @@ const applianceIdSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
+const payloadSchema = Joi.object({
+  isVisibleToPublic: Joi.string().valid('true', 'false').optional()
+})
+
 export const changeDisplayStatus = {
   plugin: {
     name: 'change-display-status',
@@ -38,7 +42,8 @@ export const changeDisplayStatus = {
           ...changeDisplayStatusSubmitController,
           options: {
             validate: {
-              params: applianceIdSchema
+              params: applianceIdSchema,
+              payload: payloadSchema
             }
           }
         }

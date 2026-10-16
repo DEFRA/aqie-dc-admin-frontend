@@ -33,8 +33,6 @@
         <p class="govuk-body">{{ description }}</p>
 
         <form method="post" action="{{ formAction }}" novalidate>
-            <input type="hidden" name="applianceId" value="{{ applianceId }}">
-
             <div class="govuk-form-group{% if error %} govuk-form-group--error{% endif %}">
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
