@@ -234,8 +234,8 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     canTogglePublicVisibility: data.canTogglePublicVisibility || false,
     buttons,
     publicListingUrl: `/appliance-list/${encodeURIComponent(applianceId)}`,
-    hideFromPublicUrl: '/change-display-status',
-    makePublicUrl: '/change-display-status',
+    hideFromPublicUrl: `/appliance-record/${encodeURIComponent(applianceId)}/change-display-status`,
+    makePublicUrl: `/appliance-record/${encodeURIComponent(applianceId)}/change-display-status`,
     certifications,
     details
   }
