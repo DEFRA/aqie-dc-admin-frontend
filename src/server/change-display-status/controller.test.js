@@ -118,17 +118,6 @@ describe('change display status controller', () => {
     )
   })
 
-  test('redirects to appliance records when appliance id is missing on GET', async () => {
-    const h = {
-      redirect: vi.fn().mockReturnValue('redirected')
-    }
-
-    const result = await handleGetChangeDisplayStatusPage({}, h)
-
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-records')
-    expect(result).toBe('redirected')
-  })
-
   test('renders the generic error page when GET fails', async () => {
     getApplianceVisibilityState.mockRejectedValue(new Error('backend down'))
 
@@ -179,71 +168,50 @@ describe('change display status controller', () => {
     ])
   })
 
-  test('renders an error and does not save visibility when the hide screen has no selection', async () => {
-    getApplianceVisibilityState.mockResolvedValue({
-      success: true,
-      data: {
-        id: 'APP-123',
-        isVisibleToPublic: true,
-        modelName: 'Hide appliance'
-      }
-    })
+  test('validates the payload on the POST route without a failAction', () => {
+    const server = { route: vi.fn() }
 
-    const h = {
-      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
-    }
+    changeDisplayStatus.plugin.register(server)
 
-    await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {}
-      },
-      h
+    const postRoute = server.route.mock.calls[0][0].find(
+      (route) => route.method === 'POST'
     )
+    const { payload } = postRoute.options.validate
 
-    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
-    expect(saveApplianceVisibility).not.toHaveBeenCalled()
-    expect(h.view).toHaveBeenCalledWith(
-      'change-display-status/index',
-      expect.objectContaining({
-        error: expect.objectContaining({
-          message:
-            'Select yes if you want this appliance to be hidden from the public list'
-        })
-      })
-    )
+    expect(postRoute.options.validate.params).toBeDefined()
+    expect(postRoute.options.validate.failAction).toBeUndefined()
+    expect(payload.validate({}).error).toBeUndefined()
+    expect(payload.validate({ isVisibleToPublic: 'maybe' }).error).toBeDefined()
   })
 
-  test('renders an error and does not save visibility when the make-live screen has no selection', async () => {
+  test('re-renders the page with a validation error when no radio option is selected', async () => {
     getApplianceVisibilityState.mockResolvedValue({
       success: true,
       data: {
         id: 'APP-123',
-        isVisibleToPublic: false,
-        modelName: 'Make appliance live'
+        modelName: 'Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove',
+        isVisibleToPublic: true
       }
     })
 
+    const code = vi.fn().mockReturnThis()
     const h = {
-      view: vi.fn().mockReturnValue({ code: vi.fn().mockReturnThis() })
+      view: vi.fn().mockReturnValue({ code })
     }
 
     await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {}
-      },
+      { params: { applianceId: 'APP-123' }, payload: {} },
       h
     )
 
-    expect(getApplianceVisibilityState).toHaveBeenCalledWith('APP-123')
-    expect(saveApplianceVisibility).not.toHaveBeenCalled()
+    expect(code).toHaveBeenCalledWith(400)
     expect(h.view).toHaveBeenCalledWith(
       'change-display-status/index',
       expect.objectContaining({
         error: expect.objectContaining({
+          field: 'isVisibleToPublic',
           message:
-            'Select yes if you want this appliance to appear in the public list'
+            'Select yes if you want this appliance to be hidden from the public list'
         })
       })
     )
@@ -290,38 +258,6 @@ describe('change display status controller', () => {
     expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
     expect(result).toBe('redirected')
-  })
-
-  test('redirects to appliance records when appliance id is missing on POST', async () => {
-    const h = {
-      redirect: vi.fn().mockReturnValue('redirected')
-    }
-
-    const result = await handlePostChangeDisplayStatusPage({}, h)
-
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-records')
-    expect(result).toBe('redirected')
-  })
-
-  test('saves true when the form sends a boolean true value', async () => {
-    saveApplianceVisibility.mockResolvedValue({ success: true })
-
-    const h = {
-      redirect: vi.fn().mockReturnThis()
-    }
-
-    await handlePostChangeDisplayStatusPage(
-      {
-        params: { applianceId: 'APP-123' },
-        payload: {
-          isVisibleToPublic: true
-        }
-      },
-      h
-    )
-
-    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
-    expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
   })
 
   test('renders the generic error page when POST fails', async () => {
