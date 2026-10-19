@@ -30,6 +30,7 @@ import { azureAuth } from './plugins/azure-auth.js'
 import { instructionManual } from './instruction-manual/index.js'
 import { testReports } from './test-reports/index.js'
 import { applianceRecordDetail } from './appliance-record-detail/index.js'
+import { actionHistory } from './action-history/index.js'
 import { applianceApplicationDetails } from './appliance-application-details/index.js'
 
 export const router = {
@@ -71,6 +72,7 @@ export const router = {
         instructionManual,
         testReports,
         applianceRecordDetail,
+        actionHistory,
         applianceApplicationDetails
       ])
 

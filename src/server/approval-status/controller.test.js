@@ -257,7 +257,7 @@ describe('Approval Status Controller', () => {
       })
 
       mockRequest.auth = {
-        credentials: { name: 'Ada', email: 'ada@example.com' }
+        credentials: { user: { name: 'Ada', email: 'ada@example.com' } }
       }
 
       await approvalsStatusDecisionController.handler(mockRequest, mockH)
