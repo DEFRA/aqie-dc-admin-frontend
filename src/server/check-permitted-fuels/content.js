@@ -9,6 +9,11 @@ export const checkPermittedFuelsContent = {
     cancel: 'Cancel',
     yes: 'Yes',
     no: 'No',
+    characterCount: {
+      limit: 1000,
+      limitExceeded: (count) =>
+        `You have ${count} ${count === 1 ? 'character' : 'characters'} too many`
+    },
     errors: {
       generic: 'Sorry, there is a problem with the service',
       summaryTitle: 'There is a problem',
