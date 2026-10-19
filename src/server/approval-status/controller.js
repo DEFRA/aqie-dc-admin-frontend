@@ -120,9 +120,10 @@ export const approvalsStatusDecisionController = {
       }
 
       // Get the logged-in user's info for decidedBy
+      const user = request.auth?.credentials?.user
       const decidedBy = {
-        name: request.auth?.credentials?.name || 'System',
-        email: request.auth?.credentials?.email || 'system@example.com'
+        name: user?.name || 'System',
+        email: user?.email || 'system@example.com'
       }
 
       // Submit the update to the backend
