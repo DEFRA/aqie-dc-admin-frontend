@@ -45,6 +45,18 @@ function renderCheckPermittedFuelsPage(
   })
 }
 
+async function renderValidationError(h, applianceId, error, buildValues) {
+  const { data: appliance } = await getApplianceForPermittedFuels(applianceId)
+
+  return renderCheckPermittedFuelsPage(
+    h,
+    applianceId,
+    appliance,
+    buildValues(appliance),
+    error
+  ).code(statusCodes.badRequest)
+}
+
 async function handleCheckPermittedFuelsRequest(request, h) {
   const { applianceId } = request.params
 
@@ -78,44 +90,54 @@ async function handleCheckPermittedFuelsDecisionRequest(request, h) {
   const { permittedFuels, burnsWood } = request.payload
 
   try {
-    if (!hasAnyLetter(permittedFuels)) {
-      const { data: appliance } =
-        await getApplianceForPermittedFuels(applianceId)
+    // Keeps what the user typed, falling back to the saved wood answer.
+    const keepSubmitted = (appliance) => ({
+      permittedFuels: permittedFuels ?? '',
+      burnsWood: burnsWood ?? toYesNo(appliance.isPermittedToBurnWood)
+    })
 
-      return renderCheckPermittedFuelsPage(
+    if (!hasAnyLetter(permittedFuels)) {
+      return await renderValidationError(
         h,
         applianceId,
-        appliance,
-        {
-          permittedFuels: permittedFuels ?? '',
-          burnsWood: burnsWood ?? toYesNo(appliance.isPermittedToBurnWood)
-        },
         {
           field: 'permittedFuels',
           message: content.errors.permittedFuelsRequired,
           href: '#perm-fuels'
-        }
-      ).code(statusCodes.badRequest)
+        },
+        keepSubmitted
+      )
+    }
+
+    if (permittedFuels.length > content.characterCount.limit) {
+      const overBy = permittedFuels.length - content.characterCount.limit
+
+      return await renderValidationError(
+        h,
+        applianceId,
+        {
+          field: 'permittedFuels',
+          message: content.characterCount.limitExceeded(overBy),
+          href: '#perm-fuels'
+        },
+        keepSubmitted
+      )
     }
 
     if (!burnsWood) {
-      const { data: appliance } =
-        await getApplianceForPermittedFuels(applianceId)
-
-      return renderCheckPermittedFuelsPage(
+      return await renderValidationError(
         h,
         applianceId,
-        appliance,
-        {
-          permittedFuels: permittedFuels ?? appliance.permittedFuels ?? '',
-          burnsWood: undefined
-        },
         {
           field: 'burnsWood',
           message: content.errors.woodSelectionRequired,
           href: '#burnsWood'
-        }
-      ).code(statusCodes.badRequest)
+        },
+        (appliance) => ({
+          permittedFuels: permittedFuels ?? appliance.permittedFuels ?? '',
+          burnsWood: undefined
+        })
+      )
     }
 
     await savePermittedFuels(applianceId, permittedFuels, burnsWood === 'Yes')

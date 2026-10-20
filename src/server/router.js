@@ -25,12 +25,14 @@ import { applianceType } from './appliance-type/index.js'
 import { otherApplianceType } from './other-appliance-type/index.js'
 import { variantAppliance } from './variant-appliance/index.js'
 import { applianceRecord } from './appliance-record/index.js'
+import { changeDisplayStatus } from './change-display-status/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 import { instructionManual } from './instruction-manual/index.js'
 import { testReports } from './test-reports/index.js'
 import { applianceRecordDetail } from './appliance-record-detail/index.js'
 import { applianceApplicationDetails } from './appliance-application-details/index.js'
+import { applianceRecordInstructionManual } from './appliance-record-instruction-manual/index.js'
 
 export const router = {
   plugin: {
@@ -68,10 +70,12 @@ export const router = {
         technicalDrawings,
         additionalConditions,
         applianceRecord,
+        changeDisplayStatus,
         instructionManual,
         testReports,
         applianceRecordDetail,
-        applianceApplicationDetails
+        applianceApplicationDetails,
+        applianceRecordInstructionManual
       ])
 
       // Static assets

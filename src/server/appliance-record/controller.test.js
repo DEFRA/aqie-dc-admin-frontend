@@ -62,8 +62,8 @@ const mockApplianceRecord = {
       hideFromPublic: true
     },
     publicListingUrl: '/appliance-list/APP-123',
-    hideFromPublicUrl: '/change-display-status',
-    makePublicUrl: '/change-display-status',
+    hideFromPublicUrl: '/appliance-record/APP-123/change-display-status',
+    makePublicUrl: '/appliance-record/APP-123/change-display-status',
     certifications: [
       {
         country: 'England',
@@ -327,7 +327,9 @@ describe('applianceRecord controller', () => {
       expect(callArgs.actions.buttons[0].text).toBe(
         'Hide appliance from public list'
       )
-      expect(callArgs.actions.buttons[0].href).toBe('/change-display-status')
+      expect(callArgs.actions.buttons[0].href).toBe(
+        '/appliance-record/APP-123/change-display-status'
+      )
     })
 
     test('passes rejected details rows with rejection metadata and back link text', async () => {
@@ -409,7 +411,9 @@ describe('applianceRecord controller', () => {
       expect(callArgs.actions.buttons[0].text).toBe(
         'Make appliance live on public list'
       )
-      expect(callArgs.actions.buttons[0].href).toBe('/change-display-status')
+      expect(callArgs.actions.buttons[0].href).toBe(
+        '/appliance-record/APP-123/change-display-status'
+      )
       expect(callArgs.statusDisplay.label).toBe('Hidden from public list')
       expect(callArgs.statusDisplay.tagClass).toBe('govuk-tag--grey')
     })
