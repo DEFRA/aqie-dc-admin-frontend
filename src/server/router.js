@@ -6,6 +6,7 @@ import { health } from './health/index.js'
 import { manageCertification } from './manage-certification/index.js'
 import { applianceRecords } from './appliance-records/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
+import { fuelApplications } from './fuel-applications/index.js'
 import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { finishApplicationReview } from './finish-application-review/index.js'
 import { applicationReviewComplete } from './application-review-complete/index.js'
@@ -48,6 +49,7 @@ export const router = {
         manageCertification,
         applianceRecords,
         applianceApplications,
+        fuelApplications,
         reviewApplianceApplication,
         finishApplicationReview,
         applicationReviewComplete,
