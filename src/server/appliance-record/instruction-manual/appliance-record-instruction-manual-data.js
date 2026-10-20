@@ -1,4 +1,4 @@
-import { fetchJson } from '../common/api/api.js'
+import { fetchJson } from '../../common/api/api.js'
 
 /**
  * Fetches the full appliance record by ID.

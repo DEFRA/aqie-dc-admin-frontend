@@ -1,11 +1,11 @@
 import { applianceRecordInstructionManualContent } from './content.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 import { getApplianceForInstructionManual } from './appliance-record-instruction-manual-data.js'
 import {
   buildInstructionManualRows,
   buildServicingManualRows
 } from './appliance-record-instruction-manual-rows.js'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = applianceRecordInstructionManualContent.en
@@ -45,7 +45,7 @@ async function handleApplianceRecordInstructionManualRequest(request, h) {
       await getApplianceForInstructionManual(applianceId)
 
     return h.view(
-      'appliance-record-instruction-manual/index',
+      'appliance-record/instruction-manual/index',
       buildViewModel(appliance, applianceId)
     )
   } catch (error) {

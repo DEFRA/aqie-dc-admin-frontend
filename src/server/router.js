@@ -29,9 +29,9 @@ import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
 import { instructionManual } from './instruction-manual/index.js'
 import { testReports } from './test-reports/index.js'
-import { applianceRecordDetail } from './appliance-record-detail/index.js'
-import { applianceApplicationDetails } from './appliance-application-details/index.js'
-import { applianceRecordInstructionManual } from './appliance-record-instruction-manual/index.js'
+import { applianceRecordDetail } from './appliance-record/appliance-record-detail/index.js'
+import { applianceApplicationDetails } from './appliance-record/application-details/index.js'
+import { applianceRecordInstructionManual } from './appliance-record/instruction-manual/index.js'
 
 export const router = {
   plugin: {

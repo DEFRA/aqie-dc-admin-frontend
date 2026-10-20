@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 import { handleApplianceRecordInstructionManualRequest } from './controller.js'
 
 const { getApplianceForInstructionManualMock } = vi.hoisted(() => ({
@@ -56,7 +56,7 @@ describe('#handleApplianceRecordInstructionManualRequest', () => {
     )
 
     expect(h.view).toHaveBeenCalledWith(
-      'appliance-record-instruction-manual/index',
+      'appliance-record/instruction-manual/index',
       expect.objectContaining({
         heading:
           'Instruction manual for Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove',
