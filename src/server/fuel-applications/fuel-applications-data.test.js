@@ -19,24 +19,7 @@ describe('getFuelApplications', () => {
     fetchJsonMock.mockReset()
   })
 
-  test('normalises malformed backend data to empty arrays', async () => {
-    fetchJsonMock.mockResolvedValue({
-      success: true,
-      data: {
-        new: 'not-an-array',
-        inProgress: undefined
-      }
-    })
-
-    const result = await getFuelApplications()
-
-    expect(result.data).toEqual({
-      new: [],
-      inProgress: []
-    })
-  })
-
-  test('returns a valid backend payload unchanged', async () => {
+  test('returns the backend summary contract without frontend re-shaping', async () => {
     fetchJsonMock.mockResolvedValue({
       success: true,
       data: {

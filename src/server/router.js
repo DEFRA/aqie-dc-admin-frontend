@@ -33,6 +33,7 @@ import { testReports } from './test-reports/index.js'
 import { applianceRecordDetail } from './appliance-record-detail/index.js'
 import { applianceApplicationDetails } from './appliance-application-details/index.js'
 import { applianceRecordInstructionManual } from './appliance-record-instruction-manual/index.js'
+import { fuelApplicationDetails } from './fuel-application-details/index.js'
 
 export const router = {
   plugin: {
@@ -75,6 +76,7 @@ export const router = {
         testReports,
         applianceRecordDetail,
         applianceApplicationDetails,
+        fuelApplicationDetails,
         applianceRecordInstructionManual
       ])
 

@@ -1,18 +1,12 @@
 import { fetchJson, patchJson } from '../common/api/api.js'
-import { normaliseApplicationsSummary } from './fuel-applications-helpers.js'
 
 /**
  * Fetches fuel application summaries split by review status.
- * @returns {Promise<object>} Fuel application summary payload.
+ * The backend contract is guaranteed and returns empty arrays when there are no
+ * applications.
  */
 export async function getFuelApplications() {
-  const response =
-    (await fetchJson('/applications/summary-by-status?type=fuel')) ?? {}
-
-  return {
-    ...response,
-    data: normaliseApplicationsSummary(response)
-  }
+  return fetchJson('/applications/summary-by-status?type=fuel')
 }
 
 /**
