@@ -2,12 +2,12 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { fuelApplicationsContent } from './content.js'
 import {
-    getFuelApplications,
-    startFuelApplicationReview
+  getFuelApplications,
+  startFuelApplicationReview
 } from './fuel-applications-data.js'
 import {
-    buildFuelApplicationReviewer,
-    buildFuelApplicationsViewModel
+  buildFuelApplicationReviewer,
+  buildFuelApplicationsViewModel
 } from './fuel-applications-helpers.js'
 
 const logger = createLogger()
@@ -18,12 +18,12 @@ const content = fuelApplicationsContent.en
  * @param {Error} [error] - The caught exception from the data layer.
  */
 function logFuelApplicationsError(error) {
-    logger.error('[fuel-applications.GET] failed', {
-        route: '/fuel-applications',
-        operation: 'getFuelApplications',
-        message: error?.message ?? 'Unknown error',
-        stack: error?.stack
-    })
+  logger.error('[fuel-applications.GET] failed', {
+    route: '/fuel-applications',
+    operation: 'getFuelApplications',
+    message: error?.message ?? 'Unknown error',
+    stack: error?.stack
+  })
 }
 
 /**
@@ -34,23 +34,23 @@ function logFuelApplicationsError(error) {
  * @returns {Promise<object>} The rendered fuel applications page or error view.
  */
 async function handleFuelApplicationsRequest(_request, h) {
-    try {
-        const response = await getFuelApplications()
-        const applications = response.data
+  try {
+    const response = await getFuelApplications()
+    const applications = response.data
 
-        return h.view(
-            'fuel-applications/index',
-            buildFuelApplicationsViewModel(applications)
-        )
-    } catch (error) {
-        logFuelApplicationsError(error)
+    return h.view(
+      'fuel-applications/index',
+      buildFuelApplicationsViewModel(applications)
+    )
+  } catch (error) {
+    logFuelApplicationsError(error)
 
-        return h
-            .view('error/index', {
-                message: content.errors.generic
-            })
-            .code(statusCodes.internalServerError)
-    }
+    return h
+      .view('error/index', {
+        message: content.errors.generic
+      })
+      .code(statusCodes.internalServerError)
+  }
 }
 
 /**
@@ -61,52 +61,52 @@ async function handleFuelApplicationsRequest(_request, h) {
  * @returns {Promise<object>} Redirect to the list or an error page.
  */
 async function handleStartFuelApplicationReviewRequest(request, h) {
-    const { applicationId } = request.params
-    const user = request.auth?.credentials?.user
+  const { applicationId } = request.params
+  const user = request.auth?.credentials?.user
 
-    if (!user?.name || !user?.email) {
-        logger.warn(
-            `[fuel-applications] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
-        )
+  if (!user?.name || !user?.email) {
+    logger.warn(
+      `[fuel-applications] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
+    )
+  }
+
+  const reviewedBy = buildFuelApplicationReviewer(user)
+
+  try {
+    await startFuelApplicationReview(applicationId, reviewedBy)
+
+    return h.redirect(`/review-fuel-application/${applicationId}`)
+  } catch (error) {
+    if (error.status === statusCodes.conflict) {
+      return h.redirect(`/review-fuel-application/${applicationId}`)
     }
 
-    const reviewedBy = buildFuelApplicationReviewer(user)
+    logger.error('[fuel-applications.POST] failed to start review', {
+      route: '/review-fuel-application/{applicationId}/start',
+      applicationId,
+      message: error?.message ?? 'Unknown error',
+      stack: error?.stack
+    })
 
-    try {
-        await startFuelApplicationReview(applicationId, reviewedBy)
-
-        return h.redirect(`/review-fuel-application/${applicationId}`)
-    } catch (error) {
-        if (error.status === statusCodes.conflict) {
-            return h.redirect(`/review-fuel-application/${applicationId}`)
-        }
-
-        logger.error('[fuel-applications.POST] failed to start review', {
-            route: '/review-fuel-application/{applicationId}/start',
-            applicationId,
-            message: error?.message ?? 'Unknown error',
-            stack: error?.stack
-        })
-
-        return h
-            .view('error/index', {
-                message: content.errors.generic
-            })
-            .code(statusCodes.internalServerError)
-    }
+    return h
+      .view('error/index', {
+        message: content.errors.generic
+      })
+      .code(statusCodes.internalServerError)
+  }
 }
 
 const fuelApplicationsController = {
-    handler: handleFuelApplicationsRequest
+  handler: handleFuelApplicationsRequest
 }
 
 const startFuelApplicationReviewController = {
-    handler: handleStartFuelApplicationReviewRequest
+  handler: handleStartFuelApplicationReviewRequest
 }
 
 export {
-    handleFuelApplicationsRequest,
-    fuelApplicationsController,
-    handleStartFuelApplicationReviewRequest,
-    startFuelApplicationReviewController
+  handleFuelApplicationsRequest,
+  fuelApplicationsController,
+  handleStartFuelApplicationReviewRequest,
+  startFuelApplicationReviewController
 }

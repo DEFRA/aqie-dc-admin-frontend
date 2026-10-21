@@ -3,128 +3,128 @@ import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const { getFuelApplicationsMock, startFuelApplicationReviewMock } = vi.hoisted(
-    () => ({
-        getFuelApplicationsMock: vi.fn(),
-        startFuelApplicationReviewMock: vi.fn()
-    })
+  () => ({
+    getFuelApplicationsMock: vi.fn(),
+    startFuelApplicationReviewMock: vi.fn()
+  })
 )
 
 vi.mock('./fuel-applications-data.js', () => ({
-    getFuelApplications: getFuelApplicationsMock,
-    startFuelApplicationReview: startFuelApplicationReviewMock
+  getFuelApplications: getFuelApplicationsMock,
+  startFuelApplicationReview: startFuelApplicationReviewMock
 }))
 
 describe('#fuelApplicationsController', () => {
-    let server
+  let server
 
-    beforeAll(async () => {
-        server = await createServer()
-        await server.initialize()
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  beforeEach(() => {
+    getFuelApplicationsMock.mockReset()
+    startFuelApplicationReviewMock.mockReset()
+  })
+
+  afterAll(async () => {
+    await server.stop({ timeout: 0 })
+  })
+
+  test('renders the fuel applications page when data loads', async () => {
+    getFuelApplicationsMock.mockResolvedValue({
+      data: {
+        new: [{ id: 'app-1', items: [{ name: 'Fuels' }] }],
+        inProgress: []
+      }
     })
 
-    beforeEach(() => {
-        getFuelApplicationsMock.mockReset()
-        startFuelApplicationReviewMock.mockReset()
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
     })
 
-    afterAll(async () => {
-        await server.stop({ timeout: 0 })
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(payload).toContain('Fuel applications')
+  })
+
+  test('renders the fuel applications page with safe empty arrays when the backend payload is malformed', async () => {
+    getFuelApplicationsMock.mockResolvedValue({
+      data: {
+        new: 'not-an-array',
+        inProgress: undefined
+      }
     })
 
-    test('renders the fuel applications page when data loads', async () => {
-        getFuelApplicationsMock.mockResolvedValue({
-            data: {
-                new: [{ id: 'app-1', items: [{ name: 'Fuels' }] }],
-                inProgress: []
-            }
-        })
-
-        const { statusCode, payload } = await server.inject({
-            method: 'GET',
-            url: '/fuel-applications'
-        })
-
-        expect(statusCode).toBe(statusCodes.ok)
-        expect(payload).toContain('Fuel applications')
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
     })
 
-    test('renders the fuel applications page with safe empty arrays when the backend payload is malformed', async () => {
-        getFuelApplicationsMock.mockResolvedValue({
-            data: {
-                new: 'not-an-array',
-                inProgress: undefined
-            }
-        })
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(payload).toContain('Fuel applications')
+  })
 
-        const { statusCode, payload } = await server.inject({
-            method: 'GET',
-            url: '/fuel-applications'
-        })
+  test('renders the error view when the backend response is missing data', async () => {
+    getFuelApplicationsMock.mockResolvedValue(null)
 
-        expect(statusCode).toBe(statusCodes.ok)
-        expect(payload).toContain('Fuel applications')
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
     })
 
-    test('renders the error view when the backend response is missing data', async () => {
-        getFuelApplicationsMock.mockResolvedValue(null)
+    expect(statusCode).toBe(statusCodes.internalServerError)
+    expect(payload).toContain('Sorry, there is a problem with the service')
+  })
 
-        const { statusCode, payload } = await server.inject({
-            method: 'GET',
-            url: '/fuel-applications'
-        })
+  test('redirects to the fuel application details page when the start review action is called', async () => {
+    startFuelApplicationReviewMock.mockResolvedValue({ success: true })
 
-        expect(statusCode).toBe(statusCodes.internalServerError)
-        expect(payload).toContain('Sorry, there is a problem with the service')
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel-application/app-1/start',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
-    test('redirects to the fuel application details page when the start review action is called', async () => {
-        startFuelApplicationReviewMock.mockResolvedValue({ success: true })
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/review-fuel-application/app-1')
+  })
 
-        const response = await server.inject({
-            method: 'POST',
-            url: '/review-fuel-application/app-1/start',
-            auth: {
-                strategy: 'session',
-                credentials: {
-                    isAuthenticated: true,
-                    user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
-                }
-            }
-        })
-
-        expect(response.statusCode).toBe(302)
-        expect(response.headers.location).toBe('/review-fuel-application/app-1')
+  test('redirects to the fuel application details page when the review is already in progress', async () => {
+    startFuelApplicationReviewMock.mockRejectedValue({
+      status: statusCodes.conflict
     })
 
-    test('redirects to the fuel application details page when the review is already in progress', async () => {
-        startFuelApplicationReviewMock.mockRejectedValue({
-            status: statusCodes.conflict
-        })
-
-        const response = await server.inject({
-            method: 'POST',
-            url: '/review-fuel-application/app-1/start',
-            auth: {
-                strategy: 'session',
-                credentials: {
-                    isAuthenticated: true,
-                    user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
-                }
-            }
-        })
-
-        expect(response.statusCode).toBe(302)
-        expect(response.headers.location).toBe('/review-fuel-application/app-1')
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel-application/app-1/start',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
     })
 
-    test('renders the error view when the data layer throws', async () => {
-        getFuelApplicationsMock.mockRejectedValue(new Error('backend down'))
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/review-fuel-application/app-1')
+  })
 
-        const { statusCode } = await server.inject({
-            method: 'GET',
-            url: '/fuel-applications'
-        })
+  test('renders the error view when the data layer throws', async () => {
+    getFuelApplicationsMock.mockRejectedValue(new Error('backend down'))
 
-        expect(statusCode).toBe(statusCodes.internalServerError)
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
     })
+
+    expect(statusCode).toBe(statusCodes.internalServerError)
+  })
 })

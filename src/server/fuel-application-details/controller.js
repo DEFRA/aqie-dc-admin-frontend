@@ -8,31 +8,31 @@ const logger = createLogger()
 const content = fuelApplicationDetailsContent.en
 
 async function handleFuelApplicationDetailsRequest(request, h) {
-    const { applicationId } = request.params
+  const { applicationId } = request.params
 
-    try {
-        const response = await getFuelApplicationDetails(applicationId)
-        const application = response.data
+  try {
+    const response = await getFuelApplicationDetails(applicationId)
+    const application = response.data
 
-        return h.view(
-            'fuel-application-details/index',
-            buildFuelApplicationViewModel(application, applicationId)
-        )
-    } catch (error) {
-        logger.error(
-            `[fuelApplicationDetails] failed to load ${applicationId}: ${error.message}`
-        )
+    return h.view(
+      'fuel-application-details/index',
+      buildFuelApplicationViewModel(application, applicationId)
+    )
+  } catch (error) {
+    logger.error(
+      `[fuelApplicationDetails] failed to load ${applicationId}: ${error.message}`
+    )
 
-        return h
-            .view('error/index', {
-                message: content.errors.generic
-            })
-            .code(statusCodes.internalServerError)
-    }
+    return h
+      .view('error/index', {
+        message: content.errors.generic
+      })
+      .code(statusCodes.internalServerError)
+  }
 }
 
 export const fuelApplicationDetailsController = {
-    handler: handleFuelApplicationDetailsRequest
+  handler: handleFuelApplicationDetailsRequest
 }
 
 export { handleFuelApplicationDetailsRequest }
