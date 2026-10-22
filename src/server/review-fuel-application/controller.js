@@ -1,13 +1,13 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
-import { getFuelApplicationDetails } from './fuel-application-details-data.js'
-import { buildFuelApplicationViewModel } from './fuel-application-details-rows.js'
-import { fuelApplicationDetailsContent } from './content.js'
+import { getFuelApplicationDetails } from './review-fuel-application-data.js'
+import { buildFuelApplicationViewModel } from './review-fuel-application-rows.js'
+import { reviewFuelApplicationContent } from './content.js'
 
 const logger = createLogger()
-const content = fuelApplicationDetailsContent.en
+const content = reviewFuelApplicationContent.en
 
-async function handleFuelApplicationDetailsRequest(request, h) {
+async function handleReviewFuelApplicationRequest(request, h) {
   const { applicationId } = request.params
 
   try {
@@ -15,12 +15,12 @@ async function handleFuelApplicationDetailsRequest(request, h) {
     const application = response.data
 
     return h.view(
-      'fuel-application-details/index',
+      'review-fuel-application/index',
       buildFuelApplicationViewModel(application, applicationId)
     )
   } catch (error) {
     logger.error(
-      `[fuelApplicationDetails] failed to load ${applicationId}: ${error.message}`
+      `[reviewFuelApplication] failed to load ${applicationId}: ${error.message}`
     )
 
     return h
@@ -31,8 +31,8 @@ async function handleFuelApplicationDetailsRequest(request, h) {
   }
 }
 
-export const fuelApplicationDetailsController = {
-  handler: handleFuelApplicationDetailsRequest
+export const reviewFuelApplicationController = {
+  handler: handleReviewFuelApplicationRequest
 }
 
-export { handleFuelApplicationDetailsRequest }
+export { handleReviewFuelApplicationRequest }

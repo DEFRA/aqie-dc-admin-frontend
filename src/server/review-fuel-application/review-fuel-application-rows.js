@@ -1,6 +1,6 @@
-import { fuelApplicationDetailsContent } from './content.js'
+import { reviewFuelApplicationContent } from './content.js'
 
-const content = fuelApplicationDetailsContent.en
+const content = reviewFuelApplicationContent.en
 
 function getPrimaryFuel(application = {}) {
   const linkedItems = Array.isArray(application.linkedItems)
@@ -115,8 +115,8 @@ export function buildFuelRows(fuels = [], applicationId) {
   return fuels.map((fuel) => {
     const statusKey = fuel?.technicalReview?.status ?? 'in_progress'
     const statusMeta =
-      fuelApplicationDetailsContent.en.statusTags[statusKey] ??
-      fuelApplicationDetailsContent.en.statusTags.in_progress
+      reviewFuelApplicationContent.en.statusTags[statusKey] ??
+      reviewFuelApplicationContent.en.statusTags.in_progress
 
     return {
       brandName:

@@ -1,4 +1,4 @@
-export const fuelApplicationDetailsContent = {
+export const reviewFuelApplicationContent = {
   en: {
     pageTitle: (applicationId) => `Review fuel application ${applicationId}`,
     heading: (applicationId) => `Review fuel application ${applicationId}`,

@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { statusCodes } from '../common/constants/status-codes.js'
-import { fuelApplicationDetailsContent } from './content.js'
-import { handleFuelApplicationDetailsRequest } from './controller.js'
+import { reviewFuelApplicationContent } from './content.js'
+import { handleReviewFuelApplicationRequest } from './controller.js'
 
-const content = fuelApplicationDetailsContent.en
+const content = reviewFuelApplicationContent.en
 
 const { getFuelApplicationDetailsMock } = vi.hoisted(() => ({
   getFuelApplicationDetailsMock: vi.fn()
 }))
 
-vi.mock('./fuel-application-details-data.js', () => ({
+vi.mock('./review-fuel-application-data.js', () => ({
   getFuelApplicationDetails: getFuelApplicationDetailsMock
 }))
 
@@ -46,7 +46,7 @@ function toolkit() {
   }
 }
 
-describe('#handleFuelApplicationDetailsRequest', () => {
+describe('#handleReviewFuelApplicationRequest', () => {
   beforeEach(() => {
     getFuelApplicationDetailsMock.mockReset()
   })
@@ -55,13 +55,13 @@ describe('#handleFuelApplicationDetailsRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
-    await handleFuelApplicationDetailsRequest(
+    await handleReviewFuelApplicationRequest(
       { params: { applicationId: 'app-0317' } },
       h
     )
 
     expect(h.view).toHaveBeenCalledWith(
-      'fuel-application-details/index',
+      'review-fuel-application/index',
       expect.objectContaining({
         pageTitle: content.pageTitle('app-0317'),
         heading: content.heading('app-0317')
@@ -73,7 +73,7 @@ describe('#handleFuelApplicationDetailsRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
-    await handleFuelApplicationDetailsRequest(
+    await handleReviewFuelApplicationRequest(
       { params: { applicationId: 'app-0317' } },
       h
     )
@@ -92,7 +92,7 @@ describe('#handleFuelApplicationDetailsRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
-    await handleFuelApplicationDetailsRequest(
+    await handleReviewFuelApplicationRequest(
       { params: { applicationId: 'app-0317' } },
       h
     )
@@ -121,7 +121,7 @@ describe('#handleFuelApplicationDetailsRequest', () => {
     })
     const h = toolkit()
 
-    await handleFuelApplicationDetailsRequest(
+    await handleReviewFuelApplicationRequest(
       { params: { applicationId: 'app-0317' } },
       h
     )
@@ -141,7 +141,7 @@ describe('#handleFuelApplicationDetailsRequest', () => {
       code: vi.fn()
     }
 
-    await handleFuelApplicationDetailsRequest(
+    await handleReviewFuelApplicationRequest(
       { params: { applicationId: 'app-0317' } },
       h
     )

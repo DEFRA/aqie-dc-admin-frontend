@@ -6,102 +6,80 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">{{ heading }}</h1>
         <div class="govuk-body" data-testid="fuel-applications-page-body">
-            <h2 class="govuk-heading-l">{{ content.sections.notStarted }}</h2>
             {% if notStartedApplications.length > 0 %}
-            <div data-testid="fuel-applications-not-started">
-                <div class="govuk-grid-row govuk-!-margin-bottom-2">
-                    <div class="govuk-grid-column-one-third">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.application }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-third">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.fuel }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-third">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.action }}</p>
-                    </div>
-                </div>
-
-                {% for application in notStartedApplications %}
-                <div class="govuk-grid-row govuk-!-margin-bottom-4" style="border-bottom: 2px solid #b1b4b6;">
-                    <div class="govuk-grid-column-one-third">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">{{ application.id }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-third">
-                        <p class="govuk-body govuk-!-margin-bottom-0">
+            <table class="govuk-table govuk-!-margin-bottom-9" data-testid="fuel-applications-not-started">
+                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.notStarted }}
+                </caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                        <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{ content.columns.fuel }}
+                        </th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    {% for application in notStartedApplications %}
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell govuk-!-width-one-half">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}
                             {% else %}
                             -
                             {% endif %}
-                        </p>
-                    </div>
-                    <div class="govuk-grid-column-one-third">
-                        <form method="post" action="/review-fuel-application/{{ application.id }}/start" novalidate>
-                            <button type="submit" class="app-link-button">{{ content.actions.startReview }}</button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+                        </td>
+                        <td class="govuk-table__cell">
+                            <form method="post" action="/review-fuel-application/{{ application.id }}/start" novalidate>
+                                <button type="submit" class="app-link-button">{{ content.actions.startReview }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% else %}
             <p class="govuk-body">{{ content.emptyState.notStarted }}</p>
             {% endif %}
 
-            <h2 class="govuk-heading-l">{{ content.sections.inProgress }}</h2>
             {% if inProgressApplications.length > 0 %}
-            <div data-testid="fuel-applications-in-progress">
-                <div class="govuk-grid-row govuk-!-margin-bottom-2">
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.application }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.fuel }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.reviewer }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                            {{ content.columns.action }}</p>
-                    </div>
-                </div>
-
-                {% for application in inProgressApplications %}
-                <div class="govuk-grid-row govuk-!-margin-bottom-4" style="border-bottom: 2px solid #b1b4b6;">
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">{{ application.id }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-margin-bottom-0">
+            <table class="govuk-table" data-testid="fuel-applications-in-progress">
+                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.inProgress }}
+                </caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.fuel }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.reviewer }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    {% for application in inProgressApplications %}
+                    <tr class="govuk-table__row">
+                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}
                             {% else %}
                             -
                             {% endif %}
-                        </p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <p class="govuk-body govuk-!-margin-bottom-0">
+                        </td>
+                        <td class="govuk-table__cell">
                             {% if application.reviewedBy and application.reviewedBy.name %}
                             {{ application.reviewedBy.name }}
                             {% else %}
                             -
                             {% endif %}
-                        </p>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <a class="govuk-link"
-                            href="/review-fuel-application/{{ application.id }}">{{ content.actions.continueReview }}</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+                        </td>
+                        <td class="govuk-table__cell">
+                            <a class="govuk-link"
+                                href="/review-fuel-application/{{ application.id }}">{{ content.actions.continueReview }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             {% else %}
             <p class="govuk-body">{{ content.emptyState.inProgress }}</p>
             {% endif %}

@@ -127,4 +127,43 @@ describe('#fuelApplicationsController', () => {
 
     expect(statusCode).toBe(statusCodes.internalServerError)
   })
+
+  test('rejects invalid application identifiers before starting the review', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel-application/invalid id/start',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
+    })
+
+    expect(response.statusCode).toBe(statusCodes.badRequest)
+  })
+
+  test('falls back to default reviewer metadata when auth user details are incomplete', async () => {
+    startFuelApplicationReviewMock.mockResolvedValue({ success: true })
+
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel-application/app-1/start',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com' }
+        }
+      }
+    })
+
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/review-fuel-application/app-1')
+    expect(startFuelApplicationReviewMock).toHaveBeenCalledWith('app-1', {
+      name: 'Unknown reviewer',
+      email: 'test@yopmail.com'
+    })
+  })
 })

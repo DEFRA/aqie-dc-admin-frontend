@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { getFuelApplicationDetails } from './fuel-application-details-data.js'
+import { getFuelApplicationDetails } from './review-fuel-application-data.js'
 
 const { fetchJsonMock } = vi.hoisted(() => ({
   fetchJsonMock: vi.fn()
