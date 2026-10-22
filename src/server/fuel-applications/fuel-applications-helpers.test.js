@@ -11,7 +11,13 @@ describe('buildFuelApplicationsViewModel', () => {
   test('maps applications and content into the view model', () => {
     const applications = {
       new: [{ id: 'fuel-001', items: [{ name: 'Diesel' }] }],
-      inProgress: [{ id: 'fuel-002', items: [{ name: 'Petrol' }], reviewedBy: { name: 'Jane Doe' } }]
+      inProgress: [
+        {
+          id: 'fuel-002',
+          items: [{ name: 'Petrol' }],
+          reviewedBy: { name: 'Jane Doe' }
+        }
+      ]
     }
 
     const result = buildFuelApplicationsViewModel(applications)
