@@ -4,7 +4,7 @@ const { fetchJsonMock } = vi.hoisted(() => ({
   fetchJsonMock: vi.fn()
 }))
 
-vi.mock('../common/api/api.js', () => ({
+vi.mock('../../common/api/api.js', () => ({
   fetchJson: fetchJsonMock
 }))
 
