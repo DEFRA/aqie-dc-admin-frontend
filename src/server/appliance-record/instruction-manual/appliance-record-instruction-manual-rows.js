@@ -1,4 +1,4 @@
-import { formatDate } from '../../config/nunjucks/filters/format-date.js'
+import { formatDate } from '../../../config/nunjucks/filters/format-date.js'
 import { applianceRecordInstructionManualContent } from './content.js'
 
 const content = applianceRecordInstructionManualContent.en
