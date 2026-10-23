@@ -230,4 +230,49 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
     )
     expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
+
+  test('re-renders with a character count error when permitted fuels is too long', async () => {
+    getApplianceForPermittedFuelsMock.mockResolvedValue({ data: appliance })
+    const h = toolkit()
+    const tooLong = 'a'.repeat(1001)
+
+    await handleCheckPermittedFuelsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: { permittedFuels: tooLong, burnsWood: 'Yes' }
+      },
+      h
+    )
+
+    expect(savePermittedFuelsMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'check-permitted-fuels/index',
+      expect.objectContaining({
+        error: {
+          field: 'permittedFuels',
+          message: 'You have 1 character too many',
+          href: '#perm-fuels'
+        },
+        formValues: { permittedFuels: tooLong, burnsWood: 'Yes' }
+      })
+    )
+    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
+  })
+
+  test('accepts permitted fuels at exactly the character limit', async () => {
+    savePermittedFuelsMock.mockResolvedValue({ success: true })
+    const h = toolkit()
+    const atLimit = 'a'.repeat(1000)
+
+    await handleCheckPermittedFuelsDecisionRequest(
+      {
+        params: { applianceId: 'APP-1' },
+        payload: { permittedFuels: atLimit, burnsWood: 'Yes' }
+      },
+      h
+    )
+
+    expect(savePermittedFuelsMock).toHaveBeenCalledWith('APP-1', atLimit, true)
+    expect(h.redirect).toHaveBeenCalledWith('/review-appliance/APP-1')
+  })
 })

@@ -29,7 +29,7 @@ describe('#getApplianceRecord', () => {
 
     const result = await getApplianceRecord('APP-001')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/api/admin/appliances/APP-001')
+    expect(fetchJsonMock).toHaveBeenCalledWith('/admin/appliances/APP-001')
     expect(result).toEqual(response)
   })
 
@@ -38,9 +38,7 @@ describe('#getApplianceRecord', () => {
 
     await getApplianceRecord('APP/001')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith(
-      '/api/admin/appliances/APP%2F001'
-    )
+    expect(fetchJsonMock).toHaveBeenCalledWith('/admin/appliances/APP%2F001')
   })
 
   test('returns the backend response unchanged for error responses', async () => {
