@@ -104,7 +104,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
       statusLabel: 'In progress',
       actionText: 'Continue review'
     })
-    expect(viewModel.continueReviewHref).toBe('/not-found')
+    expect(viewModel.continueReviewHref).toBe('/incomplete-review')
   })
 
   test('falls back to safe values when the backend data is missing', async () => {
@@ -113,7 +113,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
         companyName: undefined,
         companyContact: {},
         responsiblePerson: {},
-        fuels: undefined,
+        linkedItems: [],
         customerComplaints: undefined,
         fuelBagging: undefined,
         manufacturerOrReseller: undefined

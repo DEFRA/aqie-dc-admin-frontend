@@ -14,58 +14,39 @@ describe('getFuelApplicationDetails', () => {
     fetchJsonMock.mockReset()
   })
 
-  test('fetches the full application and normalises the fuel list', async () => {
+  test('returns the backend response envelope so the controller can drill into data', async () => {
+    const application = {
+      id: 'app-0317',
+      companyName: 'Flamers Ltd',
+      companyContact: { name: 'Contact Name' },
+      linkedItems: [{ brandNames: 'Kings Starterlog' }]
+    }
+
     fetchJsonMock.mockResolvedValue({
-      data: {
-        id: 'app-0317',
-        companyName: 'Flamers Ltd',
-        companyContact: { name: 'Contact Name' },
-        fuels: [{ brandNames: 'Kings Starterlog' }]
-      }
+      success: true,
+      message: 'Application retrieved successfully',
+      data: application
     })
 
     const result = await getFuelApplicationDetails('app-0317')
 
     expect(fetchJsonMock).toHaveBeenCalledWith('/applications/app-0317')
+    expect(result).toEqual({
+      success: true,
+      message: 'Application retrieved successfully',
+      data: application
+    })
     expect(result.data.companyContact).toEqual({ name: 'Contact Name' })
-    expect(result.data.fuels).toEqual([{ brandNames: 'Kings Starterlog' }])
+    expect(result.data.linkedItems).toEqual([
+      { brandNames: 'Kings Starterlog' }
+    ])
   })
 
-  test('returns the raw backend fuel application shape when linkedItems is used', async () => {
-    fetchJsonMock.mockResolvedValue({
-      data: {
-        id: 'app-0317',
-        linkedItems: [
-          {
-            companyName: 'FuelCo',
-            companyFullAddress: '789 Industrial Estate, Manchester, M1 3CD',
-            companyContact: { name: 'Fuel Person', email: 'JD@email.com' },
-            responsiblePerson: { name: 'Rep Name', email: 'rep@co.com' },
-            customerComplaints: false,
-            fuelBagging: 'Bagged',
-            manufacturerOrReseller: 'Manufacturer',
-            brandNames: 'PelletBrand',
-            technicalReview: { status: 'in_progress' }
-          }
-        ]
-      }
-    })
-
-    const result = await getFuelApplicationDetails('app-0317')
-
-    expect(result.data.linkedItems[0].companyName).toBe('FuelCo')
-    expect(result.data.linkedItems[0].companyContact).toEqual({
-      name: 'Fuel Person',
-      email: 'JD@email.com'
-    })
-    expect(result.data.linkedItems[0].brandNames).toBe('PelletBrand')
-  })
-
-  test('returns an empty object when the backend payload is malformed', async () => {
+  test('returns the raw backend response when it is malformed', async () => {
     fetchJsonMock.mockResolvedValue(null)
 
     const result = await getFuelApplicationDetails('app-0317')
 
-    expect(result.data).toEqual({})
+    expect(result).toBeNull()
   })
 })

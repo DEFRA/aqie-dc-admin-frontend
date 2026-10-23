@@ -2,12 +2,8 @@ import { reviewFuelApplicationContent } from './content.js'
 
 const content = reviewFuelApplicationContent.en
 
-function getPrimaryFuel(application = {}) {
-  const linkedItems = Array.isArray(application.linkedItems)
-    ? application.linkedItems
-    : []
-
-  return linkedItems[0] ?? application
+function getPrimaryFuel(application) {
+  return application?.linkedItems?.[0] ?? {}
 }
 
 function buildBooleanValue(value) {
@@ -36,7 +32,7 @@ function buildCompanyAddress(application) {
   ].filter(Boolean)
 }
 
-export function buildApplicantSummaryRows(application = {}) {
+export function buildApplicantSummaryRows(application) {
   const primaryFuel = getPrimaryFuel(application)
   const companyAddress = buildCompanyAddress(primaryFuel)
 
@@ -111,12 +107,10 @@ export function buildApplicantSummaryRows(application = {}) {
   ]
 }
 
-export function buildFuelRows(fuels = [], applicationId) {
-  return fuels.map((fuel) => {
-    const statusKey = fuel?.technicalReview?.status ?? 'in_progress'
+export function buildFuelRows(linkedItems, applicationId) {
+  return linkedItems.map((fuel) => {
     const statusMeta =
-      reviewFuelApplicationContent.en.statusTags[statusKey] ??
-      reviewFuelApplicationContent.en.statusTags.in_progress
+      reviewFuelApplicationContent.en.statusTags[fuel.technicalReview.status]
 
     return {
       brandName:
@@ -129,21 +123,16 @@ export function buildFuelRows(fuels = [], applicationId) {
   })
 }
 
-export function buildFuelApplicationViewModel(application = {}, applicationId) {
-  const cleanApplication = application ?? {}
-  const linkedFuels = Array.isArray(cleanApplication.linkedItems)
-    ? cleanApplication.linkedItems
-    : Array.isArray(cleanApplication.fuels)
-      ? cleanApplication.fuels
-      : []
+export function buildFuelApplicationViewModel(application, applicationId) {
+  const linkedItems = application.linkedItems
   const heading = content.heading(applicationId)
 
   return {
     pageTitle: content.pageTitle(applicationId),
     heading,
     content,
-    summaryRows: buildApplicantSummaryRows(cleanApplication),
-    fuelRows: buildFuelRows(linkedFuels, applicationId),
+    summaryRows: buildApplicantSummaryRows(application),
+    fuelRows: buildFuelRows(linkedItems, applicationId),
     tableCaption: content.table.caption(applicationId),
     breadcrumbs: [
       { text: content.navigation.home, href: '/manage-certification' },
@@ -158,6 +147,6 @@ export function buildFuelApplicationViewModel(application = {}, applicationId) {
       text: content.navigation.back
     },
     returnHref: '/fuel-applications',
-    continueReviewHref: '/not-found'
+    continueReviewHref: '/incomplete-review'
   }
 }

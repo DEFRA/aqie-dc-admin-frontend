@@ -72,13 +72,15 @@ async function handleStartFuelApplicationReviewRequest(request, h) {
 
   const reviewedBy = buildFuelApplicationReviewer(user)
 
+  const encodedApplicationId = encodeURIComponent(applicationId)
+
   try {
     await startFuelApplicationReview(applicationId, reviewedBy)
 
-    return h.redirect(`/review-fuel-application/${applicationId}`)
+    return h.redirect(`/review-fuel-application/${encodedApplicationId}`)
   } catch (error) {
     if (error.status === statusCodes.conflict) {
-      return h.redirect(`/review-fuel-application/${applicationId}`)
+      return h.redirect(`/review-fuel-application/${encodedApplicationId}`)
     }
 
     logger.error('[fuel-applications.POST] failed to start review', {
