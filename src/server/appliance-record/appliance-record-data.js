@@ -8,5 +8,5 @@ import { fetchJson } from '../common/api/api.js'
  * @returns {Promise<Object>} The raw backend response payload
  */
 export async function getApplianceRecord(applianceId) {
-  return fetchJson(`/api/admin/appliances/${encodeURIComponent(applianceId)}`)
+  return fetchJson(`/admin/appliances/${encodeURIComponent(applianceId)}`)
 }
