@@ -182,6 +182,12 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     ([countryKey, countryName]) => {
       const certification = data.certifications?.[countryKey] || {}
 
+      // Routes use kebab-case (northern-ireland); the data keys are camelCase.
+      const countrySlug = countryKey.replaceAll(
+        /[A-Z]/g,
+        (letter) => `-${letter.toLowerCase()}`
+      )
+
       // Backend returns certification status as awaiting_decision | certified | uncertified
       return {
         country: countryName,
@@ -189,7 +195,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
         dateCertified: certification.lastCertifiedAt
           ? formatDate(certification.lastCertifiedAt)
           : null,
-        changeUrl: `/approval-status-${countryKey}`
+        changeUrl: `${encodeURIComponent(applianceId)}/approval-status-${countrySlug}`
       }
     }
   )
