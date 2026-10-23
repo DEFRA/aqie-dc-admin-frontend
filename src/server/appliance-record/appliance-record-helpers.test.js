@@ -42,6 +42,17 @@ describe('appliance record helpers', () => {
     expect(transformed.details[3].label).toBe('Application 0042 details')
   })
 
+  test('builds approval-status links that match the routed country slugs', () => {
+    const { certifications } = buildApplianceRecordData('APP-123', {})
+
+    expect(certifications.map((cert) => cert.changeUrl)).toEqual([
+      'APP-123/approval-status-england',
+      'APP-123/approval-status-scotland',
+      'APP-123/approval-status-wales',
+      'APP-123/approval-status-northern-ireland'
+    ])
+  })
+
   test('builds the public listing and action state for each appliance status', () => {
     const liveAppliance = {
       applianceStatus: 'live',
