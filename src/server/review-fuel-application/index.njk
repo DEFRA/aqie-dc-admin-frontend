@@ -5,69 +5,65 @@
 {% endblock %}
 
 {% block content %}
-<div class="govuk-width-container">
-    <main class="govuk-main-wrapper" id="main-content">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">
-                    {{ heading }}
-                </h1>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            {{ heading }}
+        </h1>
 
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">
-                            {{ content.summaryCardTitle }}
-                        </h2>
-                    </div>
-                    <div class="govuk-summary-card__content">
-                        {{ govukSummaryList({ rows: summaryRows }) }}
-                    </div>
-                </div>
-
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">
-                            {{ content.fuelCardTitle }}
-                        </h2>
-                    </div>
-                    <div class="govuk-summary-card__content">
-                        {% if fuelRows and fuelRows.length > 0 %}
-                        {% for fuelRow in fuelRows %}
-                        <div class="govuk-grid-row govuk-!-margin-bottom-4">
-                            <div class="govuk-grid-column-one-third">
-                                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.brandName }}</h3>
-                                <p class="govuk-body govuk-!-margin-bottom-0">{{ fuelRow.brandName }}</p>
-                            </div>
-                            <div class="govuk-grid-column-one-third">
-                                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.status }}</h3>
-                                <strong class="govuk-tag {{ fuelRow.statusColour }}">
-                                    {{ fuelRow.statusLabel }}
-                                </strong>
-                            </div>
-                            <div class="govuk-grid-column-one-third">
-                                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.action }}</h3>
-                                <a href="{{ fuelRow.actionHref }}">{{ fuelRow.actionText }}</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <p class="govuk-body">{{ content.table.empty }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="govuk-button-group govuk-!-margin-top-7">
-                    {{ govukButton({
-            text: content.actions.continue,
-            href: continueReviewHref
-          }) }}
-                </div>
-
-                <p>
-                    <a class="govuk-link" href="{{ returnHref }}">{{ content.actions.returnToList }}</a>
-                </p>
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    {{ content.summaryCardTitle }}
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                {{ govukSummaryList({ rows: summaryRows }) }}
             </div>
         </div>
-    </main>
+
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    {{ content.fuelCardTitle }}
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                {% if fuelRows and fuelRows.length > 0 %}
+                {% for fuelRow in fuelRows %}
+                <div class="govuk-grid-row govuk-!-margin-bottom-4">
+                    <div class="govuk-grid-column-one-third">
+                        <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.brandName }}</h3>
+                        <p class="govuk-body govuk-!-margin-bottom-0">{{ fuelRow.brandName }}</p>
+                    </div>
+                    <div class="govuk-grid-column-one-third">
+                        <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.status }}</h3>
+                        <strong class="govuk-tag {{ fuelRow.statusColour }}">
+                            {{ fuelRow.statusLabel }}
+                        </strong>
+                    </div>
+                    <div class="govuk-grid-column-one-third">
+                        <h3 class="govuk-heading-s govuk-!-margin-bottom-1">{{ content.table.action }}</h3>
+                        <a href="{{ fuelRow.actionHref }}">{{ fuelRow.actionText }}</a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="govuk-body">{{ content.table.empty }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="govuk-button-group govuk-!-margin-top-7">
+            {{ govukButton({
+    text: content.actions.continue,
+    href: continueReviewHref
+  }) }}
+        </div>
+
+        <p>
+            <a class="govuk-link" href="{{ returnHref }}">{{ content.actions.returnToList }}</a>
+        </p>
+    </div>
 </div>
 {% endblock %}
