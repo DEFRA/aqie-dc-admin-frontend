@@ -39,10 +39,11 @@
     <form method="post"
           action="/review-appliance/{{ appliance.id }}/permitted-fuels"
           novalidate>
-      {{ govukTextarea({
+      {{ govukCharacterCount({
         id: "perm-fuels",
         name: "permittedFuels",
         rows: 5,
+        maxlength: content.characterCount.limit,
         value: formValues.permittedFuels,
         formGroup: {
           classes: "govuk-!-margin-bottom-9"
