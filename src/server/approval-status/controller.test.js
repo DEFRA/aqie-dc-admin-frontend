@@ -338,7 +338,7 @@ describe('Approval Status Controller', () => {
       expect(result.statusCode).toBe(400)
       expect(result.template).toBe('approval-status/index')
       expect(result.data.error).toEqual({
-        message: 'Please select an Option',
+        message: 'Please select an option',
         href: '#decision-0'
       })
       expect(result.data.pageTitle).toMatch(/^Error: /)
