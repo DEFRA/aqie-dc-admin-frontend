@@ -1,4 +1,5 @@
 import { applianceReviewContent } from './content.js'
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 
 const content = applianceReviewContent.en
 
@@ -24,7 +25,7 @@ export function buildApplianceBreadcrumbs(
     { text: 'Home', href: '/manage-certifications' },
     { text: content.applicationsHeading, href: '/appliance-applications' },
     {
-      text: `Review appliance application ${appliance.applicationId}`,
+      text: `Review appliance application ${formatApplicationId(appliance.applicationId)}`,
       href: applicationPath(appliance.applicationId)
     },
     {
