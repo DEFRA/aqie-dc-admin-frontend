@@ -124,7 +124,7 @@ export function buildFuelRows(linkedItems, applicationId) {
 }
 
 export function buildFuelApplicationViewModel(application, applicationId) {
-  const linkedItems = application.linkedItems
+  const linkedItems = application?.linkedItems ?? []
   const heading = content.heading(applicationId)
 
   return {
