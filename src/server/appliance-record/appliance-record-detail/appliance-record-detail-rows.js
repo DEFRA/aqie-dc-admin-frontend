@@ -3,7 +3,7 @@ import {
   formatApplianceType,
   formatNominalOutput,
   valueText
-} from '../appliance-details/appliance-summary-builder.js'
+} from '../../appliance-details/appliance-summary-builder.js'
 import { applianceRecordDetailContent } from './content.js'
 
 const content = applianceRecordDetailContent.en
@@ -91,7 +91,7 @@ export function buildLegacyRows(appliance) {
   return [
     {
       key: { text: content.labels.legacyApplianceId },
-      value: { text: valueText(appliance.id) }
+      value: { text: valueText(appliance.legacy?.id) }
     },
     {
       key: { text: content.labels.modelName },

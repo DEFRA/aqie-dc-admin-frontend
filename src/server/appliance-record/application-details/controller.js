@@ -1,22 +1,25 @@
 import { applianceApplicationDetailsContent } from './content.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+import { getApplianceTechnicalReview } from '../../common/services/common-appliance-service.js'
 import { getApplicationDetails } from './appliance-application-details-data.js'
 import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
 
 function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
+  const title = application.id
+    ? `Application ${application.id} details`
+    : 'Application details'
 
   return {
-    pageTitle: `Application ${application.id} details`,
-    heading: `Application ${application.id} details`,
+    pageTitle: title,
+    heading: title,
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
@@ -35,12 +38,13 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
 
   try {
     const { data: appliance } = await getApplianceTechnicalReview(applianceId)
-    const { data: application } = await getApplicationDetails(
-      appliance.applicationId
-    )
+    const applicationId = appliance.isLegacyRecord
+      ? appliance.legacy?.applicationId
+      : appliance.applicationId
+    const { data: application } = await getApplicationDetails(applicationId)
 
     return h.view(
-      'appliance-application-details/index',
+      'appliance-record/application-details/index',
       buildViewModel(appliance, application, applianceId)
     )
   } catch (error) {

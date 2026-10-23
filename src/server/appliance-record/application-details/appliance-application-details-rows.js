@@ -1,5 +1,5 @@
-import { formatDate } from '../../config/nunjucks/filters/format-date.js'
-import { valueText } from '../appliance-details/appliance-summary-builder.js'
+import { formatDate } from '../../../config/nunjucks/filters/format-date.js'
+import { valueText } from '../../appliance-details/appliance-summary-builder.js'
 import { applianceApplicationDetailsContent } from './content.js'
 
 const content = applianceApplicationDetailsContent.en
@@ -39,19 +39,10 @@ export function buildAppliancesValue(appliances) {
 }
 
 /**
- * Combines company name and address lines into a single govukSummaryList value.
- */
-function buildCompanyValue(application) {
-  const addressLines = buildCompanyAddress(application)
-  const allLines = [application.companyName, ...addressLines].filter(Boolean)
-
-  if (!allLines.length) return { text: content.notProvided }
-  return { html: allLines.join('<br>') }
-}
-
-/**
  * Builds the govukSummaryList value for linked legacy application IDs.
- * Single ID → plain text. Multiple IDs → bullet list.
+ * Single ID → plain text.
+ * Multiple IDs → comma-separated with "and" before the last item.
+ * e.g. "CAA-1, CAA-2 and CAA-3"
  */
 function buildLinkedApplicationsValue(linkedApplicationIds) {
   if (!linkedApplicationIds?.length) return { text: content.notProvided }
@@ -62,25 +53,43 @@ function buildLinkedApplicationsValue(linkedApplicationIds) {
 
   if (ids.length === 1) return { text: ids[0] }
 
-  const items = ids.map((id) => `<li>${id}</li>`).join('')
-  return {
-    html: `<ul class="govuk-list govuk-list--bullet">${items}</ul>`
-  }
+  const allButLast = ids.slice(0, -1).join(', ')
+  return { text: `${allButLast} and ${ids[ids.length - 1]}` }
 }
 
 export function buildLegacySummaryRows(application) {
-  return [
-    {
+  const rows = []
+
+  if (application.legacy?.linkedApplicationIds?.length) {
+    rows.push({
       key: { text: content.labels.linkedLegacyApplications },
       value: buildLinkedApplicationsValue(
-        application.legacy?.linkedApplicationIds
+        application.legacy.linkedApplicationIds
       )
-    },
-    {
+    })
+  }
+
+  const addressLines = buildCompanyAddress(application)
+
+  if (addressLines.length) {
+    rows.push(
+      {
+        key: { text: content.labels.companyName },
+        value: { text: application.companyName || content.notProvided }
+      },
+      {
+        key: { text: content.labels.companyAddress },
+        value: { html: addressLines.join('<br>') }
+      }
+    )
+  } else {
+    rows.push({
       key: { text: content.labels.company },
-      value: buildCompanyValue(application)
-    }
-  ]
+      value: { text: application.companyName || content.notProvided }
+    })
+  }
+
+  return rows
 }
 
 export function buildSummaryRows(application) {
