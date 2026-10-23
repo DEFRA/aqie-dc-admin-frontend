@@ -42,6 +42,7 @@ describe('#dashboardController', () => {
 
     expect(statusCode).toBe(statusCodes.ok)
     expect(result).toContain('Manage Certification')
+    expect(result).toContain('href="/fuel-applications"')
   })
 
   test('renders error view when getCounts throws error', async () => {
