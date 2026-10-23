@@ -6,6 +6,7 @@ import { health } from './health/index.js'
 import { manageCertification } from './manage-certification/index.js'
 import { applianceRecords } from './appliance-records/index.js'
 import { applianceApplications } from './appliance-applications/index.js'
+import { fuelApplications } from './fuel-applications/index.js'
 import { reviewApplianceApplication } from './review-appliance-application/index.js'
 import { finishApplicationReview } from './finish-application-review/index.js'
 import { applicationReviewComplete } from './application-review-complete/index.js'
@@ -33,6 +34,7 @@ import { testReports } from './test-reports/index.js'
 import { applianceRecordDetail } from './appliance-record-detail/index.js'
 import { applianceApplicationDetails } from './appliance-application-details/index.js'
 import { applianceRecordInstructionManual } from './appliance-record-instruction-manual/index.js'
+import { reviewFuelApplication } from './review-fuel-application/index.js'
 
 export const router = {
   plugin: {
@@ -51,6 +53,7 @@ export const router = {
         manageCertification,
         applianceRecords,
         applianceApplications,
+        fuelApplications,
         reviewApplianceApplication,
         finishApplicationReview,
         applicationReviewComplete,
@@ -75,6 +78,7 @@ export const router = {
         testReports,
         applianceRecordDetail,
         applianceApplicationDetails,
+        reviewFuelApplication,
         applianceRecordInstructionManual
       ])
 
