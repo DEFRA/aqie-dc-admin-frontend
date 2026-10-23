@@ -13,20 +13,24 @@ const { getLegacyComments } = await import('./legacy-comments-data.js')
 describe('#getLegacyComments', () => {
   beforeEach(() => fetchJsonMock.mockReset())
 
-  test('fetches from /appliances/{applianceId}', async () => {
-    fetchJsonMock.mockResolvedValue({ id: 'APP-1' })
+  test('fetches from /appliances/{applianceId}/legacy-comments', async () => {
+    fetchJsonMock.mockResolvedValue({ data: [] })
 
     const result = await getLegacyComments('APP-1')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP-1')
-    expect(result.id).toBe('APP-1')
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP-1/legacy-comments'
+    )
+    expect(result.data).toEqual([])
   })
 
   test('encodes special characters in the applianceId', async () => {
-    fetchJsonMock.mockResolvedValue({ id: 'APP/1' })
+    fetchJsonMock.mockResolvedValue({ data: [] })
 
     await getLegacyComments('APP/1')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1')
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      '/appliances/APP%2F1/legacy-comments'
+    )
   })
 })

@@ -13,10 +13,13 @@ const content = applianceApplicationDetailsContent.en
 
 function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
+  const title = application.id
+    ? `Application ${application.id} details`
+    : 'Application details'
 
   return {
-    pageTitle: `Application ${application.id} details`,
-    heading: `Application ${application.id} details`,
+    pageTitle: title,
+    heading: title,
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
@@ -35,9 +38,10 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
 
   try {
     const { data: appliance } = await getApplianceTechnicalReview(applianceId)
-    const { data: application } = await getApplicationDetails(
-      appliance.applicationId
-    )
+    const applicationId = appliance.isLegacyRecord
+      ? appliance.legacy?.applicationId
+      : appliance.applicationId
+    const { data: application } = await getApplicationDetails(applicationId)
 
     return h.view(
       'appliance-record/application-details/index',

@@ -2,8 +2,15 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { statusCodes } from '../../common/constants/status-codes.js'
 import { handleLegacyCommentsRequest } from './controller.js'
 
-const { getLegacyCommentsMock } = vi.hoisted(() => ({
-  getLegacyCommentsMock: vi.fn()
+const { getApplianceTechnicalReviewMock, getLegacyCommentsMock } = vi.hoisted(
+  () => ({
+    getApplianceTechnicalReviewMock: vi.fn(),
+    getLegacyCommentsMock: vi.fn()
+  })
+)
+
+vi.mock('../../common/services/common-appliance-service.js', () => ({
+  getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
 vi.mock('./legacy-comments-data.js', () => ({
@@ -12,14 +19,13 @@ vi.mock('./legacy-comments-data.js', () => ({
 
 const baseAppliance = {
   id: 'APP-1',
-  modelName: 'Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove',
-  legacy: {
-    comments: [
-      '[05/04/2016 12:16] Data Entry User / Data Entry (Legacy.user@example.com): The Jetmaster 50i comment.',
-      '[08/06/2016 14:45] Data Entry User / Data Entry (Legacy.user@example.com): According to the applicant...'
-    ]
-  }
+  modelName: 'Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove'
 }
+
+const baseComments = [
+  '[05/04/2016 12:16] Data Entry User / Data Entry (Legacy.user@example.com): The Jetmaster 50i comment.',
+  '[08/06/2016 14:45] Data Entry User / Data Entry (Legacy.user@example.com): According to the applicant...'
+]
 
 function toolkit() {
   const code = vi.fn().mockReturnValue('rendered')
@@ -31,11 +37,13 @@ function toolkit() {
 
 describe('#handleLegacyCommentsRequest', () => {
   beforeEach(() => {
+    getApplianceTechnicalReviewMock.mockReset()
     getLegacyCommentsMock.mockReset()
   })
 
   test('renders with correct heading including model name', async () => {
-    getLegacyCommentsMock.mockResolvedValue({ data: baseAppliance })
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -52,7 +60,8 @@ describe('#handleLegacyCommentsRequest', () => {
   })
 
   test('passes all comments to the view model', async () => {
-    getLegacyCommentsMock.mockResolvedValue({ data: baseAppliance })
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -62,7 +71,8 @@ describe('#handleLegacyCommentsRequest', () => {
   })
 
   test('passes string comments through unchanged', async () => {
-    getLegacyCommentsMock.mockResolvedValue({ data: baseAppliance })
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -74,21 +84,17 @@ describe('#handleLegacyCommentsRequest', () => {
   })
 
   test('normalizes structured comment objects into formatted strings', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getLegacyCommentsMock.mockResolvedValue({
-      data: {
-        ...baseAppliance,
-        legacy: {
-          comments: [
-            {
-              date: '05/04/2016 12:16',
-              user: 'Data Entry User',
-              role: 'Data Entry',
-              email: 'Legacy.user@example.com',
-              text: 'The Jetmaster 50i comment.'
-            }
-          ]
+      data: [
+        {
+          date: '05/04/2016 12:16',
+          user: 'Data Entry User',
+          role: 'Data Entry',
+          email: 'Legacy.user@example.com',
+          text: 'The Jetmaster 50i comment.'
         }
-      }
+      ]
     })
     const h = toolkit()
 
@@ -100,10 +106,9 @@ describe('#handleLegacyCommentsRequest', () => {
     )
   })
 
-  test('comments is empty array when legacy.comments is absent', async () => {
-    getLegacyCommentsMock.mockResolvedValue({
-      data: { ...baseAppliance, legacy: undefined }
-    })
+  test('comments is empty array when response data is empty', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockResolvedValue({ data: [] })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -113,7 +118,8 @@ describe('#handleLegacyCommentsRequest', () => {
   })
 
   test('sets correct back link, return href, and breadcrumbs', async () => {
-    getLegacyCommentsMock.mockResolvedValue({ data: baseAppliance })
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -131,8 +137,21 @@ describe('#handleLegacyCommentsRequest', () => {
     ])
   })
 
-  test('renders error page when API fetch fails', async () => {
-    getLegacyCommentsMock.mockRejectedValue(new Error('backend down'))
+  test('renders error page when the technical review fetch fails', async () => {
+    getApplianceTechnicalReviewMock.mockRejectedValue(new Error('backend down'))
+    const h = toolkit()
+
+    await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
+  })
+
+  test('renders error page when the comments fetch fails', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getLegacyCommentsMock.mockRejectedValue(new Error('not found'))
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)

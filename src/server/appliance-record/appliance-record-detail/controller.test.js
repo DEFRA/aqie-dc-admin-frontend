@@ -181,6 +181,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
       data: {
         ...baseAppliance,
         isLegacyRecord: true,
+        legacy: { id: 'LEGACY-APP-1' },
         permittedToBurnWood: true
       }
     })
@@ -193,7 +194,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
 
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.summaryRows[0].key.text).toBe('Legacy appliance ID')
-    expect(viewModel.summaryRows[0].value.text).toBe('APP-1')
+    expect(viewModel.summaryRows[0].value.text).toBe('LEGACY-APP-1')
     const hasApplianceId = viewModel.summaryRows.some(
       (row) => row.key.text === 'Appliance ID'
     )

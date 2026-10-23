@@ -1,5 +1,6 @@
 import { legacyCommentsContent } from './content.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
+import { getApplianceTechnicalReview } from '../../common/services/common-appliance-service.js'
 import { getLegacyComments } from './legacy-comments-data.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
@@ -26,15 +27,14 @@ function normalizeComment(comment) {
   return parts.join(' ')
 }
 
-function buildViewModel(appliance, applianceId) {
+function buildViewModel(appliance, comments, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
-  const rawComments = appliance.legacy?.comments ?? []
-  const comments = rawComments.map(normalizeComment)
+  const normalizedComments = (comments ?? []).map(normalizeComment)
 
   return {
     pageTitle: `${content.headingPrefix} ${appliance.modelName}`,
     heading: `${content.headingPrefix} ${appliance.modelName}`,
-    comments,
+    comments: normalizedComments,
     noComments: content.noComments,
     backLink: { href: returnHref },
     returnHref,
@@ -50,11 +50,12 @@ async function handleLegacyCommentsRequest(request, h) {
   const { applianceId } = request.params
 
   try {
-    const { data: appliance } = await getLegacyComments(applianceId)
+    const { data: appliance } = await getApplianceTechnicalReview(applianceId)
+    const { data: comments } = await getLegacyComments(applianceId)
 
     return h.view(
       'appliance-record/legacy-comments/index',
-      buildViewModel(appliance, applianceId)
+      buildViewModel(appliance, comments, applianceId)
     )
   } catch (error) {
     logger.error(

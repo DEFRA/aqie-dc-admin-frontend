@@ -50,28 +50,46 @@ export const buildNonLegacyDetailsRows = (appliance) =>
   }))
 
 export const buildLegacyDetailsRows = (appliance) => {
+  const hasInstructionManual = !!(
+    appliance.instructionManual?.title ||
+    appliance.instructionManual?.version ||
+    appliance.instructionManual?.publicationDate
+  )
+  const hasLegacyComments = !!appliance.legacy?.comments?.length
+
   const details = [
     {
       label: content.legacyDetailsItems.applianceDetails,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/appliance-details`
-    },
-    {
+    }
+  ]
+
+  if (hasInstructionManual) {
+    details.push({
       label: content.legacyDetailsItems.manuals,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/instruction-manual`
-    },
-    {
+    })
+  }
+
+  if (hasLegacyComments) {
+    details.push({
       label: content.legacyDetailsItems.legacyComments,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
-    },
+    })
+  }
+
+  details.push(
     {
-      label: content.formatApplicationDetailsLabel(appliance.applicationId),
+      label: content.formatApplicationDetailsLabel(
+        appliance.legacy?.applicationId
+      ),
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
     },
     {
       label: content.legacyDetailsItems.actionHistory,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
     }
-  ]
+  )
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -239,6 +257,12 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
   }
   if (data.isLegacyRecord !== undefined) {
     transformedData.isLegacyRecord = data.isLegacyRecord
+  }
+  if (data.legacy !== undefined) {
+    transformedData.legacy = data.legacy
+  }
+  if (data.instructionManual !== undefined) {
+    transformedData.instructionManual = data.instructionManual
   }
 
   return transformedData
