@@ -6,13 +6,9 @@ import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
-<<<<<<< HEAD:src/server/appliance-record/application-details/controller.js
 import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
-=======
-import { statusCodes } from '../common/constants/status-codes.js'
-import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
->>>>>>> f8a5323fdec3bfcee8f19e1db43a0f7e16bb7ea1:src/server/appliance-application-details/controller.js
+import { formatApplicationId } from '../../../config/nunjucks/filters/format-application-id.js'
 
 const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
