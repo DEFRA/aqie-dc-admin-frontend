@@ -6,6 +6,7 @@ import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -16,6 +17,10 @@ function buildViewModel(appliance, application, applianceId) {
   const title = application.id
     ? `Application ${application.id} details`
     : 'Application details'
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
     pageTitle: title,
@@ -25,11 +30,8 @@ function buildViewModel(appliance, application, applianceId) {
       : buildSummaryRows(application),
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 
@@ -41,7 +43,9 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
     const applicationId = appliance.isLegacyRecord
       ? appliance.legacy?.applicationId
       : appliance.applicationId
-    const { data: application } = await getApplicationDetails(applicationId)
+    const application = applicationId
+      ? (await getApplicationDetails(applicationId)).data
+      : {}
 
     return h.view(
       'appliance-record/application-details/index',

@@ -35,6 +35,18 @@ export const buildCertificationTableRows = (appliance) =>
     ]
   })
 
+export const buildSubPageBreadcrumbs = (modelName, returnHref) => ({
+  breadcrumbs: [
+    { text: content.nav.home, href: content.nav.homeHref },
+    {
+      text: content.nav.applianceRecords,
+      href: content.nav.applianceRecordsHref
+    },
+    { text: modelName, href: returnHref }
+  ],
+  returnToRecord: content.nav.returnToRecord
+})
+
 export const buildNonLegacyDetailsRows = (appliance) =>
   appliance.details.map((detail) => ({
     key: { text: detail.label },

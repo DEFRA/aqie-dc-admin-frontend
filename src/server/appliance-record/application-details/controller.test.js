@@ -292,6 +292,27 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     expect(phoneRow.value.text).toBe('Not provided')
   })
 
+  test('skips the application fetch and renders with empty data when applicationId is absent', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({
+      data: { ...baseAppliance, applicationId: undefined }
+    })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(getApplicationDetailsMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-record/application-details/index',
+      expect.objectContaining({
+        pageTitle: 'Application details',
+        heading: 'Application details'
+      })
+    )
+  })
+
   test('uses applicationId from the technical review response to fetch the application', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })

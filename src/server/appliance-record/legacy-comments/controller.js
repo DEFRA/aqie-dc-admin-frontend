@@ -2,6 +2,7 @@ import { legacyCommentsContent } from './content.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
 import { getApplianceTechnicalReview } from '../../common/services/common-appliance-service.js'
 import { getLegacyComments } from './legacy-comments-data.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -30,6 +31,10 @@ function normalizeComment(comment) {
 function buildViewModel(appliance, comments, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
   const normalizedComments = (comments ?? []).map(normalizeComment)
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
     pageTitle: `${content.headingPrefix} ${appliance.modelName}`,
@@ -38,11 +43,8 @@ function buildViewModel(appliance, comments, applianceId) {
     noComments: content.noComments,
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 

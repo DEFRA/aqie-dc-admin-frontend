@@ -5,6 +5,7 @@ import {
   buildLegacyRows,
   buildNonLegacyRows
 } from './appliance-record-detail-rows.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -12,6 +13,10 @@ const content = applianceRecordDetailContent.en
 
 function buildViewModel(appliance, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
     pageTitle: content.pageTitle,
@@ -21,11 +26,8 @@ function buildViewModel(appliance, applianceId) {
       : buildNonLegacyRows(appliance),
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 
