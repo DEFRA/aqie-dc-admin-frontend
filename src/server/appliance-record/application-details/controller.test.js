@@ -374,7 +374,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
   })
 
   describe('legacy records (isLegacyRecord: true)', () => {
-    const legacyAppliance = { ...baseAppliance, isLegacyRecord: true }
+    const legacyAppliance = {
+      ...baseAppliance,
+      isLegacyRecord: true,
+      legacy: { applicationId: 'app-uuid-123' }
+    }
 
     const legacyApplication = {
       id: 'app-uuid-123',
