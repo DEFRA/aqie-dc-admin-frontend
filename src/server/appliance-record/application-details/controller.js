@@ -16,7 +16,7 @@ const content = applianceApplicationDetailsContent.en
 function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
   const title = application.id
-    ? `Application ${application.id} details`
+    ? `Application ${formatApplicationId(application.id)} details`
     : 'Application details'
   const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
     appliance.modelName,
@@ -24,13 +24,8 @@ function buildViewModel(appliance, application, applianceId) {
   )
 
   return {
-<<<<<<< HEAD:src/server/appliance-record/application-details/controller.js
     pageTitle: title,
     heading: title,
-=======
-    pageTitle: `Application ${formatApplicationId(application.id)} details`,
-    heading: `Application ${formatApplicationId(application.id)} details`,
->>>>>>> f8a5323fdec3bfcee8f19e1db43a0f7e16bb7ea1:src/server/appliance-application-details/controller.js
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
