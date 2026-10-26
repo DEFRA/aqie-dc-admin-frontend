@@ -1,9 +1,10 @@
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 export const content = {
   en: {
     getHeading: (applicationId) =>
-      `Your review of application ${applicationId} is not complete`,
+      `Your review of application ${formatApplicationId(applicationId)} is not complete`,
     getPageTitle: (applicationId) =>
-      `Your review of application ${applicationId} is not complete`,
+      `Your review of application ${formatApplicationId(applicationId)} is not complete`,
     introText:
       'You must make a final decision on each appliance before completing this application review.',
     returnLinkText: 'Return to application and complete reviews',
