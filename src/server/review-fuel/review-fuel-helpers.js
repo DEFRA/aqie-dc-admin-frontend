@@ -1,6 +1,5 @@
 import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
 import { reviewFuelContent } from './content.js'
-import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 
 const content = reviewFuelContent.en
 
