@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 import { handleApplianceRecordDetailRequest } from './controller.js'
 
 const { getApplianceDetailMock } = vi.hoisted(() => ({
@@ -47,7 +47,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
     )
 
     expect(h.view).toHaveBeenCalledWith(
-      'appliance-record-detail/index',
+      'appliance-record/appliance-record-detail/index',
       expect.objectContaining({
         heading: 'Appliance details',
         pageTitle: 'Appliance details'

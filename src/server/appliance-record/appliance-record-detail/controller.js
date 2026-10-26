@@ -1,11 +1,11 @@
 import { applianceRecordDetailContent } from './content.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
 import { getApplianceDetail } from './appliance-record-detail-data.js'
 import {
   buildLegacyRows,
   buildNonLegacyRows
 } from './appliance-record-detail-rows.js'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = applianceRecordDetailContent.en
@@ -36,7 +36,7 @@ async function handleApplianceRecordDetailRequest(request, h) {
     const { data: appliance } = await getApplianceDetail(applianceId)
 
     return h.view(
-      'appliance-record-detail/index',
+      'appliance-record/appliance-record-detail/index',
       buildViewModel(appliance, applianceId)
     )
   } catch (error) {

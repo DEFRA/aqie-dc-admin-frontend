@@ -28,14 +28,6 @@ export const applianceRecordInstructionManual = {
           options: {
             validate: { params: paramsSchema }
           }
-        },
-        {
-          method: 'GET',
-          path: '/appliance-record/{applianceId}/manuals',
-          ...applianceRecordInstructionManualController,
-          options: {
-            validate: { params: paramsSchema }
-          }
         }
       ])
     }
