@@ -21,7 +21,8 @@
                 <tbody class="govuk-table__body">
                     {% for application in notStartedApplications %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
                         <td class="govuk-table__cell govuk-!-width-one-half">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}
@@ -57,7 +58,8 @@
                 <tbody class="govuk-table__body">
                     {% for application in inProgressApplications %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
                         <td class="govuk-table__cell">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}

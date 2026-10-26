@@ -41,7 +41,7 @@ export const reviewFuelApplicationContent = {
         label: 'Not started',
         colour: 'govuk-tag--grey'
       },
-      in_progress: {
+      in_review: {
         text: 'Continue review',
         label: 'In progress',
         colour: 'govuk-tag--yellow'

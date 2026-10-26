@@ -35,6 +35,7 @@ import { applianceRecordDetail } from './appliance-record-detail/index.js'
 import { applianceApplicationDetails } from './appliance-application-details/index.js'
 import { applianceRecordInstructionManual } from './appliance-record-instruction-manual/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
+import { reviewFuel } from './review-fuel/index.js'
 
 export const router = {
   plugin: {
@@ -79,7 +80,8 @@ export const router = {
         applianceRecordDetail,
         applianceApplicationDetails,
         reviewFuelApplication,
-        applianceRecordInstructionManual
+        applianceRecordInstructionManual,
+        reviewFuel
       ])
 
       // Static assets

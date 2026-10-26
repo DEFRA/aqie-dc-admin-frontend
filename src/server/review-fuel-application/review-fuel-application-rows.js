@@ -1,3 +1,4 @@
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 import { reviewFuelApplicationContent } from './content.js'
 
 const content = reviewFuelApplicationContent.en
@@ -30,6 +31,12 @@ function buildCompanyAddress(application) {
     application.companyAddress?.postcode,
     application.companyAddress?.country
   ].filter(Boolean)
+}
+
+function buildManufacturerOrResellerValue(fuel) {
+  return (
+    fuel?.manufacturerOrReseller ?? fuel?.supplierType ?? content.notProvided
+  )
 }
 
 export function buildApplicantSummaryRows(application) {
@@ -101,16 +108,19 @@ export function buildApplicantSummaryRows(application) {
     {
       key: { text: content.labels.manufacturerOrReseller },
       value: {
-        text: primaryFuel.manufacturerOrReseller ?? content.notProvided
+        text: buildManufacturerOrResellerValue(primaryFuel)
       }
     }
   ]
 }
 
-export function buildFuelRows(linkedItems, applicationId) {
+export function buildFuelRows(linkedItems, _applicationId) {
   return linkedItems.map((fuel) => {
+    const reviewStatus = fuel?.technicalReview?.status ?? 'new'
     const statusMeta =
-      reviewFuelApplicationContent.en.statusTags[fuel.technicalReview.status]
+      reviewFuelApplicationContent.en.statusTags[reviewStatus] ??
+      reviewFuelApplicationContent.en.statusTags.new
+    const fuelId = fuel?.fuelId ?? fuel?.id
 
     return {
       brandName:
@@ -118,22 +128,27 @@ export function buildFuelRows(linkedItems, applicationId) {
       statusLabel: statusMeta.label,
       statusColour: statusMeta.colour,
       actionText: statusMeta.text,
-      actionHref: `/review-fuel-application/${encodeURIComponent(applicationId)}`
+      actionHref: fuelId
+        ? `/review-fuel/${encodeURIComponent(fuelId)}`
+        : '/fuel-applications'
     }
   })
 }
 
 export function buildFuelApplicationViewModel(application, applicationId) {
   const linkedItems = application?.linkedItems ?? []
-  const heading = content.heading(applicationId)
+  const formattedApplicationId = formatApplicationId(
+    application?.id ?? applicationId
+  )
+  const heading = content.heading(formattedApplicationId)
 
   return {
-    pageTitle: content.pageTitle(applicationId),
+    pageTitle: content.pageTitle(formattedApplicationId),
     heading,
     content,
     summaryRows: buildApplicantSummaryRows(application),
     fuelRows: buildFuelRows(linkedItems, applicationId),
-    tableCaption: content.table.caption(applicationId),
+    tableCaption: content.table.caption(formattedApplicationId),
     breadcrumbs: [
       { text: content.navigation.home, href: '/manage-certification' },
       {

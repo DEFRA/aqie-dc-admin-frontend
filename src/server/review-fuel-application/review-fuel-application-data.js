@@ -1,4 +1,4 @@
-import { fetchJson } from '../common/api/api.js'
+import { fetchJson, patchJson } from '../common/api/api.js'
 
 /**
  * Fetches the full application payload for a fuel review.
@@ -7,4 +7,15 @@ import { fetchJson } from '../common/api/api.js'
  */
 export async function getFuelApplicationDetails(applicationId) {
   return fetchJson(`/applications/${encodeURIComponent(applicationId)}`)
+}
+
+/**
+ * Marks a fuel application as in progress once a reviewer starts working on it.
+ * This follows the same backend contract as the appliance review flow.
+ */
+export async function startFuelApplicationReview(applicationId, reviewedBy) {
+  return patchJson(
+    `/applications/${encodeURIComponent(applicationId)}/in-progress`,
+    { reviewedBy }
+  )
 }

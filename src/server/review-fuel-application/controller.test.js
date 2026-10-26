@@ -1,22 +1,29 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { reviewFuelApplicationContent } from './content.js'
-import { handleReviewFuelApplicationRequest } from './controller.js'
+import {
+  handleReviewFuelApplicationRequest,
+  handleStartFuelApplicationReviewRequest
+} from './controller.js'
 
 const content = reviewFuelApplicationContent.en
 
-const { getFuelApplicationDetailsMock } = vi.hoisted(() => ({
-  getFuelApplicationDetailsMock: vi.fn()
-}))
+const { getFuelApplicationDetailsMock, startFuelApplicationReviewMock } =
+  vi.hoisted(() => ({
+    getFuelApplicationDetailsMock: vi.fn(),
+    startFuelApplicationReviewMock: vi.fn()
+  }))
 
 vi.mock('./review-fuel-application-data.js', () => ({
-  getFuelApplicationDetails: getFuelApplicationDetailsMock
+  getFuelApplicationDetails: getFuelApplicationDetailsMock,
+  startFuelApplicationReview: startFuelApplicationReviewMock
 }))
 
 const baseApplication = {
-  id: 'app-0317',
+  id: '7756-0001',
   linkedItems: [
     {
+      fuelId: 'FUEL-123',
       companyName: 'Flamers Ltd',
       companyFullAddress: 'Sonna\nMullingar\nCo. Westmeath\nN91 PYC8',
       companyContact: {
@@ -33,7 +40,7 @@ const baseApplication = {
       fuelBagging: 'Bagged at source',
       manufacturerOrReseller: 'Manufacturer',
       brandNames: 'Kings Starterlog',
-      technicalReview: { status: 'in_progress' }
+      technicalReview: { status: 'in_review' }
     }
   ]
 }
@@ -56,15 +63,15 @@ describe('#handleReviewFuelApplicationRequest', () => {
     const h = toolkit()
 
     await handleReviewFuelApplicationRequest(
-      { params: { applicationId: 'app-0317' } },
+      { params: { applicationId: '7756-0001' } },
       h
     )
 
     expect(h.view).toHaveBeenCalledWith(
       'review-fuel-application/index',
       expect.objectContaining({
-        pageTitle: content.pageTitle('app-0317'),
-        heading: content.heading('app-0317')
+        pageTitle: content.pageTitle('0001'),
+        heading: content.heading('0001')
       })
     )
   })
@@ -102,9 +109,59 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.fuelRows[0]).toMatchObject({
       brandName: 'Kings Starterlog',
       statusLabel: 'In progress',
-      actionText: 'Continue review'
+      actionText: 'Continue review',
+      actionHref: '/review-fuel/FUEL-123'
     })
     expect(viewModel.continueReviewHref).toBe('/incomplete-review')
+  })
+
+  test('uses the supplier type when manufacturer or reseller is missing', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            ...baseApplication.linkedItems[0],
+            manufacturerOrReseller: undefined,
+            supplierType: 'Manufacturer'
+          }
+        ]
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryRows[10].value.text).toBe('Manufacturer')
+  })
+
+  test('does not fall back to the application id when constructing the fuel review link', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            companyName: 'Fallback test',
+            brandNames: 'Test fuel',
+            technicalReview: { status: 'new' },
+            id: 'legacy-id'
+          }
+        ]
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.fuelRows[0].actionHref).toBe('/review-fuel/legacy-id')
   })
 
   test('falls back to safe values when the backend data is missing', async () => {
@@ -130,6 +187,60 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.summaryRows[0].value.text).toBe(content.notProvided)
     expect(viewModel.summaryRows[8].value.text).toBe(content.notProvided)
     expect(viewModel.fuelRows).toEqual([])
+  })
+
+  test('uses a default not-started status when a linked fuel has no technicalReview state', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            companyName: 'Legacy fuel trader',
+            brandNames: 'Legacy fuel',
+            id: 'legacy-id'
+          }
+        ]
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.fuelRows[0]).toMatchObject({
+      brandName: 'Legacy fuel',
+      statusLabel: 'Not started',
+      actionText: 'Start review',
+      actionHref: '/review-fuel/legacy-id'
+    })
+  })
+
+  test('starts the review and redirects back to the application page', async () => {
+    startFuelApplicationReviewMock.mockResolvedValue({ success: true })
+    const h = {
+      redirect: vi.fn().mockReturnValue('redirected')
+    }
+
+    await handleStartFuelApplicationReviewRequest(
+      {
+        params: { applicationId: 'app-0317' },
+        auth: {
+          credentials: {
+            user: { name: 'Jane Doe', email: 'jane@example.com' }
+          }
+        }
+      },
+      h
+    )
+
+    expect(startFuelApplicationReviewMock).toHaveBeenCalledWith('app-0317', {
+      name: 'Jane Doe',
+      email: 'jane@example.com'
+    })
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel-application/app-0317')
   })
 
   test('renders the standard error page when the data fetch fails', async () => {
