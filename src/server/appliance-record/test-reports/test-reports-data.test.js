@@ -8,15 +8,15 @@ vi.mock('../../common/api/api.js', () => ({
   fetchJson: fetchJsonMock
 }))
 
-const { getApplianceDetail } = await import('./appliance-record-detail-data.js')
+const { getTestReports } = await import('./test-reports-data.js')
 
-describe('#getApplianceDetail', () => {
+describe('#getTestReports', () => {
   beforeEach(() => fetchJsonMock.mockReset())
 
   test('fetches from /appliances/{applianceId}', async () => {
     fetchJsonMock.mockResolvedValue({ id: 'APP-1' })
 
-    const result = await getApplianceDetail('APP-1')
+    const result = await getTestReports('APP-1')
 
     expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP-1')
     expect(result.id).toBe('APP-1')
@@ -25,7 +25,7 @@ describe('#getApplianceDetail', () => {
   test('encodes special characters in the applianceId', async () => {
     fetchJsonMock.mockResolvedValue({ id: 'APP/1' })
 
-    await getApplianceDetail('APP/1')
+    await getTestReports('APP/1')
 
     expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1')
   })

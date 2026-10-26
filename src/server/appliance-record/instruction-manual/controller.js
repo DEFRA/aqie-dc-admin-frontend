@@ -5,6 +5,7 @@ import {
   buildInstructionManualRows,
   buildServicingManualRows
 } from './appliance-record-instruction-manual-rows.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -17,6 +18,10 @@ function buildViewModel(appliance, applianceId) {
     ? content.legacyHeadingPrefix
     : content.headingPrefix
   const heading = `${headingPrefix} ${appliance.modelName}`
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
     pageTitle: heading,
@@ -29,11 +34,8 @@ function buildViewModel(appliance, applianceId) {
       : [],
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 

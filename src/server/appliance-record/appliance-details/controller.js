@@ -1,10 +1,11 @@
 import { applianceRecordDetailContent } from './content.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
-import { getApplianceDetail } from './appliance-record-detail-data.js'
+import { getApplianceDetail } from './appliance-details-data.js'
 import {
   buildLegacyRows,
   buildNonLegacyRows
-} from './appliance-record-detail-rows.js'
+} from './appliance-details-rows.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -12,6 +13,10 @@ const content = applianceRecordDetailContent.en
 
 function buildViewModel(appliance, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
     pageTitle: content.pageTitle,
@@ -21,11 +26,8 @@ function buildViewModel(appliance, applianceId) {
       : buildNonLegacyRows(appliance),
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 
@@ -36,7 +38,7 @@ async function handleApplianceRecordDetailRequest(request, h) {
     const { data: appliance } = await getApplianceDetail(applianceId)
 
     return h.view(
-      'appliance-record/appliance-record-detail/index',
+      'appliance-record/appliance-details/index',
       buildViewModel(appliance, applianceId)
     )
   } catch (error) {

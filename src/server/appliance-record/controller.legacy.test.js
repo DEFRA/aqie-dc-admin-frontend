@@ -181,10 +181,10 @@ describe('applianceRecord controller - Legacy Records', () => {
         data: {
           ...mockBackendResponse.data,
           id: 'APP-LEGACY-789',
-          applicationId: '0042',
           isLegacyRecord: true,
           modelName: 'Legacy Record Model',
-          status: 'live'
+          status: 'live',
+          legacy: { applicationId: '0042' }
         }
       })
 
@@ -197,10 +197,9 @@ describe('applianceRecord controller - Legacy Records', () => {
       const callArgs = h.view.mock.calls[0][1]
       const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
 
+      // Mock has no instructionManual or legacy.comments so those rows are hidden
       expect(detailLabels).toEqual([
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,
-        applianceRecordContent.en.legacyDetailsItems.manuals,
-        applianceRecordContent.en.legacyDetailsItems.legacyComments,
         'Application 0042 details',
         applianceRecordContent.en.legacyDetailsItems.actionHistory
       ])

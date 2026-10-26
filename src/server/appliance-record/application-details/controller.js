@@ -6,6 +6,7 @@ import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
+import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 import { formatApplicationId } from '../../../config/nunjucks/filters/format-application-id.js'
 
@@ -14,20 +15,24 @@ const content = applianceApplicationDetailsContent.en
 
 function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
+  const title = application.id
+    ? `Application ${formatApplicationId(application.id)} details`
+    : 'Application details'
+  const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
+    appliance.modelName,
+    returnHref
+  )
 
   return {
-    pageTitle: `Application ${formatApplicationId(application.id)} details`,
-    heading: `Application ${formatApplicationId(application.id)} details`,
+    pageTitle: title,
+    heading: title,
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
     backLink: { href: returnHref },
     returnHref,
-    breadcrumbs: [
-      { text: 'Home', href: '/manage-certification' },
-      { text: 'Appliance records', href: '/appliance-records' },
-      { text: appliance.modelName, href: returnHref }
-    ]
+    returnToRecord,
+    breadcrumbs
   }
 }
 
@@ -36,9 +41,12 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
 
   try {
     const { data: appliance } = await getApplianceTechnicalReview(applianceId)
-    const { data: application } = await getApplicationDetails(
-      appliance.applicationId
-    )
+    const applicationId = appliance.isLegacyRecord
+      ? appliance.legacy?.applicationId
+      : appliance.applicationId
+    const application = applicationId
+      ? (await getApplicationDetails(applicationId)).data
+      : {}
 
     return h.view(
       'appliance-record/application-details/index',

@@ -130,6 +130,15 @@ export const applianceRecordContent = {
     backLinkText: 'Back',
     returnLink: 'Return to appliance records',
 
+    // Shared sub-page navigation strings
+    nav: {
+      home: 'Home',
+      homeHref: '/manage-certification',
+      applianceRecords: 'Appliance records',
+      applianceRecordsHref: '/appliance-records',
+      returnToRecord: 'Return to record'
+    },
+
     // Error messages
     errors: {
       generic: 'Sorry, there is a problem with the service'

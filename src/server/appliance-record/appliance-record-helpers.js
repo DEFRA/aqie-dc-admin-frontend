@@ -1,20 +1,11 @@
 import { applianceRecordContent } from './content.js'
+import { formatDate } from '../../config/nunjucks/filters/format-date.js'
 
 const content = applianceRecordContent.en
 
 // Backend returns appliance status as live | hidden | pending | rejected
 export const normalizeApplianceStatus = (status) =>
   content.applianceStatus[status] ? status : content.statusValues.pending
-
-export const formatDate = (dateString) => {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
 
 export const buildCertificationTableRows = (appliance) =>
   appliance.certifications.map((cert) => {
@@ -35,6 +26,18 @@ export const buildCertificationTableRows = (appliance) =>
     ]
   })
 
+export const buildSubPageBreadcrumbs = (modelName, returnHref) => ({
+  breadcrumbs: [
+    { text: content.nav.home, href: content.nav.homeHref },
+    {
+      text: content.nav.applianceRecords,
+      href: content.nav.applianceRecordsHref
+    },
+    { text: modelName, href: returnHref }
+  ],
+  returnToRecord: content.nav.returnToRecord
+})
+
 export const buildNonLegacyDetailsRows = (appliance) =>
   appliance.details.map((detail) => ({
     key: { text: detail.label },
@@ -50,28 +53,46 @@ export const buildNonLegacyDetailsRows = (appliance) =>
   }))
 
 export const buildLegacyDetailsRows = (appliance) => {
+  const hasInstructionManual = !!(
+    appliance.instructionManual?.title ||
+    appliance.instructionManual?.version ||
+    appliance.instructionManual?.publicationDate
+  )
+  const hasLegacyComments = !!appliance.legacy?.comments?.length
+
   const details = [
     {
       label: content.legacyDetailsItems.applianceDetails,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/appliance-details`
-    },
-    {
+    }
+  ]
+
+  if (hasInstructionManual) {
+    details.push({
       label: content.legacyDetailsItems.manuals,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/instruction-manual`
-    },
-    {
+    })
+  }
+
+  if (hasLegacyComments) {
+    details.push({
       label: content.legacyDetailsItems.legacyComments,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
-    },
+    })
+  }
+
+  details.push(
     {
-      label: content.formatApplicationDetailsLabel(appliance.applicationId),
+      label: content.formatApplicationDetailsLabel(
+        appliance.legacy?.applicationId
+      ),
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
     },
     {
       label: content.legacyDetailsItems.actionHistory,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
     }
-  ]
+  )
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -175,7 +196,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
         country: countryName,
         status: certification.status || 'awaiting_decision',
         dateCertified: certification.lastCertifiedAt
-          ? formatDate(certification.lastCertifiedAt)
+          ? formatDate(certification.lastCertifiedAt, 'dd/MM/yyyy')
           : null,
         changeUrl: `${encodeURIComponent(applianceId)}/approval-status-${countrySlug}`
       }
@@ -245,6 +266,12 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
   }
   if (data.isLegacyRecord !== undefined) {
     transformedData.isLegacyRecord = data.isLegacyRecord
+  }
+  if (data.legacy !== undefined) {
+    transformedData.legacy = data.legacy
+  }
+  if (data.instructionManual !== undefined) {
+    transformedData.instructionManual = data.instructionManual
   }
 
   return transformedData

@@ -93,7 +93,7 @@ describe('appliance record helpers', () => {
       applianceStatus: 'live',
       isLegacyRecord: true,
       id: 'APP-123',
-      applicationId: '0042',
+      legacy: { applicationId: '0042' },
       details: []
     }
 
@@ -112,7 +112,9 @@ describe('appliance record helpers', () => {
       }
     ])
 
-    expect(buildDetailsRows(legacy)[3].key.text).toBe(
+    // No instructionManual or legacy.comments on this fixture, so both
+    // conditional rows are hidden — application details is at index 1.
+    expect(buildDetailsRows(legacy)[1].key.text).toBe(
       'Application 0042 details'
     )
   })
