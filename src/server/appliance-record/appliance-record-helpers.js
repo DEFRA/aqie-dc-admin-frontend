@@ -1,20 +1,11 @@
 import { applianceRecordContent } from './content.js'
+import { formatDate } from '../../config/nunjucks/filters/format-date.js'
 
 const content = applianceRecordContent.en
 
 // Backend returns appliance status as live | hidden | pending | rejected
 export const normalizeApplianceStatus = (status) =>
   content.applianceStatus[status] ? status : content.statusValues.pending
-
-export const formatDate = (dateString) => {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
 
 export const buildCertificationTableRows = (appliance) =>
   appliance.certifications.map((cert) => {
@@ -205,7 +196,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
         country: countryName,
         status: certification.status || 'awaiting_decision',
         dateCertified: certification.lastCertifiedAt
-          ? formatDate(certification.lastCertifiedAt)
+          ? formatDate(certification.lastCertifiedAt, 'dd/MM/yyyy')
           : null,
         changeUrl: `${encodeURIComponent(applianceId)}/approval-status-${countrySlug}`
       }

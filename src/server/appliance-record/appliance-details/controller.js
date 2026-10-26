@@ -1,10 +1,10 @@
 import { applianceRecordDetailContent } from './content.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
-import { getApplianceDetail } from './appliance-record-detail-data.js'
+import { getApplianceDetail } from './appliance-details-data.js'
 import {
   buildLegacyRows,
   buildNonLegacyRows
-} from './appliance-record-detail-rows.js'
+} from './appliance-details-rows.js'
 import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
 
@@ -38,7 +38,7 @@ async function handleApplianceRecordDetailRequest(request, h) {
     const { data: appliance } = await getApplianceDetail(applianceId)
 
     return h.view(
-      'appliance-record/appliance-record-detail/index',
+      'appliance-record/appliance-details/index',
       buildViewModel(appliance, applianceId)
     )
   } catch (error) {

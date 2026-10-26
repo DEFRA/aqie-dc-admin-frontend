@@ -8,7 +8,7 @@ vi.mock('../../common/api/api.js', () => ({
   fetchJson: fetchJsonMock
 }))
 
-const { getApplianceDetail } = await import('./appliance-record-detail-data.js')
+const { getApplianceDetail } = await import('./appliance-details-data.js')
 
 describe('#getApplianceDetail', () => {
   beforeEach(() => fetchJsonMock.mockReset())
