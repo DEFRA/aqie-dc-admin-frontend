@@ -6,8 +6,13 @@ import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
+<<<<<<< HEAD:src/server/appliance-record/application-details/controller.js
 import { buildSubPageBreadcrumbs } from '../appliance-record-helpers.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
+=======
+import { statusCodes } from '../common/constants/status-codes.js'
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
+>>>>>>> f8a5323fdec3bfcee8f19e1db43a0f7e16bb7ea1:src/server/appliance-application-details/controller.js
 
 const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
@@ -23,8 +28,13 @@ function buildViewModel(appliance, application, applianceId) {
   )
 
   return {
+<<<<<<< HEAD:src/server/appliance-record/application-details/controller.js
     pageTitle: title,
     heading: title,
+=======
+    pageTitle: `Application ${formatApplicationId(application.id)} details`,
+    heading: `Application ${formatApplicationId(application.id)} details`,
+>>>>>>> f8a5323fdec3bfcee8f19e1db43a0f7e16bb7ea1:src/server/appliance-application-details/controller.js
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
