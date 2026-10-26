@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { statusCodes } from '../common/constants/status-codes.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
 import { handleApplianceApplicationDetailsRequest } from './controller.js'
 
 const { getApplianceTechnicalReviewMock, getApplicationDetailsMock } =
@@ -8,7 +8,7 @@ const { getApplianceTechnicalReviewMock, getApplicationDetailsMock } =
     getApplicationDetailsMock: vi.fn()
   }))
 
-vi.mock('../common/services/common-appliance-service.js', () => ({
+vi.mock('../../common/services/common-appliance-service.js', () => ({
   getApplianceTechnicalReview: getApplianceTechnicalReviewMock
 }))
 
@@ -65,7 +65,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     )
 
     expect(h.view).toHaveBeenCalledWith(
-      'appliance-application-details/index',
+      'appliance-record/application-details/index',
       expect.objectContaining({
         pageTitle: 'Application app-uuid-123 details',
         heading: 'Application app-uuid-123 details'

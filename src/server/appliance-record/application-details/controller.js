@@ -1,13 +1,13 @@
 import { applianceApplicationDetailsContent } from './content.js'
-import { createLogger } from '../common/helpers/logging/logger.js'
-import { getApplianceTechnicalReview } from '../common/services/common-appliance-service.js'
+import { createLogger } from '../../common/helpers/logging/logger.js'
+import { getApplianceTechnicalReview } from '../../common/services/common-appliance-service.js'
 import { getApplicationDetails } from './appliance-application-details-data.js'
 import {
   buildSummaryRows,
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
-import { statusCodes } from '../common/constants/status-codes.js'
-import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
+import { statusCodes } from '../../common/constants/status-codes.js'
+import { formatApplicationId } from '../../../config/nunjucks/filters/format-application-id.js'
 
 const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
@@ -41,7 +41,7 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
     )
 
     return h.view(
-      'appliance-application-details/index',
+      'appliance-record/application-details/index',
       buildViewModel(appliance, application, applianceId)
     )
   } catch (error) {

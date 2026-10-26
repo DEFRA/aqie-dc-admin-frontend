@@ -57,7 +57,7 @@ export const buildLegacyDetailsRows = (appliance) => {
     },
     {
       label: content.legacyDetailsItems.manuals,
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/manuals`
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/instruction-manual`
     },
     {
       label: content.legacyDetailsItems.legacyComments,

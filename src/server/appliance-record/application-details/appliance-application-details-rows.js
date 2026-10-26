@@ -1,5 +1,5 @@
-import { formatDate } from '../../config/nunjucks/filters/format-date.js'
-import { valueText } from '../appliance-details/appliance-summary-builder.js'
+import { formatDate } from '../../../config/nunjucks/filters/format-date.js'
+import { valueText } from '../../appliance-details/appliance-summary-builder.js'
 import { applianceApplicationDetailsContent } from './content.js'
 
 const content = applianceApplicationDetailsContent.en

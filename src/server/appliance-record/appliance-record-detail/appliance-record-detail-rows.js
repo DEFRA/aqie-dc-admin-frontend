@@ -3,7 +3,7 @@ import {
   formatApplianceType,
   formatNominalOutput,
   valueText
-} from '../appliance-details/appliance-summary-builder.js'
+} from '../../appliance-details/appliance-summary-builder.js'
 import { applianceRecordDetailContent } from './content.js'
 
 const content = applianceRecordDetailContent.en
