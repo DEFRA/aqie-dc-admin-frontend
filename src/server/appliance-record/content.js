@@ -1,3 +1,4 @@
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 /**
  * Appliance Record Content Layer
  *
@@ -106,7 +107,7 @@ export const applianceRecordContent = {
 
     formatApplicationDetailsLabel: (applicationId) =>
       applicationId
-        ? `Application ${applicationId} details`
+        ? `Application ${formatApplicationId(applicationId)} details`
         : 'Application details',
 
     // Detail section items - references to related pages (Legacy records)

@@ -7,6 +7,7 @@ import {
   buildLegacySummaryRows
 } from './appliance-application-details-rows.js'
 import { statusCodes } from '../../common/constants/status-codes.js'
+import { formatApplicationId } from '../../../config/nunjucks/filters/format-application-id.js'
 
 const logger = createLogger()
 const content = applianceApplicationDetailsContent.en
@@ -15,8 +16,8 @@ function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
 
   return {
-    pageTitle: `Application ${application.id} details`,
-    heading: `Application ${application.id} details`,
+    pageTitle: `Application ${formatApplicationId(application.id)} details`,
+    heading: `Application ${formatApplicationId(application.id)} details`,
     summaryRows: appliance.isLegacyRecord
       ? buildLegacySummaryRows(application)
       : buildSummaryRows(application),
