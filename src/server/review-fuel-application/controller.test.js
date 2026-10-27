@@ -39,7 +39,7 @@ const baseApplication = {
       customerComplaints: true,
       fuelBagging: 'Bagged at source',
       manufacturerOrReseller: 'Manufacturer',
-      brandNames: 'Kings Starterlog',
+      name: 'Kings Starterlog',
       technicalReview: { status: 'in_review' }
     }
   ]
@@ -115,16 +115,14 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.continueReviewHref).toBe('/incomplete-review')
   })
 
-  test('maps the backend brandName field directly to the fuel table row', async () => {
+  test('maps the backend name field directly to the fuel table row', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
         linkedItems: [
           {
             ...baseApplication.linkedItems[0],
-            brandName: 'PelletBrand',
-            brandNames: undefined,
-            name: undefined
+            name: 'PelletBrand'
           }
         ]
       }
@@ -171,7 +169,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
         linkedItems: [
           {
             companyName: 'Fallback test',
-            brandNames: 'Test fuel',
+            name: 'Test fuel',
             technicalReview: { status: 'new' },
             id: 'legacy-id'
           }
