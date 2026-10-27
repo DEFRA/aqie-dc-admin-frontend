@@ -32,6 +32,7 @@ import { azureAuth } from './plugins/azure-auth.js'
 import { instructionManual } from './instruction-manual/index.js'
 import { testReports } from './test-reports/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
+import { fuelDetails } from './fuel-details/index.js'
 
 export const router = {
   plugin: {
@@ -73,7 +74,8 @@ export const router = {
         changeDisplayStatus,
         instructionManual,
         testReports,
-        reviewFuelApplication
+        reviewFuelApplication,
+        fuelDetails
       ])
 
       // Static assets

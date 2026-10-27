@@ -19,12 +19,7 @@ vi.mock('./appliance-application-details-data.js', () => ({
 const baseAppliance = {
   id: 'APP-1',
   modelName: 'Aarrow Ecoburn 5F',
-  applicationId: 'app-uuid-123'
-}
-
-const baseApplication = {
-  id: 'app-uuid-123',
-  submittedAt: '2026-01-01T00:00:00.000Z',
+  applicationId: 'app-uuid-123',
   companyName: 'Arada Limited',
   companyFullAddress:
     'The Fireworks\nWeycroft Avenue\nAxminster\nDevon\nEX13 5HU',
@@ -33,7 +28,12 @@ const baseApplication = {
     email: 'john.doe@arada.co.uk',
     alternativeEmail: 'hello@arada.co.uk',
     phone: '07722 334455'
-  },
+  }
+}
+
+const baseApplication = {
+  id: 'app-uuid-123',
+  submittedAt: '2026-01-01T00:00:00.000Z',
   linkedItems: [
     { modelName: 'Aarrow Ecoburn 5F plus 4.9kW multi-fuel stove' },
     { modelName: 'Aarrow Ecoburn 5F plus Widescreen 4.99kW multi-fuel stove' }
@@ -72,7 +72,26 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       })
     )
   })
+  test('strips the 4-digit prefix from the applicationId in the title and heading', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getApplicationDetailsMock.mockResolvedValue({
+      data: { ...baseApplication, id: '7756-0001' }
+    })
+    const h = toolkit()
 
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-record/application-details/index',
+      expect.objectContaining({
+        pageTitle: 'Application 0001 details',
+        heading: 'Application 0001 details'
+      })
+    )
+  })
   test('renders "Application details" as title when application.id is absent', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({
@@ -144,6 +163,27 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     expect(dateRow.value.text).toBe('Not provided')
   })
 
+  test('reads company and contact details from the appliance, not the application', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const valueFor = (label) =>
+      viewModel.summaryRows.find((row) => row.key.text === label).value.text
+
+    expect(valueFor('Company name')).toBe('Arada Limited')
+    expect(valueFor('Main contact name')).toBe('John Doe')
+    expect(valueFor('Main contact email')).toBe('john.doe@arada.co.uk')
+    expect(valueFor('Main contact alternative email')).toBe('hello@arada.co.uk')
+    expect(valueFor('Main contact telephone number')).toBe('07722 334455')
+  })
+
   test('builds company address from companyFullAddress splitting on newlines', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
@@ -164,10 +204,9 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
   })
 
   test('builds company address from structured parts when companyFullAddress is absent', async () => {
-    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getApplicationDetailsMock.mockResolvedValue({
+    getApplianceTechnicalReviewMock.mockResolvedValue({
       data: {
-        ...baseApplication,
+        ...baseAppliance,
         companyFullAddress: undefined,
         companyAddress: {
           line1: '456 Factory Road',
@@ -179,6 +218,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
         }
       }
     })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
     await handleApplianceApplicationDetailsRequest(
@@ -243,16 +283,16 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
   })
 
   test('falls back to "Not provided" for missing alternativeEmail', async () => {
-    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getApplicationDetailsMock.mockResolvedValue({
+    getApplianceTechnicalReviewMock.mockResolvedValue({
       data: {
-        ...baseApplication,
+        ...baseAppliance,
         companyContact: {
-          ...baseApplication.companyContact,
+          ...baseAppliance.companyContact,
           alternativeEmail: undefined
         }
       }
     })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
     await handleApplianceApplicationDetailsRequest(
@@ -268,16 +308,16 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
   })
 
   test('falls back to "Not provided" for missing phone', async () => {
-    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getApplicationDetailsMock.mockResolvedValue({
+    getApplianceTechnicalReviewMock.mockResolvedValue({
       data: {
-        ...baseApplication,
+        ...baseAppliance,
         companyContact: {
-          ...baseApplication.companyContact,
+          ...baseAppliance.companyContact,
           phone: undefined
         }
       }
     })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
     await handleApplianceApplicationDetailsRequest(
@@ -377,11 +417,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     const legacyAppliance = {
       ...baseAppliance,
       isLegacyRecord: true,
-      legacy: { applicationId: 'app-uuid-123' }
-    }
-
-    const legacyApplication = {
-      id: 'app-uuid-123',
+      legacy: { applicationId: 'app-uuid-123' },
       companyName: 'Jetmaster Fires Limited',
       companyFullAddress: undefined,
       companyAddress: {
@@ -390,7 +426,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
         city: 'Eastleigh',
         county: 'Hampshire',
         postcode: 'SO50 4NT'
-      },
+      }
+    }
+
+    const legacyApplication = {
+      id: 'app-uuid-123',
       legacy: {
         linkedApplicationIds: ['CAA-EA-00000850']
       }
@@ -539,15 +579,13 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
 
     test('renders single Company row with name only when address is absent', async () => {
       getApplianceTechnicalReviewMock.mockResolvedValue({
-        data: legacyAppliance
-      })
-      getApplicationDetailsMock.mockResolvedValue({
         data: {
-          ...legacyApplication,
+          ...legacyAppliance,
           companyAddress: undefined,
           companyFullAddress: undefined
         }
       })
+      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(
