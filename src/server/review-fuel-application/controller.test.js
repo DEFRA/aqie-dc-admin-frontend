@@ -115,6 +115,31 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.continueReviewHref).toBe('/incomplete-review')
   })
 
+  test('maps the backend brandName field directly to the fuel table row', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            ...baseApplication.linkedItems[0],
+            brandName: 'PelletBrand',
+            brandNames: undefined,
+            name: undefined
+          }
+        ]
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.fuelRows[0].brandName).toBe('PelletBrand')
+  })
+
   test('uses the supplier type when manufacturer or reseller is missing', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
@@ -164,16 +189,11 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.fuelRows[0].actionHref).toBe('/review-fuel/legacy-id')
   })
 
-  test('falls back to safe values when the backend data is missing', async () => {
+  test('returns the generic error page when the backend payload does not match the expected linked item contract', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
-        companyName: undefined,
-        companyContact: {},
-        responsiblePerson: {},
-        linkedItems: [],
-        customerComplaints: undefined,
-        fuelBagging: undefined,
-        manufacturerOrReseller: undefined
+        id: 'app-0317',
+        linkedItems: []
       }
     })
     const h = toolkit()
@@ -183,21 +203,23 @@ describe('#handleReviewFuelApplicationRequest', () => {
       h
     )
 
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.summaryRows[0].value.text).toBe(content.notProvided)
-    expect(viewModel.summaryRows[8].value.text).toBe(content.notProvided)
-    expect(viewModel.fuelRows).toEqual([])
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: content.errors.generic
+    })
   })
 
-  test('uses a default not-started status when a linked fuel has no technicalReview state', async () => {
+  test('shows not provided when alternative email and phone are null', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
         linkedItems: [
           {
-            companyName: 'Legacy fuel trader',
-            brandNames: 'Legacy fuel',
-            id: 'legacy-id'
+            ...baseApplication.linkedItems[0],
+            companyContact: {
+              ...baseApplication.linkedItems[0].companyContact,
+              alternativeEmail: null,
+              phone: null
+            }
           }
         ]
       }
@@ -210,12 +232,8 @@ describe('#handleReviewFuelApplicationRequest', () => {
     )
 
     const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.fuelRows[0]).toMatchObject({
-      brandName: 'Legacy fuel',
-      statusLabel: 'Not started',
-      actionText: 'Start review',
-      actionHref: '/review-fuel/legacy-id'
-    })
+    expect(viewModel.summaryRows[4].value.text).toBe(content.notProvided)
+    expect(viewModel.summaryRows[5].value.text).toBe(content.notProvided)
   })
 
   test('starts the review and redirects back to the application page', async () => {

@@ -11,6 +11,7 @@ const content = reviewFuelContent.en
 export class ReviewFuelViewModelBuilder {
   static getFuelName(fuel, fallbackFuelId) {
     return (
+      fuel?.brandName ||
       fuel?.brandNames ||
       fuel?.resellBrandName ||
       fuel?.name ||
@@ -46,13 +47,13 @@ export class ReviewFuelViewModelBuilder {
         },
         ...(fuel?.applicationId
           ? [
-              {
-                text: content.incompleteReview.applicationBreadcrumb(
-                  fuel.applicationId
-                ),
-                href: applicationHref
-              }
-            ]
+            {
+              text: content.incompleteReview.applicationBreadcrumb(
+                fuel.applicationId
+              ),
+              href: applicationHref
+            }
+          ]
           : []),
         { text: fuelName, href: reviewFuelHref }
       ]
@@ -64,19 +65,19 @@ export class ReviewFuelViewModelBuilder {
 
     return isManufacturer
       ? [
-          {
-            title: { text: content.manufacturerTaskTitle },
-            href: content.links.testResults,
-            status: { text: content.notReviewed }
-          }
-        ]
+        {
+          title: { text: content.manufacturerTaskTitle },
+          href: content.links.testResults,
+          status: { text: content.notReviewed }
+        }
+      ]
       : [
-          {
-            title: { text: content.rebrandTaskTitle },
-            href: content.links.rebrandLetter,
-            status: { text: content.notReviewed }
-          }
-        ]
+        {
+          title: { text: content.rebrandTaskTitle },
+          href: content.links.rebrandLetter,
+          status: { text: content.notReviewed }
+        }
+      ]
   }
 
   static buildListingTasks(fuel) {

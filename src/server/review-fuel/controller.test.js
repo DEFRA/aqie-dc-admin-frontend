@@ -117,6 +117,24 @@ describe('#reviewFuelController', () => {
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
   })
 
+  test('uses the backend brandName field when present while keeping legacy fallbacks', () => {
+    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+      {
+        fuelId: 'FUEL-003',
+        brandName: 'Brand Name from API',
+        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        applicationId: 'app-0317'
+      },
+      'FUEL-003'
+    )
+
+    expect(viewModel.heading).toBe('Review Brand Name from API')
+    expect(viewModel.breadcrumbs.at(-1)).toEqual({
+      text: 'Brand Name from API',
+      href: '/review-fuel-application/app-0317'
+    })
+  })
+
   test('builds the incomplete review view model with the expected GOV.UK links', () => {
     const viewModel = ReviewFuelViewModelBuilder.buildIncompleteReviewViewModel(
       {
