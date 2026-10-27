@@ -81,18 +81,12 @@ export const buildLegacyDetailsRows = (appliance) => {
     })
   }
 
-  details.push(
-    {
-      label: content.formatApplicationDetailsLabel(
-        appliance.legacy?.applicationId
-      ),
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
-    },
-    {
-      label: content.legacyDetailsItems.actionHistory,
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
-    }
-  )
+  details.push({
+    label: content.formatApplicationDetailsLabel(
+      appliance.legacy?.applicationId
+    ),
+    viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
+  })
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -113,21 +107,21 @@ export const buildRejectedDetailsRows = (appliance) => {
     {
       key: { text: content.rejectedDetails.dateRejected },
       value: {
-        text: appliance.updatedAt
-          ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })
-          : null
+        text: new Intl.DateTimeFormat('en-GB', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(new Date(appliance.technicalReview.reviewedAt))
       }
     },
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
         text:
-          appliance.technicalReview?.reviewedBy ||
-          content.rejectedDetails.notSpecified
+          typeof appliance.technicalReview?.reviewedBy === 'string'
+            ? appliance.technicalReview.reviewedBy
+            : appliance.technicalReview?.reviewedBy?.name ||
+              content.rejectedDetails.notSpecified
       }
     }
   ]
@@ -235,10 +229,6 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     {
       label: content.formatApplicationDetailsLabel(data.applicationId),
       viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
-    },
-    {
-      label: content.detailsItems.actionHistory,
-      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/action-history`
     }
   ]
 

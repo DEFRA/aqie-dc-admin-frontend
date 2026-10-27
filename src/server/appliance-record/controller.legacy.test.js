@@ -4,7 +4,7 @@
  * Tests for legacy appliance record functionality.
  * Legacy records show different detail sections compared to standard records.
  *
- * Standard Details: Appliance details, Test results, Instruction manual, Application details, Action history
+ * Standard Details: Appliance details, Test results, Instruction manual, Application details
  * Legacy Details: Legacy record information, Original application details, Test results, Migration notes
  */
 
@@ -77,7 +77,7 @@ describe('applianceRecord controller - Legacy Records', () => {
 
       const callArgs = h.view.mock.calls[0][1]
       expect(callArgs.detailsRows).toBeDefined()
-      expect(callArgs.detailsRows).toHaveLength(5)
+      expect(callArgs.detailsRows).toHaveLength(4)
 
       // Verify non-legacy details items are present
       const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
@@ -85,7 +85,6 @@ describe('applianceRecord controller - Legacy Records', () => {
       expect(detailLabels).toContain('Test results')
       expect(detailLabels).toContain('Instruction manual')
       expect(detailLabels).toContain('Application details')
-      expect(detailLabels).toContain('Action history')
     })
 
     test('passes non-legacy details with correct view URLs', async () => {
@@ -112,9 +111,6 @@ describe('applianceRecord controller - Legacy Records', () => {
       )
       expect(detailRows[3].actions.items[0].href).toBe(
         '/appliance-record/APP-LEGACY-123/application-details'
-      )
-      expect(detailRows[4].actions.items[0].href).toBe(
-        '/appliance-record/APP-LEGACY-123/action-history'
       )
     })
 
@@ -200,8 +196,7 @@ describe('applianceRecord controller - Legacy Records', () => {
       // Mock has no instructionManual or legacy.comments so those rows are hidden
       expect(detailLabels).toEqual([
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,
-        'Application 0042 details',
-        applianceRecordContent.en.legacyDetailsItems.actionHistory
+        'Application 0042 details'
       ])
     })
 
@@ -210,17 +205,15 @@ describe('applianceRecord controller - Legacy Records', () => {
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,
         applianceRecordContent.en.legacyDetailsItems.manuals,
         applianceRecordContent.en.legacyDetailsItems.legacyComments,
-        applianceRecordContent.en.legacyDetailsItems.applicationDetails,
-        applianceRecordContent.en.legacyDetailsItems.actionHistory
+        applianceRecordContent.en.legacyDetailsItems.applicationDetails
       ]
 
-      expect(expectedLegacyDetails).toHaveLength(5)
+      expect(expectedLegacyDetails).toHaveLength(4)
       expect(expectedLegacyDetails).toEqual([
         'Appliance details',
         'Manuals',
         'Legacy comments',
-        'Application details',
-        'Action history'
+        'Application details'
       ])
     })
 
