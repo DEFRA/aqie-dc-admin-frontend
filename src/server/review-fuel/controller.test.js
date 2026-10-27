@@ -35,8 +35,8 @@ describe('#reviewFuelController', () => {
     getFuelReviewMock.mockResolvedValue({
       data: {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317'
       }
     })
@@ -56,7 +56,7 @@ describe('#reviewFuelController', () => {
     getFuelReviewMock.mockResolvedValue({
       data: {
         fuelId: 'FUEL-002',
-        brandNames: 'Grillaedin White Quebracho',
+        name: 'Grillaedin White Quebracho',
         supplierType: SUPPLIER_TYPE.REBRAND,
         applicationId: 'app-0317'
       }
@@ -80,8 +80,8 @@ describe('#reviewFuelController', () => {
     const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
       {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317'
       },
       'FUEL-001'
@@ -98,7 +98,7 @@ describe('#reviewFuelController', () => {
     const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
       {
         fuelId: 'FUEL-002',
-        resellBrandName: 'Grillaedin White Quebracho',
+        name: 'Grillaedin White Quebracho',
         supplierType: SUPPLIER_TYPE.REBRAND,
         applicationId: 'app-0317'
       },
@@ -117,12 +117,12 @@ describe('#reviewFuelController', () => {
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
   })
 
-  test('uses the backend brandName field when present while keeping legacy fallbacks', () => {
+  test('uses the confirmed backend fuel name field directly', () => {
     const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
       {
         fuelId: 'FUEL-003',
-        brandName: 'Brand Name from API',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Brand Name from API',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317'
       },
       'FUEL-003'
@@ -135,12 +135,28 @@ describe('#reviewFuelController', () => {
     })
   })
 
+  test('treats the confirmed backend supplierType value as a manufacturer fuel', () => {
+    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+      {
+        fuelId: 'FUEL-004',
+        name: 'PelletBrand',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: '5969-0009'
+      },
+      'FUEL-004'
+    )
+
+    expect(viewModel.isManufacturer).toBe(true)
+    expect(viewModel.documentationHeading).toBe('Review test reports')
+    expect(viewModel.documentationTasks[0].title.text).toBe('Add test results')
+  })
+
   test('builds the incomplete review view model with the expected GOV.UK links', () => {
     const viewModel = ReviewFuelViewModelBuilder.buildIncompleteReviewViewModel(
       {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: '7756-0001'
       },
       'FUEL-001'
@@ -163,8 +179,8 @@ describe('#reviewFuelController', () => {
     getFuelReviewMock.mockResolvedValue({
       data: {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: '7756-0001'
       }
     })
@@ -203,8 +219,8 @@ describe('#reviewFuelController', () => {
     getFuelReviewMock.mockResolvedValue({
       data: {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317'
       }
     })
@@ -235,8 +251,8 @@ describe('#reviewFuelController', () => {
     getFuelReviewMock.mockResolvedValue({
       data: {
         fuelId: 'FUEL-001',
-        brandNames: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURER,
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317'
       }
     })
@@ -260,6 +276,33 @@ describe('#reviewFuelController', () => {
       name: 'John doe',
       email: 'test@yopmail.com'
     })
+  })
+
+  test('redirects to the fuel applications page when the backend returns no applicationId after rejecting', async () => {
+    saveFuelReviewMock.mockResolvedValue({})
+    getFuelReviewMock.mockResolvedValue({
+      data: {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE
+      }
+    })
+
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel/FUEL-001',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      },
+      payload: { decision: 'reject' }
+    })
+
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fuel-applications')
   })
 
   test('renders the error page when the fuel fetch fails', async () => {

@@ -9,25 +9,16 @@ const content = reviewFuelContent.en
  * in a single helper that can be tested independently.
  */
 export class ReviewFuelViewModelBuilder {
-  static getFuelName(fuel, fallbackFuelId) {
-    return (
-      fuel?.brandName ||
-      fuel?.brandNames ||
-      fuel?.resellBrandName ||
-      fuel?.name ||
-      fuel?.fuelName ||
-      fallbackFuelId
-    )
-  }
-
   static isManufacturerFuel(fuel) {
-    return fuel?.supplierType === SUPPLIER_TYPE.MANUFACTURER
+    const supplierType = fuel.supplierType
+
+    return supplierType === SUPPLIER_TYPE.MANUFACTURE
   }
 
   static buildIncompleteReviewViewModel(fuel, fuelId) {
-    const fuelName = this.getFuelName(fuel, fuelId)
+    const fuelName = fuel.name
     const reviewFuelHref = `/review-fuel/${encodeURIComponent(fuelId)}`
-    const applicationHref = fuel?.applicationId
+    const applicationHref = fuel.applicationId
       ? `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
       : '/fuel-applications'
 
@@ -45,7 +36,7 @@ export class ReviewFuelViewModelBuilder {
           text: content.navigation.fuelApplications,
           href: '/fuel-applications'
         },
-        ...(fuel?.applicationId
+        ...(fuel.applicationId
           ? [
               {
                 text: content.incompleteReview.applicationBreadcrumb(
@@ -115,9 +106,9 @@ export class ReviewFuelViewModelBuilder {
   }
 
   static buildViewModel(fuel, fuelId) {
-    const fuelName = this.getFuelName(fuel, fuelId)
+    const fuelName = fuel.name
     const isManufacturer = this.isManufacturerFuel(fuel)
-    const applicationHref = fuel?.applicationId
+    const applicationHref = fuel.applicationId
       ? `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
       : '/fuel-applications'
 

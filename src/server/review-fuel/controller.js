@@ -52,14 +52,23 @@ async function handleFuelDecisionRequest(request, h) {
     await saveFuelReview(fuelId, status, reviewedBy)
 
     const { data: fuel } = await getFuelReview(fuelId)
+    const applicationId = fuel?.applicationId
+
+    if (!applicationId) {
+      logger.warn(
+        `[reviewFuel] missing applicationId for ${fuelId}; redirecting to fuel applications`
+      )
+
+      return h.redirect('/fuel-applications')
+    }
 
     return h.redirect(
-      `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
+      `/review-fuel-application/${encodeURIComponent(applicationId)}`
     )
   } catch (error) {
     if (error.status === statusCodes.conflict) {
       logger.warn(
-        `[reviewFuel] accept refused for ${fuelId}: checks outstanding`
+        `[reviewFuel] decision refused for ${fuelId}: checks outstanding`
       )
 
       return h.redirect(

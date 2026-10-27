@@ -1,5 +1,6 @@
-// The backend only accepts these values for fuel supplier type.
+// The backend contract is the canonical value 'Manufacture'.
+// The UI label remains 'Manufacturer' for display purposes.
 export const SUPPLIER_TYPE = Object.freeze({
-  MANUFACTURER: 'Manufacturer',
+  MANUFACTURE: 'Manufacture',
   REBRAND: 'Rebrand'
 })
