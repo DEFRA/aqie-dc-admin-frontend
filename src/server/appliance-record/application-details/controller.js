@@ -1,7 +1,9 @@
 import { applianceApplicationDetailsContent } from './content.js'
 import { createLogger } from '../../common/helpers/logging/logger.js'
-import { getApplianceTechnicalReview } from '../../common/services/common-appliance-service.js'
-import { getApplicationDetails } from './appliance-application-details-data.js'
+import {
+  getApplianceDetail,
+  getApplicationDetails
+} from './appliance-application-details-data.js'
 import {
   buildSummaryRows,
   buildLegacySummaryRows
@@ -40,7 +42,9 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
   const { applianceId } = request.params
 
   try {
-    const { data: appliance } = await getApplianceTechnicalReview(applianceId)
+    // Backend contract: /appliances/{ID} supplies company and contact details;
+    // /applications/{id} supplies submittedAt and linkedItems only.
+    const { data: appliance } = await getApplianceDetail(applianceId)
     const applicationId = appliance.isLegacyRecord
       ? appliance.legacy?.applicationId
       : appliance.applicationId
