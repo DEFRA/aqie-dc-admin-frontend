@@ -1,39 +1,35 @@
 import { formatDate } from '../../../config/nunjucks/filters/format-date.js'
-import { valueText } from '../../appliance-details/appliance-summary-builder.js'
 import { applianceApplicationDetailsContent } from './content.js'
 
 const content = applianceApplicationDetailsContent.en
 
 /**
- * Splits the full address string into trimmed, non-empty lines, falling
- * back to the structured address parts when no full address is available.
- * Reads from the appliance record, where company data lives.
+ * Backend contract: /appliances/{id} returns fullAddress as a pre-formatted,
+ * newline-separated string. Only split it into trimmed display lines.
  */
-export function buildCompanyAddress(appliance) {
-  if (appliance.companyFullAddress) {
-    return appliance.companyFullAddress
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-  }
+function buildAddressLines(appliance) {
+  return (appliance.fullAddress ?? '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
 
-  return [
-    appliance.companyAddress?.line1,
-    appliance.companyAddress?.line2,
-    appliance.companyAddress?.city,
-    appliance.companyAddress?.county,
-    appliance.companyAddress?.postcode,
-    appliance.companyAddress?.country
-  ].filter(Boolean)
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 /**
  * Builds the govukSummaryList value object for the appliances bullet list.
  */
 export function buildAppliancesValue(appliances) {
-  if (!appliances?.length) return { text: content.notProvided }
-
-  const items = appliances.map((a) => `<li>${a.modelName}</li>`).join('')
+  const items = (appliances ?? [])
+    .map((a) => `<li>${escapeHtml(a.modelName)}</li>`)
+    .join('')
   return {
     html: `<ul class="govuk-list govuk-list--bullet">${items}</ul>`
   }
@@ -46,8 +42,6 @@ export function buildAppliancesValue(appliances) {
  * e.g. "CAA-1, CAA-2 and CAA-3"
  */
 function buildLinkedApplicationsValue(linkedApplicationIds) {
-  if (!linkedApplicationIds?.length) return { text: content.notProvided }
-
   const ids = Array.isArray(linkedApplicationIds)
     ? linkedApplicationIds
     : [linkedApplicationIds]
@@ -56,6 +50,14 @@ function buildLinkedApplicationsValue(linkedApplicationIds) {
 
   const allButLast = ids.slice(0, -1).join(', ')
   return { text: `${allButLast} and ${ids[ids.length - 1]}` }
+}
+
+/**
+ * Address lines are joined with <br> inside an html value, so each line is
+ * escaped first.
+ */
+function buildAddressHtml(addressLines) {
+  return addressLines.map(escapeHtml).join('<br>')
 }
 
 export function buildLegacySummaryRows(appliance, application) {
@@ -70,23 +72,23 @@ export function buildLegacySummaryRows(appliance, application) {
     })
   }
 
-  const addressLines = buildCompanyAddress(appliance)
+  const addressLines = buildAddressLines(appliance)
 
   if (addressLines.length) {
     rows.push(
       {
         key: { text: content.labels.companyName },
-        value: { text: appliance.companyName || content.notProvided }
+        value: { text: appliance.companyName }
       },
       {
         key: { text: content.labels.companyAddress },
-        value: { html: addressLines.join('<br>') }
+        value: { html: buildAddressHtml(addressLines) }
       }
     )
   } else {
     rows.push({
       key: { text: content.labels.company },
-      value: { text: appliance.companyName || content.notProvided }
+      value: { text: appliance.companyName }
     })
   }
 
@@ -94,7 +96,7 @@ export function buildLegacySummaryRows(appliance, application) {
 }
 
 export function buildSummaryRows(appliance, application) {
-  const addressLines = buildCompanyAddress(appliance)
+  const addressLines = buildAddressLines(appliance)
 
   return [
     {
@@ -102,38 +104,32 @@ export function buildSummaryRows(appliance, application) {
       value: {
         text: application.submittedAt
           ? formatDate(application.submittedAt, 'd MMMM yyyy')
-          : content.notProvided
+          : undefined
       }
     },
     {
       key: { text: content.labels.companyName },
-      value: { text: valueText(appliance.companyName) }
+      value: { text: appliance.companyName }
     },
     {
       key: { text: content.labels.companyAddress },
-      value: addressLines.length
-        ? { html: addressLines.join('<br>') }
-        : { text: content.notProvided }
+      value: { html: buildAddressHtml(addressLines) }
     },
     {
       key: { text: content.labels.mainContactName },
-      value: { text: valueText(appliance.companyContact?.name) }
+      value: { text: appliance.companyContact?.name }
     },
     {
       key: { text: content.labels.mainContactEmail },
-      value: { text: valueText(appliance.companyContact?.email) }
+      value: { text: appliance.companyContact?.email }
     },
     {
       key: { text: content.labels.mainContactAlternativeEmail },
-      value: {
-        text: appliance.companyContact?.alternativeEmail || content.notProvided
-      }
+      value: { text: appliance.companyContact?.alternativeEmail }
     },
     {
       key: { text: content.labels.mainContactPhone },
-      value: {
-        text: appliance.companyContact?.phone || content.notProvided
-      }
+      value: { text: appliance.companyContact?.phone }
     },
     {
       key: { text: content.labels.appliancesInApplication },
