@@ -7,22 +7,23 @@ const content = applianceApplicationDetailsContent.en
 /**
  * Splits the full address string into trimmed, non-empty lines, falling
  * back to the structured address parts when no full address is available.
+ * Reads from the appliance record, where company data lives.
  */
-export function buildCompanyAddress(application) {
-  if (application.companyFullAddress) {
-    return application.companyFullAddress
+export function buildCompanyAddress(appliance) {
+  if (appliance.companyFullAddress) {
+    return appliance.companyFullAddress
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean)
   }
 
   return [
-    application.companyAddress?.line1,
-    application.companyAddress?.line2,
-    application.companyAddress?.city,
-    application.companyAddress?.county,
-    application.companyAddress?.postcode,
-    application.companyAddress?.country
+    appliance.companyAddress?.line1,
+    appliance.companyAddress?.line2,
+    appliance.companyAddress?.city,
+    appliance.companyAddress?.county,
+    appliance.companyAddress?.postcode,
+    appliance.companyAddress?.country
   ].filter(Boolean)
 }
 
@@ -57,7 +58,7 @@ function buildLinkedApplicationsValue(linkedApplicationIds) {
   return { text: `${allButLast} and ${ids[ids.length - 1]}` }
 }
 
-export function buildLegacySummaryRows(application) {
+export function buildLegacySummaryRows(appliance, application) {
   const rows = []
 
   if (application.legacy?.linkedApplicationIds?.length) {
@@ -69,13 +70,13 @@ export function buildLegacySummaryRows(application) {
     })
   }
 
-  const addressLines = buildCompanyAddress(application)
+  const addressLines = buildCompanyAddress(appliance)
 
   if (addressLines.length) {
     rows.push(
       {
         key: { text: content.labels.companyName },
-        value: { text: application.companyName || content.notProvided }
+        value: { text: appliance.companyName || content.notProvided }
       },
       {
         key: { text: content.labels.companyAddress },
@@ -85,15 +86,15 @@ export function buildLegacySummaryRows(application) {
   } else {
     rows.push({
       key: { text: content.labels.company },
-      value: { text: application.companyName || content.notProvided }
+      value: { text: appliance.companyName || content.notProvided }
     })
   }
 
   return rows
 }
 
-export function buildSummaryRows(application) {
-  const addressLines = buildCompanyAddress(application)
+export function buildSummaryRows(appliance, application) {
+  const addressLines = buildCompanyAddress(appliance)
 
   return [
     {
@@ -106,7 +107,7 @@ export function buildSummaryRows(application) {
     },
     {
       key: { text: content.labels.companyName },
-      value: { text: valueText(application.companyName) }
+      value: { text: valueText(appliance.companyName) }
     },
     {
       key: { text: content.labels.companyAddress },
@@ -116,23 +117,22 @@ export function buildSummaryRows(application) {
     },
     {
       key: { text: content.labels.mainContactName },
-      value: { text: valueText(application.companyContact?.name) }
+      value: { text: valueText(appliance.companyContact?.name) }
     },
     {
       key: { text: content.labels.mainContactEmail },
-      value: { text: valueText(application.companyContact?.email) }
+      value: { text: valueText(appliance.companyContact?.email) }
     },
     {
       key: { text: content.labels.mainContactAlternativeEmail },
       value: {
-        text:
-          application.companyContact?.alternativeEmail || content.notProvided
+        text: appliance.companyContact?.alternativeEmail || content.notProvided
       }
     },
     {
       key: { text: content.labels.mainContactPhone },
       value: {
-        text: application.companyContact?.phone || content.notProvided
+        text: appliance.companyContact?.phone || content.notProvided
       }
     },
     {
