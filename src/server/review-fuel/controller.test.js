@@ -305,6 +305,28 @@ describe('#reviewFuelController', () => {
     expect(response.headers.location).toBe('/fuel-applications')
   })
 
+  test('redirects back to the incomplete review page when the backend rejects the decision as a conflict', async () => {
+    saveFuelReviewMock.mockRejectedValue({ status: statusCodes.conflict })
+
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel/FUEL-001',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      },
+      payload: { decision: 'accept' }
+    })
+
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe(
+      '/review-fuel/FUEL-001/incomplete-review'
+    )
+  })
+
   test('renders the error page when the fuel fetch fails', async () => {
     getFuelReviewMock.mockRejectedValue(new Error('backend down'))
 

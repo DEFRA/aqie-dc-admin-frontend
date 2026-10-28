@@ -20,7 +20,7 @@ export const reviewFuelApplicationContent = {
       responsiblePersonEmail: 'Responsible person email',
       customerComplaints: 'Customer complaints system in place?',
       fuelSalesMethod: 'How do they sell the fuel?',
-      manufacturerOrReseller: 'Manufacturer or reseller?'
+      manufacturerOrRebrander: 'Manufacturer or rebrander?'
     },
     table: {
       caption: (applicationId) => `Fuel in application ${applicationId}`,

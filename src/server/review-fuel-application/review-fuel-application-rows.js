@@ -82,10 +82,10 @@ export function buildApplicantSummaryRows(application) {
       }
     },
     {
-      key: { text: content.labels.manufacturerOrReseller },
+      key: { text: content.labels.manufacturerOrRebrander },
       value: {
         text:
-          primaryFuel.manufacturerOrReseller ??
+          primaryFuel.manufacturerOrRebrander ??
           primaryFuel.supplierType ??
           content.notProvided
       }
@@ -95,11 +95,9 @@ export function buildApplicantSummaryRows(application) {
 
 export function buildFuelRows(linkedItems, _applicationId) {
   return linkedItems.map((fuel) => {
-    const reviewStatus = fuel.technicalReview?.status ?? 'new'
-    const statusMeta =
-      reviewFuelApplicationContent.en.statusTags[reviewStatus] ??
-      reviewFuelApplicationContent.en.statusTags.new
-    const fuelId = fuel.fuelId ?? fuel.id
+    const reviewStatus = fuel.technicalReview.status
+    const statusMeta = reviewFuelApplicationContent.en.statusTags[reviewStatus]
+    const fuelId = fuel.id
     return {
       brandName: fuel.name,
       statusLabel: statusMeta.label,
@@ -112,9 +110,7 @@ export function buildFuelRows(linkedItems, _applicationId) {
 
 export function buildFuelApplicationViewModel(application, applicationId) {
   const linkedItems = application?.linkedItems ?? []
-  const formattedApplicationId = formatApplicationId(
-    application?.id ?? applicationId
-  )
+  const formattedApplicationId = formatApplicationId(application.id)
   const heading = content.heading(formattedApplicationId)
 
   return {

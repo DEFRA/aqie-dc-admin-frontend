@@ -23,7 +23,7 @@ const baseApplication = {
   id: '7756-0001',
   linkedItems: [
     {
-      fuelId: 'FUEL-123',
+      id: 'FUEL-123',
       companyName: 'Flamers Ltd',
       companyFullAddress: 'Sonna\nMullingar\nCo. Westmeath\nN91 PYC8',
       companyContact: {
@@ -38,7 +38,7 @@ const baseApplication = {
       },
       customerComplaints: true,
       fuelBagging: 'Bagged at source',
-      manufacturerOrReseller: 'Manufacturer',
+      manufacturerOrRebrander: 'Manufacturer',
       name: 'Kings Starterlog',
       technicalReview: { status: 'in_review' }
     }
@@ -138,14 +138,14 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.fuelRows[0].brandName).toBe('PelletBrand')
   })
 
-  test('uses the supplier type when manufacturer or reseller is missing', async () => {
+  test('uses the supplier type when manufacturer or rebrander is missing', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
         linkedItems: [
           {
             ...baseApplication.linkedItems[0],
-            manufacturerOrReseller: undefined,
+            manufacturerOrRebrander: undefined,
             supplierType: 'Manufacturer'
           }
         ]
@@ -185,6 +185,30 @@ describe('#handleReviewFuelApplicationRequest', () => {
 
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.fuelRows[0].actionHref).toBe('/review-fuel/legacy-id')
+  })
+
+  test('returns the generic error page when technicalReview.status is missing instead of silently defaulting to new', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            ...baseApplication.linkedItems[0],
+            technicalReview: {}
+          }
+        ]
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: content.errors.generic
+    })
   })
 
   test('returns the generic error page when the backend payload does not match the expected linked item contract', async () => {
@@ -256,6 +280,48 @@ describe('#handleReviewFuelApplicationRequest', () => {
       name: 'Jane Doe',
       email: 'jane@example.com'
     })
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel-application/app-0317')
+  })
+
+  test('falls back to unknown reviewer values when the auth user is incomplete', async () => {
+    startFuelApplicationReviewMock.mockResolvedValue({ success: true })
+    const h = {
+      redirect: vi.fn().mockReturnValue('redirected')
+    }
+
+    await handleStartFuelApplicationReviewRequest(
+      {
+        params: { applicationId: 'app-0317' },
+        auth: { credentials: { user: { name: 'Jane Doe' } } }
+      },
+      h
+    )
+
+    expect(startFuelApplicationReviewMock).toHaveBeenCalledWith('app-0317', {
+      name: 'Jane Doe',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel-application/app-0317')
+  })
+
+  test('redirects back to the application page when the backend rejects a review start as a conflict', async () => {
+    startFuelApplicationReviewMock.mockRejectedValue({ status: 409 })
+    const h = {
+      redirect: vi.fn().mockReturnValue('redirected')
+    }
+
+    await handleStartFuelApplicationReviewRequest(
+      {
+        params: { applicationId: 'app-0317' },
+        auth: {
+          credentials: {
+            user: { name: 'Jane Doe', email: 'jane@example.com' }
+          }
+        }
+      },
+      h
+    )
+
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel-application/app-0317')
   })
 
