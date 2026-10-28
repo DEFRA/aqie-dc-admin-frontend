@@ -38,21 +38,32 @@ export const buildSubPageBreadcrumbs = (modelName, returnHref) => ({
   returnToRecord: content.nav.returnToRecord
 })
 
-export const buildNonLegacyDetailsRows = (appliance) =>
-  appliance.details.map((detail) => ({
-    key: { text: detail.label },
-    actions: {
-      items: [
-        {
-          href: detail.viewUrl,
-          text: content.actionText,
-          visuallyHiddenText: detail.label.toLowerCase()
-        }
-      ]
-    }
-  }))
+export const buildNonLegacyDetailsRows = (
+  appliance,
+  { includeActionHistory = true } = {}
+) =>
+  appliance.details
+    .filter(
+      (detail) =>
+        includeActionHistory || !detail.viewUrl.endsWith('/action-history')
+    )
+    .map((detail) => ({
+      key: { text: detail.label },
+      actions: {
+        items: [
+          {
+            href: detail.viewUrl,
+            text: content.actionText,
+            visuallyHiddenText: detail.label.toLowerCase()
+          }
+        ]
+      }
+    }))
 
-export const buildLegacyDetailsRows = (appliance) => {
+export const buildLegacyDetailsRows = (
+  appliance,
+  { includeActionHistory = true } = {}
+) => {
   const hasInstructionManual = !!(
     appliance.instructionManual?.title ||
     appliance.instructionManual?.version ||
@@ -81,18 +92,19 @@ export const buildLegacyDetailsRows = (appliance) => {
     })
   }
 
-  details.push(
-    {
-      label: content.formatApplicationDetailsLabel(
-        appliance.legacy?.applicationId
-      ),
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
-    },
-    {
+  details.push({
+    label: content.formatApplicationDetailsLabel(
+      appliance.legacy?.applicationId
+    ),
+    viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
+  })
+
+  if (includeActionHistory) {
+    details.push({
       label: content.legacyDetailsItems.actionHistory,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
-    }
-  )
+    })
+  }
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -113,28 +125,20 @@ export const buildRejectedDetailsRows = (appliance) => {
     {
       key: { text: content.rejectedDetails.dateRejected },
       value: {
-        text: appliance.updatedAt
-          ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })
-          : null
+        text: formatDate(appliance.technicalReview.reviewedAt, 'd MMMM yyyy')
       }
     },
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
-        text:
-          appliance.technicalReview?.reviewedBy ||
-          content.rejectedDetails.notSpecified
+        text: appliance.technicalReview.reviewedBy.name
       }
     }
   ]
 
   const remainingRows = appliance.isLegacyRecord
-    ? buildLegacyDetailsRows(appliance)
-    : buildNonLegacyDetailsRows(appliance)
+    ? buildLegacyDetailsRows(appliance, { includeActionHistory: false })
+    : buildNonLegacyDetailsRows(appliance, { includeActionHistory: false })
 
   return [...rejectedRows, ...remainingRows]
 }
