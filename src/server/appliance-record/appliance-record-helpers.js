@@ -81,12 +81,18 @@ export const buildLegacyDetailsRows = (appliance) => {
     })
   }
 
-  details.push({
-    label: content.formatApplicationDetailsLabel(
-      appliance.legacy?.applicationId
-    ),
-    viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
-  })
+  details.push(
+    {
+      label: content.formatApplicationDetailsLabel(
+        appliance.legacy?.applicationId
+      ),
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
+    },
+    {
+      label: content.legacyDetailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
+    }
+  )
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -107,28 +113,26 @@ export const buildRejectedDetailsRows = (appliance) => {
     {
       key: { text: content.rejectedDetails.dateRejected },
       value: {
-        text: new Intl.DateTimeFormat('en-GB', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        }).format(new Date(appliance.technicalReview.reviewedAt))
+        text: formatDate(appliance.technicalReview.reviewedAt, 'd MMMM yyyy')
       }
     },
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
-        text:
-          typeof appliance.technicalReview?.reviewedBy === 'string'
-            ? appliance.technicalReview.reviewedBy
-            : appliance.technicalReview?.reviewedBy?.name ||
-              content.rejectedDetails.notSpecified
+        text: appliance.technicalReview.reviewedBy.name
       }
     }
   ]
 
-  const remainingRows = appliance.isLegacyRecord
-    ? buildLegacyDetailsRows(appliance)
-    : buildNonLegacyDetailsRows(appliance)
+  const remainingRows = (
+    appliance.isLegacyRecord
+      ? buildLegacyDetailsRows(appliance)
+      : buildNonLegacyDetailsRows(appliance)
+  ).filter(
+    (row) =>
+      row.key.text !== content.detailsItems.actionHistory &&
+      row.key.text !== content.legacyDetailsItems.actionHistory
+  )
 
   return [...rejectedRows, ...remainingRows]
 }
@@ -229,6 +233,10 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     {
       label: content.formatApplicationDetailsLabel(data.applicationId),
       viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/application-details`
+    },
+    {
+      label: content.detailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/action-history`
     }
   ]
 

@@ -125,7 +125,7 @@ describe('appliance record helpers', () => {
       isLegacyRecord: false,
       technicalReview: {
         reviewedAt: '2026-02-25T10:00:00.000Z',
-        reviewedBy: 'Calvin May'
+        reviewedBy: { name: 'Calvin May' }
       },
       details: []
     }

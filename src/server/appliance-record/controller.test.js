@@ -106,6 +106,10 @@ const mockApplianceRecord = {
       {
         label: 'Application details',
         viewUrl: '/appliance-record/APP-123/application-details'
+      },
+      {
+        label: 'Action history',
+        viewUrl: '/appliance-record/APP-123/action-history'
       }
     ]
   }
@@ -269,7 +273,7 @@ describe('applianceRecord controller', () => {
       )
 
       const callArgs = h.view.mock.calls[0][1]
-      expect(callArgs.detailsRows).toHaveLength(4)
+      expect(callArgs.detailsRows).toHaveLength(5)
       expect(callArgs.detailsRows[0].key.text).toBe('Appliance details')
       expect(callArgs.detailsRows[0].actions.items[0].href).toBe(
         '/appliance-record/APP-123/appliance-details'
