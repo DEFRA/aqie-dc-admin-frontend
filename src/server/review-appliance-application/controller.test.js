@@ -41,7 +41,7 @@ describe('#reviewApplicationAppliancesController', () => {
 
   test('renders the review page with application details', async () => {
     getApplianceApplicationMock.mockResolvedValue({
-      data: { ...baseApplication, companyFullAddress: 'Line 1\nLine 2' }
+      data: { ...baseApplication, fullAddress: ['Line 1', 'Line 2'] }
     })
 
     const { result, statusCode } = await server.inject({
@@ -84,9 +84,9 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     getApplianceApplicationMock.mockReset()
   })
 
-  test('uses companyFullAddress when provided, replacing newlines with <br>', async () => {
+  test('passes fullAddress lines to the view', async () => {
     getApplianceApplicationMock.mockResolvedValue({
-      data: { ...baseApplication, companyFullAddress: 'Line 1\nLine 2\nLine 3' }
+      data: { ...baseApplication, fullAddress: ['Line 1', 'Line 2', 'Line 3'] }
     })
 
     const view = vi.fn().mockReturnValue('rendered')
@@ -105,37 +105,6 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     )
   })
 
-  test('builds companyAddress from parts when companyFullAddress is absent', async () => {
-    getApplianceApplicationMock.mockResolvedValue({
-      data: {
-        ...baseApplication,
-        companyAddress: {
-          line1: '1 High Street',
-          line2: '',
-          city: 'London',
-          county: undefined,
-          postcode: 'SW1A 1AA',
-          country: 'UK'
-        }
-      }
-    })
-
-    const view = vi.fn().mockReturnValue('rendered')
-    const h = { view }
-
-    await handleAppliancesApplicationRequest(
-      { params: { applicationId: 'app-1' } },
-      h
-    )
-
-    expect(view).toHaveBeenCalledWith(
-      'review-appliance-application/index',
-      expect.objectContaining({
-        companyAddress: ['1 High Street', 'London', 'SW1A 1AA', 'UK']
-      })
-    )
-  })
-
   test.each([
     ['new', 'Start review', 'Not started', 'govuk-tag--grey'],
     ['in_review', 'Continue review', 'In progress', 'govuk-tag--yellow'],
@@ -147,7 +116,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
       getApplianceApplicationMock.mockResolvedValue({
         data: {
           ...baseApplication,
-          companyFullAddress: 'Line 1',
+          fullAddress: ['Line 1'],
           linkedItems: [
             {
               id: 'appliance-1',
@@ -186,7 +155,7 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
     getApplianceApplicationMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        companyFullAddress: 'Line 1',
+        fullAddress: ['Line 1'],
         linkedItems: [
           {
             id: 'appliance-1',
