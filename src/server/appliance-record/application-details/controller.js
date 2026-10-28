@@ -27,8 +27,8 @@ function buildViewModel(appliance, application, applianceId) {
     pageTitle: title,
     heading: title,
     summaryRows: appliance.isLegacyRecord
-      ? buildLegacySummaryRows(application)
-      : buildSummaryRows(application),
+      ? buildLegacySummaryRows(appliance, application)
+      : buildSummaryRows(appliance, application),
     backLink: { href: returnHref },
     returnHref,
     returnToRecord,
