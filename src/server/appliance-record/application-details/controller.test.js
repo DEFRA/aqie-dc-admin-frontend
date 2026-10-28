@@ -9,7 +9,7 @@ const { getApplianceDetailMock, getApplicationDetailsMock } = vi.hoisted(
   })
 )
 
-vi.mock('./appliance-application-details-data.js', () => ({
+vi.mock('./application-details-data.js', () => ({
   getApplianceDetail: getApplianceDetailMock,
   getApplicationDetails: getApplicationDetailsMock
 }))

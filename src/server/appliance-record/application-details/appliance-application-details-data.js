@@ -1,10 +1,10 @@
 import { fetchJson } from '../../common/api/api.js'
 
 /**
- * /applications/{id} only returns submittedAt
- * and linkedItems.
- * /appliances/{ID} returns Company name, company address, and main contact
- * details
+ * fetches full application record by ID and array of all appliances or fuels
+ * (linkedItems) associated with the application.
+ * Company name, company address, and main contact details live on the
+ * Appliance record, not the Application record.
  */
 export async function getApplicationDetails(applicationId) {
   return fetchJson(`/applications/${encodeURIComponent(applicationId)}`)

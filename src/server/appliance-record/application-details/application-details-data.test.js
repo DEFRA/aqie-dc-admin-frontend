@@ -9,12 +9,7 @@ vi.mock('../../common/api/api.js', () => ({
 }))
 
 const { getApplianceDetail, getApplicationDetails } =
-  await import('./appliance-application-details-data.js')
-
-// Rejects only when awaited, so the spy never holds an unhandled rejected promise.
-const rejectsWith = (error) => ({
-  then: (_resolve, reject) => reject(error)
-})
+  await import('./application-details-data.js')
 
 describe('#getApplicationDetails', () => {
   beforeEach(() => fetchJsonMock.mockReset())
@@ -37,7 +32,8 @@ describe('#getApplicationDetails', () => {
   })
 
   test('propagates errors from fetchJson', async () => {
-    fetchJsonMock.mockImplementation(() => rejectsWith(new Error('not found')))
+    const error = new Error('not found')
+    fetchJsonMock.mockRejectedValueOnce(error)
 
     await expect(getApplicationDetails('app-1')).rejects.toThrow('not found')
   })
@@ -64,9 +60,8 @@ describe('#getApplianceDetail', () => {
   })
 
   test('propagates errors from fetchJson', async () => {
-    fetchJsonMock.mockImplementation(() =>
-      rejectsWith(new Error('backend down'))
-    )
+    const error = new Error('backend down')
+    fetchJsonMock.mockRejectedValueOnce(error)
 
     await expect(getApplianceDetail('APP-1')).rejects.toThrow('backend down')
   })
