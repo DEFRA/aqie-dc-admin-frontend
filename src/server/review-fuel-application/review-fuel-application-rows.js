@@ -133,7 +133,6 @@ export function buildFuelApplicationViewModel(application, applicationId) {
     content,
     summaryRows: buildApplicantSummaryRows(application),
     fuelRows: buildFuelRows(linkedItems, applicationId),
-    tableCaption: content.table.caption(applicationId),
     breadcrumbs: [
       { text: content.navigation.home, href: '/manage-certification' },
       {

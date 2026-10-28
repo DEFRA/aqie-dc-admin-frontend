@@ -48,6 +48,29 @@ describe('#fuelApplicationsController', () => {
     expect(payload).toContain('Fuel applications')
   })
 
+  test('renders every fuel for applications with multiple items', async () => {
+    getFuelApplicationsMock.mockResolvedValue({
+      data: {
+        new: [
+          {
+            id: 'app-2',
+            items: [{ name: 'Diesel' }, { name: 'Petrol' }]
+          }
+        ],
+        inProgress: []
+      }
+    })
+
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(payload).toContain('Diesel')
+    expect(payload).toContain('Petrol')
+  })
+
   test('renders the fuel applications page with safe empty arrays when the backend payload is malformed', async () => {
     getFuelApplicationsMock.mockResolvedValue({
       data: {

@@ -14,16 +14,12 @@ const logger = createLogger()
 const content = fuelApplicationsContent.en
 
 /**
- * Logs a failed fuel applications list request with route and operation context.
- * @param {Error} [error] - The caught exception from the data layer.
+ * Logs a failed fuel applications list request with the same convention used in
+ * the rest of the fuel/appliance controllers: string message + error object.
+ * @param {Error} error - The caught exception from the data layer.
  */
 function logFuelApplicationsError(error) {
-  logger.error('[fuel-applications.GET] failed', {
-    route: '/fuel-applications',
-    operation: 'getFuelApplications',
-    message: error?.message ?? 'Unknown error',
-    stack: error?.stack
-  })
+  logger.error(`[fuel-applications.GET] failed: ${error.message}`, error)
 }
 
 /**
@@ -83,12 +79,10 @@ async function handleStartFuelApplicationReviewRequest(request, h) {
       return h.redirect(`/review-fuel-application/${encodedApplicationId}`)
     }
 
-    logger.error('[fuel-applications.POST] failed to start review', {
-      route: '/review-fuel-application/{applicationId}/start',
-      applicationId,
-      message: error?.message ?? 'Unknown error',
-      stack: error?.stack
-    })
+    logger.error(
+      `[fuel-applications.POST] failed to start review for ${applicationId}: ${error.message}`,
+      error
+    )
 
     return h
       .view('error/index', {

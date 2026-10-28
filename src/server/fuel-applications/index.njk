@@ -1,15 +1,13 @@
 {% extends 'layouts/page.njk' %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-xl">{{ heading }}</h1>
         <div class="govuk-body" data-testid="fuel-applications-page-body">
+            <h2 class="govuk-heading-l">{{ content.sections.notStarted }}</h2>
             {% if notStartedApplications.length > 0 %}
             <table class="govuk-table govuk-!-margin-bottom-9" data-testid="fuel-applications-not-started">
-                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.notStarted }}
-                </caption>
                 <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
                         <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
@@ -24,7 +22,15 @@
                         <th scope="row" class="govuk-table__header">{{ application.id }}</th>
                         <td class="govuk-table__cell govuk-!-width-one-half">
                             {% if application.items and application.items.length > 0 %}
+                            {% if application.items.length === 1 %}
                             {{ application.items[0].name }}
+                            {% else %}
+                            <ul class="govuk-list govuk-list--bullet">
+                                {% for item in application.items %}
+                                <li>{{ item.name }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
                             {% else %}
                             -
                             {% endif %}
@@ -42,10 +48,9 @@
             <p class="govuk-body">{{ content.emptyState.notStarted }}</p>
             {% endif %}
 
+            <h2 class="govuk-heading-l">{{ content.sections.inProgress }}</h2>
             {% if inProgressApplications.length > 0 %}
             <table class="govuk-table" data-testid="fuel-applications-in-progress">
-                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.inProgress }}
-                </caption>
                 <thead class="govuk-table__head">
                     <tr class="govuk-table__row">
                         <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
@@ -60,7 +65,15 @@
                         <th scope="row" class="govuk-table__header">{{ application.id }}</th>
                         <td class="govuk-table__cell">
                             {% if application.items and application.items.length > 0 %}
+                            {% if application.items.length === 1 %}
                             {{ application.items[0].name }}
+                            {% else %}
+                            <ul class="govuk-list govuk-list--bullet">
+                                {% for item in application.items %}
+                                <li>{{ item.name }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
                             {% else %}
                             -
                             {% endif %}
