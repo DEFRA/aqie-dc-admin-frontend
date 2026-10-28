@@ -74,9 +74,6 @@ export const router = {
         changeDisplayStatus,
         instructionManual,
         testReports,
-        applianceRecordDetail,
-        applianceApplicationDetails,
-        applianceRecordInstructionManual,
         reviewFuel,
         reviewFuelApplication
       ])
