@@ -73,6 +73,27 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     )
   })
 
+  test('renders "Application details" as title when application.id is absent', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
+    getApplicationDetailsMock.mockResolvedValue({
+      data: { ...baseApplication, id: undefined }
+    })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-record/application-details/index',
+      expect.objectContaining({
+        pageTitle: 'Application details',
+        heading: 'Application details'
+      })
+    )
+  })
+
   test('builds 8 summary rows', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
@@ -271,6 +292,27 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     expect(phoneRow.value.text).toBe('Not provided')
   })
 
+  test('skips the application fetch and renders with empty data when applicationId is absent', async () => {
+    getApplianceTechnicalReviewMock.mockResolvedValue({
+      data: { ...baseAppliance, applicationId: undefined }
+    })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(getApplicationDetailsMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-record/application-details/index',
+      expect.objectContaining({
+        pageTitle: 'Application details',
+        heading: 'Application details'
+      })
+    )
+  })
+
   test('uses applicationId from the technical review response to fetch the application', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
@@ -282,6 +324,27 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     )
 
     expect(getApplicationDetailsMock).toHaveBeenCalledWith('app-uuid-123')
+  })
+
+  test('uses legacy.applicationId for legacy appliances instead of applicationId', async () => {
+    const legacyAppliance = {
+      ...baseAppliance,
+      isLegacyRecord: true,
+      applicationId: null,
+      legacy: { applicationId: 'legacy-app-uuid-456' }
+    }
+    getApplianceTechnicalReviewMock.mockResolvedValue({ data: legacyAppliance })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    expect(getApplicationDetailsMock).toHaveBeenCalledWith(
+      'legacy-app-uuid-456'
+    )
   })
 
   test('sets correct back link, return href, and breadcrumbs', async () => {
@@ -311,7 +374,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
   })
 
   describe('legacy records (isLegacyRecord: true)', () => {
-    const legacyAppliance = { ...baseAppliance, isLegacyRecord: true }
+    const legacyAppliance = {
+      ...baseAppliance,
+      isLegacyRecord: true,
+      legacy: { applicationId: 'app-uuid-123' }
+    }
 
     const legacyApplication = {
       id: 'app-uuid-123',
@@ -329,7 +396,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       }
     }
 
-    test('renders only 2 summary rows for a legacy record', async () => {
+    test('renders 3 summary rows for a legacy record with address present', async () => {
       getApplianceTechnicalReviewMock.mockResolvedValue({
         data: legacyAppliance
       })
@@ -342,7 +409,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       )
 
       const [, viewModel] = h.view.mock.calls[0]
-      expect(viewModel.summaryRows).toHaveLength(2)
+      expect(viewModel.summaryRows).toHaveLength(3)
     })
 
     test('renders linked legacy applications as plain text for a single ID', async () => {
@@ -365,7 +432,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       expect(linkedRow.value.html).toBeUndefined()
     })
 
-    test('renders linked legacy applications as a bullet list for multiple IDs', async () => {
+    test('renders linked legacy applications as comma-separated with "and" for multiple IDs', async () => {
       getApplianceTechnicalReviewMock.mockResolvedValue({
         data: legacyAppliance
       })
@@ -388,12 +455,43 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       const linkedRow = viewModel.summaryRows.find(
         (row) => row.key.text === 'Linked legacy applications'
       )
-      expect(linkedRow.value.html).toContain('<li>CAA-EA-00000850</li>')
-      expect(linkedRow.value.html).toContain('<li>CAA-EA-00000851</li>')
-      expect(linkedRow.value.text).toBeUndefined()
+      expect(linkedRow.value.text).toBe('CAA-EA-00000850 and CAA-EA-00000851')
+      expect(linkedRow.value.html).toBeUndefined()
     })
 
-    test('renders "Not provided" when linkedApplicationIds is absent', async () => {
+    test('renders linked legacy applications with commas for three or more IDs', async () => {
+      getApplianceTechnicalReviewMock.mockResolvedValue({
+        data: legacyAppliance
+      })
+      getApplicationDetailsMock.mockResolvedValue({
+        data: {
+          ...legacyApplication,
+          legacy: {
+            linkedApplicationIds: [
+              'CAA-EA-00000850',
+              'CAA-EA-00000851',
+              'CAA-EA-00000852'
+            ]
+          }
+        }
+      })
+      const h = toolkit()
+
+      await handleApplianceApplicationDetailsRequest(
+        { params: { applianceId: 'APP-1' } },
+        h
+      )
+
+      const [, viewModel] = h.view.mock.calls[0]
+      const linkedRow = viewModel.summaryRows.find(
+        (row) => row.key.text === 'Linked legacy applications'
+      )
+      expect(linkedRow.value.text).toBe(
+        'CAA-EA-00000850, CAA-EA-00000851 and CAA-EA-00000852'
+      )
+    })
+
+    test('omits the linked legacy applications row when linkedApplicationIds is absent', async () => {
       getApplianceTechnicalReviewMock.mockResolvedValue({
         data: legacyAppliance
       })
@@ -411,10 +509,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       const linkedRow = viewModel.summaryRows.find(
         (row) => row.key.text === 'Linked legacy applications'
       )
-      expect(linkedRow.value.text).toBe('Not provided')
+      expect(linkedRow).toBeUndefined()
+      expect(viewModel.summaryRows).toHaveLength(2)
     })
 
-    test('renders company name and address combined in the Company row', async () => {
+    test('renders separate Company name and Company address rows when address is present', async () => {
       getApplianceTechnicalReviewMock.mockResolvedValue({
         data: legacyAppliance
       })
@@ -427,12 +526,46 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       )
 
       const [, viewModel] = h.view.mock.calls[0]
+      const nameRow = viewModel.summaryRows.find(
+        (row) => row.key.text === 'Company name'
+      )
+      const addressRow = viewModel.summaryRows.find(
+        (row) => row.key.text === 'Company address'
+      )
+      expect(nameRow.value.text).toBe('Jetmaster Fires Limited')
+      expect(addressRow.value.html).toContain('Unit 2')
+      expect(addressRow.value.html).toContain('SO50 4NT')
+    })
+
+    test('renders single Company row with name only when address is absent', async () => {
+      getApplianceTechnicalReviewMock.mockResolvedValue({
+        data: legacyAppliance
+      })
+      getApplicationDetailsMock.mockResolvedValue({
+        data: {
+          ...legacyApplication,
+          companyAddress: undefined,
+          companyFullAddress: undefined
+        }
+      })
+      const h = toolkit()
+
+      await handleApplianceApplicationDetailsRequest(
+        { params: { applianceId: 'APP-1' } },
+        h
+      )
+
+      const [, viewModel] = h.view.mock.calls[0]
       const companyRow = viewModel.summaryRows.find(
         (row) => row.key.text === 'Company'
       )
-      expect(companyRow.value.html).toContain('Jetmaster Fires Limited')
-      expect(companyRow.value.html).toContain('Unit 2')
-      expect(companyRow.value.html).toContain('SO50 4NT')
+      expect(companyRow.value.text).toBe('Jetmaster Fires Limited')
+      expect(
+        viewModel.summaryRows.find((row) => row.key.text === 'Company name')
+      ).toBeUndefined()
+      expect(
+        viewModel.summaryRows.find((row) => row.key.text === 'Company address')
+      ).toBeUndefined()
     })
   })
 
