@@ -2,9 +2,9 @@ import { fetchJson } from '../../common/api/api.js'
 
 /**
  * /applications/{id} only returns submittedAt
- * and linkedItems. 
+ * and linkedItems.
  * /appliances/{ID} returns Company name, company address, and main contact
- * details 
+ * details
  */
 export async function getApplicationDetails(applicationId) {
   return fetchJson(`/applications/${encodeURIComponent(applicationId)}`)
