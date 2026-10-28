@@ -109,8 +109,7 @@ export function buildApplicantSummaryRows(application) {
 
 export function buildFuelRows(linkedItems, applicationId) {
   return linkedItems.map((fuel) => {
-    const statusMeta =
-      reviewFuelApplicationContent.en.statusTags[fuel.technicalReview.status]
+    const statusMeta = content.statusTags[fuel.technicalReview.status]
 
     return {
       brandName:
