@@ -14,12 +14,29 @@ vi.mock('./appliance-application-details-data.js', () => ({
   getApplicationDetails: getApplicationDetailsMock
 }))
 
+vi.mock('../../common/helpers/logging/logger.js', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn()
+  })
+}))
+
+// Backend contract: /appliances/{id} returns fullAddress as an array of
+// address line strings.
 const baseAppliance = {
   id: 'APP-1',
   modelName: 'Aarrow Ecoburn 5F',
   applicationId: 'app-uuid-123',
   companyName: 'Arada Limited',
-  fullAddress: 'The Fireworks\nWeycroft Avenue\nAxminster\nDevon\nEX13 5HU',
+  fullAddress: [
+    'The Fireworks',
+    'Weycroft Avenue',
+    'Axminster',
+    'Devon',
+    'EX13 5HU'
+  ],
   companyContact: {
     name: 'John Doe',
     email: 'john.doe@arada.co.uk',
@@ -196,7 +213,7 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     expect(valueFor('Main contact telephone number')).toBe('07722 334455')
   })
 
-  test('builds company address from fullAddress splitting on newlines', async () => {
+  test('builds company address from fullAddress lines joined with <br>', async () => {
     getApplianceDetailMock.mockResolvedValue({ data: baseAppliance })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
@@ -215,35 +232,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     )
   })
 
-  test('trims address lines and drops blank lines', async () => {
-    getApplianceDetailMock.mockResolvedValue({
-      data: {
-        ...baseAppliance,
-        fullAddress: '  456 Factory Road  \n\n Birmingham \n  \nB1 2AB'
-      }
-    })
-    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
-    const h = toolkit()
-
-    await handleApplianceApplicationDetailsRequest(
-      { params: { applianceId: 'APP-1' } },
-      h
-    )
-
-    const [, viewModel] = h.view.mock.calls[0]
-    const addressRow = viewModel.summaryRows.find(
-      (row) => row.key.text === 'Company address'
-    )
-    expect(addressRow.value.html).toBe(
-      '456 Factory Road<br>Birmingham<br>B1 2AB'
-    )
-  })
-
   test('escapes HTML in address lines', async () => {
     getApplianceDetailMock.mockResolvedValue({
       data: {
         ...baseAppliance,
-        fullAddress: 'Smith & Sons\n<script>alert(1)</script>'
+        fullAddress: ['Smith & Sons', '<script>alert(1)</script>']
       }
     })
     getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
@@ -281,6 +274,25 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     )
     expect(addressRow.value.html).toBe('')
     expect(addressRow.value.text).toBeUndefined()
+  })
+
+  test('renders an empty company address when fullAddress is an empty array', async () => {
+    getApplianceDetailMock.mockResolvedValue({
+      data: { ...baseAppliance, fullAddress: [] }
+    })
+    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
+    const h = toolkit()
+
+    await handleApplianceApplicationDetailsRequest(
+      { params: { applianceId: 'APP-1' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const addressRow = viewModel.summaryRows.find(
+      (row) => row.key.text === 'Company address'
+    )
+    expect(addressRow.value.html).toBe('')
   })
 
   test('renders linkedItems as a govuk bullet list', async () => {
@@ -515,8 +527,13 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       isLegacyRecord: true,
       legacy: { applicationId: 'app-uuid-123' },
       companyName: 'Jetmaster Fires Limited',
-      fullAddress:
-        'Unit 2\nPeacock Trading Estate\nEastleigh\nHampshire\nSO50 4NT'
+      fullAddress: [
+        'Unit 2',
+        'Peacock Trading Estate',
+        'Eastleigh',
+        'Hampshire',
+        'SO50 4NT'
+      ]
     }
 
     const legacyApplication = {
@@ -651,8 +668,9 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
         (row) => row.key.text === 'Company address'
       )
       expect(nameRow.value.text).toBe('Jetmaster Fires Limited')
-      expect(addressRow.value.html).toContain('Unit 2')
-      expect(addressRow.value.html).toContain('SO50 4NT')
+      expect(addressRow.value.html).toBe(
+        'Unit 2<br>Peacock Trading Estate<br>Eastleigh<br>Hampshire<br>SO50 4NT'
+      )
     })
 
     test('renders single Company row with name only when address is absent', async () => {
@@ -678,6 +696,31 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       expect(
         viewModel.summaryRows.find((row) => row.key.text === 'Company name')
       ).toBeUndefined()
+      expect(
+        viewModel.summaryRows.find((row) => row.key.text === 'Company address')
+      ).toBeUndefined()
+    })
+
+    test('renders single Company row with name only when address is an empty array', async () => {
+      getApplianceDetailMock.mockResolvedValue({
+        data: {
+          ...legacyAppliance,
+          fullAddress: []
+        }
+      })
+      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
+      const h = toolkit()
+
+      await handleApplianceApplicationDetailsRequest(
+        { params: { applianceId: 'APP-1' } },
+        h
+      )
+
+      const [, viewModel] = h.view.mock.calls[0]
+      const companyRow = viewModel.summaryRows.find(
+        (row) => row.key.text === 'Company'
+      )
+      expect(companyRow.value.text).toBe('Jetmaster Fires Limited')
       expect(
         viewModel.summaryRows.find((row) => row.key.text === 'Company address')
       ).toBeUndefined()

@@ -3,17 +3,6 @@ import { applianceApplicationDetailsContent } from './content.js'
 
 const content = applianceApplicationDetailsContent.en
 
-/**
- * Backend contract: /appliances/{id} returns fullAddress as a pre-formatted,
- * newline-separated string. Only split it into trimmed display lines.
- */
-function buildAddressLines(appliance) {
-  return (appliance.fullAddress ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-}
-
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -53,11 +42,12 @@ function buildLinkedApplicationsValue(linkedApplicationIds) {
 }
 
 /**
- * Address lines are joined with <br> inside an html value, so each line is
- * escaped first.
+ * Backend contract: /appliances/{id} returns fullAddress as an array of
+ * address line strings. Each line is escaped, then joined with <br> inside
+ * an html value.
  */
 function buildAddressHtml(addressLines) {
-  return addressLines.map(escapeHtml).join('<br>')
+  return (addressLines ?? []).map(escapeHtml).join('<br>')
 }
 
 export function buildLegacySummaryRows(appliance, application) {
@@ -72,9 +62,7 @@ export function buildLegacySummaryRows(appliance, application) {
     })
   }
 
-  const addressLines = buildAddressLines(appliance)
-
-  if (addressLines.length) {
+  if (appliance.fullAddress?.length) {
     rows.push(
       {
         key: { text: content.labels.companyName },
@@ -82,7 +70,7 @@ export function buildLegacySummaryRows(appliance, application) {
       },
       {
         key: { text: content.labels.companyAddress },
-        value: { html: buildAddressHtml(addressLines) }
+        value: { html: buildAddressHtml(appliance.fullAddress) }
       }
     )
   } else {
@@ -96,8 +84,6 @@ export function buildLegacySummaryRows(appliance, application) {
 }
 
 export function buildSummaryRows(appliance, application) {
-  const addressLines = buildAddressLines(appliance)
-
   return [
     {
       key: { text: content.labels.applicationDate },
@@ -113,7 +99,7 @@ export function buildSummaryRows(appliance, application) {
     },
     {
       key: { text: content.labels.companyAddress },
-      value: { html: buildAddressHtml(addressLines) }
+      value: { html: buildAddressHtml(appliance.fullAddress) }
     },
     {
       key: { text: content.labels.mainContactName },
