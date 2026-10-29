@@ -89,8 +89,7 @@ export function buildApplicantSummaryRows(application) {
       value: {
         text:
           content.supplierTypes[
-            application.supplierType ??
-              application.linkedItems?.[0]?.supplierType
+            application.supplierType ?? application.linkedItems[0]?.supplierType
           ] ?? content.notProvided
       }
     }
@@ -114,7 +113,7 @@ export function buildFuelRows(linkedItems) {
 }
 
 export function buildFuelApplicationViewModel(application) {
-  const linkedItems = application.linkedItems ?? []
+  const linkedItems = application.linkedItems
   const formattedApplicationId = formatApplicationId(application.id)
   const heading = content.heading(formattedApplicationId)
 

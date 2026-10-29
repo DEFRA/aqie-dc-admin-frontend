@@ -275,10 +275,10 @@ describe('#handleReviewFuelApplicationRequest', () => {
     })
   })
 
-  test('returns the generic error page when the backend payload does not match the expected linked item contract', async () => {
+  test('renders the empty state when there are no linked items', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
-        id: 'app-0317',
+        ...baseApplication,
         linkedItems: []
       }
     })
@@ -289,9 +289,10 @@ describe('#handleReviewFuelApplicationRequest', () => {
       h
     )
 
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: content.errors.generic
-    })
+    expect(h.view).toHaveBeenCalledWith(
+      'review-fuel-application/index',
+      expect.objectContaining({ fuelRows: [] })
+    )
   })
 
   test('shows not provided when alternative email and phone are null', async () => {

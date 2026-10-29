@@ -17,14 +17,6 @@ async function handleReviewFuelApplicationRequest(request, h) {
     const response = await getFuelApplicationDetails(applicationId)
     const application = response.data
 
-    if (!application?.linkedItems || application.linkedItems.length === 0) {
-      return h
-        .view('error/index', {
-          message: content.errors.generic
-        })
-        .code(statusCodes.internalServerError)
-    }
-
     return h.view(
       'review-fuel-application/index',
       buildFuelApplicationViewModel(application)
