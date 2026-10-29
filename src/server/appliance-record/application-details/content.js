@@ -16,8 +16,6 @@ export const applianceApplicationDetailsContent = {
       company: 'Company'
     },
 
-    notProvided: 'Not provided',
-
     errors: {
       generic: 'Sorry, there is a problem with the service'
     }
