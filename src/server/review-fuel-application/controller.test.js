@@ -21,11 +21,11 @@ vi.mock('./review-fuel-application-data.js', () => ({
 
 const baseApplication = {
   id: '7756-0001',
+  fullAddress: ['Sonna', 'Mullingar', 'Co. Westmeath', 'N91 PYC8'],
   linkedItems: [
     {
       id: 'FUEL-123',
       companyName: 'Flamers Ltd',
-      fullAddress: ['Sonna', 'Mullingar', 'Co. Westmeath', 'N91 PYC8'],
       companyContact: {
         name: 'Contact Name',
         email: 'contact.email@flamers.com',
@@ -93,6 +93,79 @@ describe('#handleReviewFuelApplicationRequest', () => {
       'responsible.email@flamers.com'
     )
     expect(viewModel.summaryRows[8].value.text).toBe(content.boolean.yes)
+  })
+
+  test('joins fullAddress lines with <br> and escapes HTML', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        fullAddress: ['1 High St', 'Leeds', '<b>LS1 1AA</b>', 'England']
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryRows[1].value.html).toBe(
+      '1 High St<br>Leeds<br>&lt;b&gt;LS1 1AA&lt;/b&gt;<br>England'
+    )
+  })
+
+  test('falls back to the linked item fullAddress, then to an empty address', async () => {
+    const { fullAddress: _omit, ...applicationWithoutAddress } = baseApplication
+    const h = toolkit()
+
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...applicationWithoutAddress,
+        linkedItems: [
+          {
+            ...baseApplication.linkedItems[0],
+            fullAddress: ['1 High St', 'Leeds']
+          }
+        ]
+      }
+    })
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+    expect(h.view.mock.calls[0][1].summaryRows[1].value.html).toBe(
+      '1 High St<br>Leeds'
+    )
+
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: applicationWithoutAddress
+    })
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+    expect(h.view.mock.calls[1][1].summaryRows[1].value.html).toBe('')
+  })
+
+  test('renders a single-line fullAddress without <br>', async () => {
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        fullAddress: ['456 Rue de Paris, Paris, France']
+      }
+    })
+    const h = toolkit()
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryRows[1].value.html).toBe(
+      '456 Rue de Paris, Paris, France'
+    )
   })
 
   test('renders the fuel table with status labels and continue-review action', async () => {
