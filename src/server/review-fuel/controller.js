@@ -26,11 +26,16 @@ async function handleReviewFuelRequest(request, h) {
 
     return h.view('review-fuel/index', buildViewModel(fuel, fuelId))
   } catch (error) {
+    const code =
+      error.status === statusCodes.notFound
+        ? statusCodes.notFound
+        : statusCodes.internalServerError
+
     logger.error(`[reviewFuel] failed to load ${fuelId}: ${error.message}`)
 
     return h
       .view('error/index', { message: content.errors.generic })
-      .code(statusCodes.internalServerError)
+      .code(code)
   }
 }
 
