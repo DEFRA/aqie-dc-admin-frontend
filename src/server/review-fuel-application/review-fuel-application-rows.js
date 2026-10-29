@@ -13,20 +13,17 @@ function escapeHtml(value) {
 }
 
 export function buildApplicantSummaryRows(application) {
-  const linkedItems = application?.linkedItems ?? []
-
-  if (linkedItems.length === 0) {
+  if (!application) {
     return []
   }
 
-  const primaryFuel = linkedItems[0]
   const companyAddress = application.fullAddress.map(escapeHtml)
 
   return [
     {
       key: { text: content.labels.companyName },
       value: {
-        text: primaryFuel.companyName ?? content.notProvided
+        text: application.companyName ?? content.notProvided
       }
     },
     {
@@ -36,47 +33,47 @@ export function buildApplicantSummaryRows(application) {
     {
       key: { text: content.labels.mainContactName },
       value: {
-        text: primaryFuel.companyContact?.name ?? content.notProvided
+        text: application.companyContact?.name ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.mainContactEmail },
       value: {
-        text: primaryFuel.companyContact?.email ?? content.notProvided
+        text: application.companyContact?.email ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.mainContactAlternativeEmail },
       value: {
         text:
-          primaryFuel.companyContact?.alternativeEmail ?? content.notProvided
+          application.companyContact?.alternativeEmail ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.mainContactPhone },
       value: {
-        text: primaryFuel.companyContact?.phone ?? content.notProvided
+        text: application.companyContact?.phone ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.responsiblePerson },
       value: {
-        text: primaryFuel.responsiblePerson?.name ?? content.notProvided
+        text: application.responsiblePerson?.name ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.responsiblePersonEmail },
       value: {
-        text: primaryFuel.responsiblePerson?.email ?? content.notProvided
+        text: application.responsiblePerson?.email ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.customerComplaints },
       value: {
         text:
-          primaryFuel.customerComplaints === true
+          application.customerComplaints === true
             ? content.boolean.yes
-            : primaryFuel.customerComplaints === false
+            : application.customerComplaints === false
               ? content.boolean.no
               : content.notProvided
       }
@@ -84,13 +81,17 @@ export function buildApplicantSummaryRows(application) {
     {
       key: { text: content.labels.fuelSalesMethod },
       value: {
-        text: primaryFuel.fuelBagging ?? content.notProvided
+        text: application.fuelBagging ?? content.notProvided
       }
     },
     {
       key: { text: content.labels.manufacturerOrRebrander },
       value: {
-        text: content.supplierTypes[primaryFuel.supplierType]
+        text:
+          content.supplierTypes[
+            application.supplierType ??
+              application.linkedItems?.[0]?.supplierType
+          ] ?? content.notProvided
       }
     }
   ]
@@ -102,7 +103,7 @@ export function buildFuelRows(linkedItems) {
     const statusMeta = content.statusTags[reviewStatus]
 
     return {
-      brandName: fuel.name,
+      brandName: fuel.brandName,
       statusLabel: statusMeta.label,
       statusColour: statusMeta.colour,
       actionText: statusMeta.text,

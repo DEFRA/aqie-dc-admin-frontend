@@ -6,7 +6,9 @@ import { fetchJson, patchJson } from '../common/api/api.js'
  * `response.data` in the controller, matching the appliance review pattern.
  */
 export async function getFuelApplicationDetails(applicationId) {
-  return fetchJson(`/applications/${encodeURIComponent(applicationId)}`)
+  return fetchJson(
+    `/applications/${encodeURIComponent(applicationId)}/summary?type=fuel`
+  )
 }
 
 /**

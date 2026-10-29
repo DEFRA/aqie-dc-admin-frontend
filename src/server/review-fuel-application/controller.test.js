@@ -21,25 +21,25 @@ vi.mock('./review-fuel-application-data.js', () => ({
 
 const baseApplication = {
   id: '7756-0001',
+  companyName: 'Flamers Ltd',
   fullAddress: ['Sonna', 'Mullingar', 'Co. Westmeath', 'N91 PYC8'],
+  companyContact: {
+    name: 'Contact Name',
+    email: 'contact.email@flamers.com',
+    alternativeEmail: 'alt.email@flamers.com',
+    phone: '07722 334455'
+  },
+  responsiblePerson: {
+    name: 'Responsible Name',
+    email: 'responsible.email@flamers.com'
+  },
+  customerComplaints: true,
+  fuelBagging: 'Bagged at source',
+  supplierType: 'Manufacturer',
   linkedItems: [
     {
       id: 'FUEL-123',
-      companyName: 'Flamers Ltd',
-      companyContact: {
-        name: 'Contact Name',
-        email: 'contact.email@flamers.com',
-        alternativeEmail: 'alt.email@flamers.com',
-        phone: '07722 334455'
-      },
-      responsiblePerson: {
-        name: 'Responsible Name',
-        email: 'responsible.email@flamers.com'
-      },
-      customerComplaints: true,
-      fuelBagging: 'Bagged at source',
-      supplierType: 'Manufacturer',
-      name: 'Kings Starterlog',
+      brandName: 'Kings Starterlog',
       technicalReview: { status: 'in_review' }
     }
   ]
@@ -115,28 +115,9 @@ describe('#handleReviewFuelApplicationRequest', () => {
     )
   })
 
-  test('falls back to the linked item fullAddress, then to an empty address', async () => {
+  test('renders an empty address when fullAddress is missing', async () => {
     const { fullAddress: _omit, ...applicationWithoutAddress } = baseApplication
     const h = toolkit()
-
-    getFuelApplicationDetailsMock.mockResolvedValue({
-      data: {
-        ...applicationWithoutAddress,
-        linkedItems: [
-          {
-            ...baseApplication.linkedItems[0],
-            fullAddress: ['1 High St', 'Leeds']
-          }
-        ]
-      }
-    })
-    await handleReviewFuelApplicationRequest(
-      { params: { applicationId: 'app-0317' } },
-      h
-    )
-    expect(h.view.mock.calls[0][1].summaryRows[1].value.html).toBe(
-      '1 High St<br>Leeds'
-    )
 
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: applicationWithoutAddress
@@ -145,7 +126,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
       { params: { applicationId: 'app-0317' } },
       h
     )
-    expect(h.view.mock.calls[1][1].summaryRows[1].value.html).toBe('')
+    expect(h.view.mock.calls[0][1].summaryRows[1].value.html).toBe('')
   })
 
   test('renders a single-line fullAddress without <br>', async () => {
@@ -188,14 +169,14 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.continueReviewHref).toBe('/incomplete-review')
   })
 
-  test('maps the backend name field directly to the fuel table row', async () => {
+  test('maps the backend brandName field to the fuel table row', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
         linkedItems: [
           {
             ...baseApplication.linkedItems[0],
-            name: 'PelletBrand'
+            brandName: 'PelletBrand'
           }
         ]
       }
@@ -215,12 +196,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        linkedItems: [
-          {
-            ...baseApplication.linkedItems[0],
-            supplierType: 'Manufacture'
-          }
-        ]
+        supplierType: 'Manufacture'
       }
     })
     const h = toolkit()
@@ -236,12 +212,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        linkedItems: [
-          {
-            ...baseApplication.linkedItems[0],
-            supplierType: 'Rebrand'
-          }
-        ]
+        supplierType: 'Rebrand'
       }
     })
 
@@ -259,8 +230,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
         ...baseApplication,
         linkedItems: [
           {
-            companyName: 'Fallback test',
-            name: 'Test fuel',
+            brandName: 'Test fuel',
             technicalReview: { status: 'new' },
             id: 'legacy-id'
           }
@@ -325,16 +295,11 @@ describe('#handleReviewFuelApplicationRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        linkedItems: [
-          {
-            ...baseApplication.linkedItems[0],
-            companyContact: {
-              ...baseApplication.linkedItems[0].companyContact,
-              alternativeEmail: null,
-              phone: null
-            }
-          }
-        ]
+        companyContact: {
+          ...baseApplication.companyContact,
+          alternativeEmail: null,
+          phone: null
+        }
       }
     })
     const h = toolkit()

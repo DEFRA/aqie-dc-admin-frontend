@@ -30,7 +30,9 @@ describe('getFuelApplicationDetails', () => {
 
     const result = await getFuelApplicationDetails('app-0317')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/applications/app-0317')
+    expect(fetchJsonMock).toHaveBeenCalledWith(
+      '/applications/app-0317/summary?type=fuel'
+    )
     expect(result).toEqual({
       success: true,
       message: 'Application retrieved successfully',
