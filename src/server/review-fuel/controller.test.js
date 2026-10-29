@@ -134,7 +134,7 @@ describe('#reviewFuelController', () => {
     expect(viewModel.heading).toBe('Review Brand Name from API')
     expect(viewModel.breadcrumbs.at(-1)).toEqual({
       text: 'Brand Name from API',
-      href: '/review-fuel-application/app-0317'
+      href: '/review-fuel/FUEL-003'
     })
   })
 

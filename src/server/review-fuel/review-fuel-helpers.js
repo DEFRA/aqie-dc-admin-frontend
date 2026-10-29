@@ -132,7 +132,17 @@ export function buildViewModel(fuel, fuelId) {
         text: content.navigation.fuelApplications,
         href: '/fuel-applications'
       },
-      { text: fuelName, href: applicationHref }
+      ...(fuel.applicationId
+        ? [
+            {
+              text: content.incompleteReview.applicationBreadcrumb(
+                fuel.applicationId
+              ),
+              href: applicationHref
+            }
+          ]
+        : []),
+      { text: fuelName, href: fuelActionPath }
     ],
     backLink: {
       href: applicationHref,
