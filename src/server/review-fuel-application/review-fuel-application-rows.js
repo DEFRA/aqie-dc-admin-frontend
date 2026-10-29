@@ -20,7 +20,7 @@ export function buildApplicantSummaryRows(application) {
   }
 
   const primaryFuel = linkedItems[0]
-  const companyAddress = (application.fullAddress).map(escapeHtml)
+  const companyAddress = application.fullAddress.map(escapeHtml)
 
   return [
     {
