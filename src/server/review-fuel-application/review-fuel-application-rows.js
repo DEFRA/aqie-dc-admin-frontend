@@ -88,8 +88,7 @@ export function buildApplicantSummaryRows(application) {
       key: { text: content.labels.manufacturerOrRebrander },
       value: {
         text:
-          content.supplierTypes[application.linkedItems[0]?.supplierType] ??
-          content.notProvided
+          content.supplierTypes[application.supplierType] ?? content.notProvided
       }
     }
   ]

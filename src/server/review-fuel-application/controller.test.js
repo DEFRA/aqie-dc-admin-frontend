@@ -35,10 +35,10 @@ const baseApplication = {
   },
   hasCustomerComplaintsSystem: true,
   fuelBagging: 'Bagged at source',
+  supplierType: 'Manufacture',
   linkedItems: [
     {
       id: 'FUEL-123',
-      supplierType: 'Manufacture',
       brandName: 'Kings Starterlog',
       technicalReview: { status: 'in_review' }
     }
@@ -199,9 +199,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        linkedItems: [
-          { ...baseApplication.linkedItems[0], supplierType: 'Manufacture' }
-        ]
+        supplierType: 'Manufacture'
       }
     })
     const h = toolkit()
@@ -217,9 +215,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
-        linkedItems: [
-          { ...baseApplication.linkedItems[0], supplierType: 'Rebrand' }
-        ]
+        supplierType: 'Rebrand'
       }
     })
 
