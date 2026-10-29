@@ -61,6 +61,10 @@ export const reviewFuelApplicationContent = {
       yes: 'Yes',
       no: 'No'
     },
+    supplierTypes: {
+      Manufacture: 'Manufacturer',
+      Rebrand: 'Rebrander'
+    },
     notProvided: 'Not provided',
     errors: {
       generic: 'Sorry, there is a problem with the service'

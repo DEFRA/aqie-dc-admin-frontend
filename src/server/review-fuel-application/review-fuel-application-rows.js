@@ -84,10 +84,7 @@ export function buildApplicantSummaryRows(application) {
     {
       key: { text: content.labels.manufacturerOrRebrander },
       value: {
-        text:
-          primaryFuel.manufacturerOrRebrander ??
-          primaryFuel.supplierType ??
-          content.notProvided
+        text: content.supplierTypes[primaryFuel.supplierType]
       }
     }
   ]

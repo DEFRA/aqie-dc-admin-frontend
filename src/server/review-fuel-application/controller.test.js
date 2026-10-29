@@ -38,7 +38,7 @@ const baseApplication = {
       },
       customerComplaints: true,
       fuelBagging: 'Bagged at source',
-      manufacturerOrRebrander: 'Manufacturer',
+      supplierType: 'Manufacturer',
       name: 'Kings Starterlog',
       technicalReview: { status: 'in_review' }
     }
@@ -138,15 +138,14 @@ describe('#handleReviewFuelApplicationRequest', () => {
     expect(viewModel.fuelRows[0].brandName).toBe('PelletBrand')
   })
 
-  test('uses the supplier type when manufacturer or rebrander is missing', async () => {
+  test('maps the backend supplierType enum values to the correct user-facing labels', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
         ...baseApplication,
         linkedItems: [
           {
             ...baseApplication.linkedItems[0],
-            manufacturerOrRebrander: undefined,
-            supplierType: 'Manufacturer'
+            supplierType: 'Manufacture'
           }
         ]
       }
@@ -158,8 +157,27 @@ describe('#handleReviewFuelApplicationRequest', () => {
       h
     )
 
-    const [, viewModel] = h.view.mock.calls[0]
+    let [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.summaryRows[10].value.text).toBe('Manufacturer')
+
+    getFuelApplicationDetailsMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        linkedItems: [
+          {
+            ...baseApplication.linkedItems[0],
+            supplierType: 'Rebrand'
+          }
+        ]
+      }
+    })
+
+    await handleReviewFuelApplicationRequest(
+      { params: { applicationId: 'app-0317' } },
+      h
+    )
+    ;[, viewModel] = h.view.mock.calls[1]
+    expect(viewModel.summaryRows[10].value.text).toBe('Rebrander')
   })
 
   test('does not fall back to the application id when constructing the fuel review link', async () => {
