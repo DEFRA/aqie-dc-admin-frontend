@@ -33,9 +33,7 @@ async function handleReviewFuelRequest(request, h) {
 
     logger.error(`[reviewFuel] failed to load ${fuelId}: ${error.message}`)
 
-    return h
-      .view('error/index', { message: content.errors.generic })
-      .code(code)
+    return h.view('error/index', { message: content.errors.generic }).code(code)
   }
 }
 
