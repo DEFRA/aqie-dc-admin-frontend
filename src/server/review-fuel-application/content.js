@@ -20,7 +20,7 @@ export const reviewFuelApplicationContent = {
       responsiblePersonEmail: 'Responsible person email',
       customerComplaints: 'Customer complaints system in place?',
       fuelSalesMethod: 'How do they sell the fuel?',
-      manufacturerOrReseller: 'Manufacturer or reseller?'
+      manufacturerOrRebrander: 'Manufacturer or rebrander?'
     },
     table: {
       caption: (applicationId) => `Fuel in application ${applicationId}`,
@@ -41,7 +41,7 @@ export const reviewFuelApplicationContent = {
         label: 'Not started',
         colour: 'govuk-tag--grey'
       },
-      in_progress: {
+      in_review: {
         text: 'Continue review',
         label: 'In progress',
         colour: 'govuk-tag--yellow'
@@ -60,6 +60,10 @@ export const reviewFuelApplicationContent = {
     boolean: {
       yes: 'Yes',
       no: 'No'
+    },
+    supplierTypes: {
+      Manufacture: 'Manufacturer',
+      Rebrand: 'Rebrander'
     },
     notProvided: 'Not provided',
     errors: {

@@ -21,7 +21,8 @@
                 <tbody class="govuk-table__body">
                     {% for application in notStartedApplications %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
                         <td class="govuk-table__cell govuk-!-width-one-half">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}
@@ -30,7 +31,7 @@
                             {% endif %}
                         </td>
                         <td class="govuk-table__cell">
-                            <form method="post" action="/review-fuel-application/{{ application.id }}/start" novalidate>
+                            <form method="post" action="{{ application.reviewHref }}/start" novalidate>
                                 <button type="submit" class="app-link-button">{{ content.actions.startReview }}</button>
                             </form>
                         </td>
@@ -57,7 +58,8 @@
                 <tbody class="govuk-table__body">
                     {% for application in inProgressApplications %}
                     <tr class="govuk-table__row">
-                        <th scope="row" class="govuk-table__header">{{ application.id }}</th>
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
                         <td class="govuk-table__cell">
                             {% if application.items and application.items.length > 0 %}
                             {{ application.items[0].name }}
@@ -66,15 +68,11 @@
                             {% endif %}
                         </td>
                         <td class="govuk-table__cell">
-                            {% if application.reviewedBy and application.reviewedBy.name %}
                             {{ application.reviewedBy.name }}
-                            {% else %}
-                            -
-                            {% endif %}
                         </td>
                         <td class="govuk-table__cell">
                             <a class="govuk-link"
-                                href="/review-fuel-application/{{ application.id }}">{{ content.actions.continueReview }}</a>
+                                href="{{ application.reviewHref }}">{{ content.actions.continueReview }}</a>
                         </td>
                     </tr>
                     {% endfor %}

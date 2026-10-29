@@ -35,7 +35,7 @@
                     {% endif %}
                   </td>
                   <td class="govuk-table__cell">
-                    <form method="post" action="/review-appliance-application/{{ application.id }}/start" novalidate>
+                    <form method="post" action="{{ application.reviewHref }}/start" novalidate>
                       <button type="submit" class="app-link-button">Start review</button>
                     </form>
                   </td>
@@ -74,7 +74,7 @@
                   </td>
                   <td class="govuk-table__cell">{{ application.reviewedBy.name }}</td>
                   <td class="govuk-table__cell">
-                    <a class="govuk-link" href="/review-appliance-application/{{ application.id }}">Continue review
+                    <a class="govuk-link" href="{{ application.reviewHref }}">Continue review
                     </a>
                   </td>
                 </tr>

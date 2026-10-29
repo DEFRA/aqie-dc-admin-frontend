@@ -10,7 +10,10 @@ const { getFuelApplicationsMock, startFuelApplicationReviewMock } = vi.hoisted(
 )
 
 vi.mock('./fuel-applications-data.js', () => ({
-  getFuelApplications: getFuelApplicationsMock,
+  getFuelApplications: getFuelApplicationsMock
+}))
+
+vi.mock('../review-fuel-application/review-fuel-application-data.js', () => ({
   startFuelApplicationReview: startFuelApplicationReviewMock
 }))
 
@@ -46,6 +49,24 @@ describe('#fuelApplicationsController', () => {
 
     expect(statusCode).toBe(statusCodes.ok)
     expect(payload).toContain('Fuel applications')
+  })
+
+  test('formats the displayed application id to match the appliance flow', async () => {
+    getFuelApplicationsMock.mockResolvedValue({
+      data: {
+        new: [{ id: '7756-0001', items: [{ name: 'Fuels' }] }],
+        inProgress: []
+      }
+    })
+
+    const { statusCode, payload } = await server.inject({
+      method: 'GET',
+      url: '/fuel-applications'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(payload).toMatch(/>\s*0001\s*<\/td>/m)
+    expect(payload).toContain('/review-fuel-application/7756-0001/start')
   })
 
   test('renders the fuel applications page with safe empty arrays when the backend payload is malformed', async () => {
