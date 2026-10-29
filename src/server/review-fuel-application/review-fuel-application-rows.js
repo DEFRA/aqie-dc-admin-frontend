@@ -3,6 +3,15 @@ import { reviewFuelApplicationContent } from './content.js'
 
 const content = reviewFuelApplicationContent.en
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 export function buildApplicantSummaryRows(application) {
   const linkedItems = application?.linkedItems ?? []
 
@@ -11,10 +20,7 @@ export function buildApplicantSummaryRows(application) {
   }
 
   const primaryFuel = linkedItems[0]
-  const companyAddress = (primaryFuel.companyFullAddress ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
+  const companyAddress = (primaryFuel.fullAddress ?? []).map(escapeHtml)
 
   return [
     {

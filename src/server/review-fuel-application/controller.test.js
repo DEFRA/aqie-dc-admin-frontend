@@ -25,7 +25,7 @@ const baseApplication = {
     {
       id: 'FUEL-123',
       companyName: 'Flamers Ltd',
-      companyFullAddress: 'Sonna\nMullingar\nCo. Westmeath\nN91 PYC8',
+      fullAddress: ['Sonna', 'Mullingar', 'Co. Westmeath', 'N91 PYC8'],
       companyContact: {
         name: 'Contact Name',
         email: 'contact.email@flamers.com',
