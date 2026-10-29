@@ -33,7 +33,7 @@ const baseApplication = {
     name: 'Responsible Name',
     email: 'responsible.email@flamers.com'
   },
-  customerComplaints: true,
+  hasCustomerComplaintsSystem: true,
   fuelBagging: 'Bagged at source',
   supplierType: 'Manufacturer',
   linkedItems: [

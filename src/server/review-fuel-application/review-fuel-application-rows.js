@@ -71,9 +71,9 @@ export function buildApplicantSummaryRows(application) {
       key: { text: content.labels.customerComplaints },
       value: {
         text:
-          application.customerComplaints === true
+          application.hasCustomerComplaintsSystem === true
             ? content.boolean.yes
-            : application.customerComplaints === false
+            : application.hasCustomerComplaintsSystem === false
               ? content.boolean.no
               : content.notProvided
       }
@@ -99,6 +99,7 @@ export function buildApplicantSummaryRows(application) {
 
 export function buildFuelRows(linkedItems) {
   return linkedItems.map((fuel) => {
+    // Same path for Manufacture and Rebrand: the backend must supply technicalReview on every linked item, no supplierType branching here.
     const reviewStatus = fuel.technicalReview.status
     const statusMeta = content.statusTags[reviewStatus]
 
