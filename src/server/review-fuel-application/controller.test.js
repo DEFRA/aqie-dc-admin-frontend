@@ -115,7 +115,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
     )
   })
 
-  test('renders an empty address when fullAddress is missing', async () => {
+  test('renders the error page when fullAddress is missing', async () => {
     const { fullAddress: _omit, ...applicationWithoutAddress } = baseApplication
     const h = toolkit()
 
@@ -126,7 +126,10 @@ describe('#handleReviewFuelApplicationRequest', () => {
       { params: { applicationId: 'app-0317' } },
       h
     )
-    expect(h.view.mock.calls[0][1].summaryRows[1].value.html).toBe('')
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: content.errors.generic
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
 
   test('renders a single-line fullAddress without <br>', async () => {
