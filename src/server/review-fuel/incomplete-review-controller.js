@@ -25,7 +25,7 @@ async function handleIncompleteReviewRequest(request, h) {
 
     return h
       .view('error/index', { message: content.errors.generic })
-      .code(error?.status || statusCodes.internalServerError)
+      .code(statusCodes.internalServerError)
   }
 }
 

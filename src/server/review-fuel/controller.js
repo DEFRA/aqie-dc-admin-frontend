@@ -31,11 +31,9 @@ async function handleReviewFuelRequest(request, h) {
   } catch (error) {
     logger.error(`[reviewFuel] failed to load ${fuelId}: ${error.message}`)
 
-    const statusCode = error?.status || statusCodes.internalServerError
-
     return h
       .view('error/index', { message: content.errors.generic })
-      .code(statusCode)
+      .code(statusCodes.internalServerError)
   }
 }
 
