@@ -93,17 +93,17 @@ export function buildApplicantSummaryRows(application) {
   ]
 }
 
-export function buildFuelRows(linkedItems, _applicationId) {
+export function buildFuelRows(linkedItems) {
   return linkedItems.map((fuel) => {
     const reviewStatus = fuel.technicalReview.status
-    const statusMeta = reviewFuelApplicationContent.en.statusTags[reviewStatus]
-    const fuelId = fuel.id
+    const statusMeta = content.statusTags[reviewStatus]
+
     return {
       brandName: fuel.name,
       statusLabel: statusMeta.label,
       statusColour: statusMeta.colour,
       actionText: statusMeta.text,
-      actionHref: `/review-fuel/${encodeURIComponent(fuelId)}`
+      actionHref: `/review-fuel/${encodeURIComponent(fuel.id)}`
     }
   })
 }
@@ -118,7 +118,7 @@ export function buildFuelApplicationViewModel(application, applicationId) {
     heading,
     content,
     summaryRows: buildApplicantSummaryRows(application),
-    fuelRows: buildFuelRows(linkedItems, applicationId),
+    fuelRows: buildFuelRows(linkedItems),
     tableCaption: content.table.caption(formattedApplicationId),
     breadcrumbs: [
       { text: content.navigation.home, href: '/manage-certification' },
