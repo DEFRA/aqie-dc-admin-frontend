@@ -2,7 +2,10 @@ import { vi } from 'vitest'
 import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
-import { ReviewFuelViewModelBuilder } from './review-fuel-helpers.js'
+import {
+  buildViewModel,
+  buildIncompleteReviewViewModel
+} from './review-fuel-helpers.js'
 
 const { getFuelReviewMock, saveFuelReviewMock } = vi.hoisted(() => ({
   getFuelReviewMock: vi.fn(),
@@ -77,7 +80,7 @@ describe('#reviewFuelController', () => {
   })
 
   test('renders the correct manufacturer task list from the helper builder', () => {
-    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+    const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',
@@ -95,7 +98,7 @@ describe('#reviewFuelController', () => {
   })
 
   test('renders the correct rebrand task list from the helper builder', () => {
-    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+    const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-002',
         name: 'Grillaedin White Quebracho',
@@ -118,7 +121,7 @@ describe('#reviewFuelController', () => {
   })
 
   test('uses the confirmed backend fuel name field directly', () => {
-    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+    const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-003',
         name: 'Brand Name from API',
@@ -136,7 +139,7 @@ describe('#reviewFuelController', () => {
   })
 
   test('treats the confirmed backend supplierType value as a manufacturer fuel', () => {
-    const viewModel = ReviewFuelViewModelBuilder.buildViewModel(
+    const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-004',
         name: 'PelletBrand',
@@ -152,7 +155,7 @@ describe('#reviewFuelController', () => {
   })
 
   test('builds the incomplete review view model with the expected GOV.UK links', () => {
-    const viewModel = ReviewFuelViewModelBuilder.buildIncompleteReviewViewModel(
+    const viewModel = buildIncompleteReviewViewModel(
       {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',

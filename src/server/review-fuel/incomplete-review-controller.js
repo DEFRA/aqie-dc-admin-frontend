@@ -2,7 +2,7 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { reviewFuelContent } from './content.js'
 import { getFuelReview } from './review-fuel-data.js'
-import { ReviewFuelViewModelBuilder } from './review-fuel-helpers.js'
+import { buildIncompleteReviewViewModel } from './review-fuel-helpers.js'
 
 const logger = createLogger()
 const content = reviewFuelContent.en
@@ -16,7 +16,7 @@ async function handleIncompleteReviewRequest(request, h) {
 
     return h.view(
       'review-fuel/incomplete-review',
-      ReviewFuelViewModelBuilder.buildIncompleteReviewViewModel(fuel, fuelId)
+      buildIncompleteReviewViewModel(fuel, fuelId)
     )
   } catch (error) {
     logger.error(

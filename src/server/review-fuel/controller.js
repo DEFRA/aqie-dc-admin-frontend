@@ -2,7 +2,7 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { reviewFuelContent } from './content.js'
 import { getFuelReview, saveFuelReview } from './review-fuel-data.js'
-import { ReviewFuelViewModelBuilder } from './review-fuel-helpers.js'
+import { buildViewModel } from './review-fuel-helpers.js'
 
 const logger = createLogger()
 const content = reviewFuelContent.en
@@ -24,10 +24,7 @@ async function handleReviewFuelRequest(request, h) {
     const response = await getFuelReview(fuelId)
     const fuel = response.data
 
-    return h.view(
-      'review-fuel/index',
-      ReviewFuelViewModelBuilder.buildViewModel(fuel, fuelId)
-    )
+    return h.view('review-fuel/index', buildViewModel(fuel, fuelId))
   } catch (error) {
     logger.error(`[reviewFuel] failed to load ${fuelId}: ${error.message}`)
 
