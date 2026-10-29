@@ -31,7 +31,7 @@
                             {% endif %}
                         </td>
                         <td class="govuk-table__cell">
-                            <form method="post" action="/review-fuel-application/{{ application.id }}/start" novalidate>
+                            <form method="post" action="{{ application.reviewHref }}/start" novalidate>
                                 <button type="submit" class="app-link-button">{{ content.actions.startReview }}</button>
                             </form>
                         </td>
@@ -76,7 +76,7 @@
                         </td>
                         <td class="govuk-table__cell">
                             <a class="govuk-link"
-                                href="/review-fuel-application/{{ application.id }}">{{ content.actions.continueReview }}</a>
+                                href="{{ application.reviewHref }}">{{ content.actions.continueReview }}</a>
                         </td>
                     </tr>
                     {% endfor %}

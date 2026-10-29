@@ -24,8 +24,18 @@ describe('buildFuelApplicationsViewModel', () => {
 
     expect(result.pageTitle).toBe(content.pageTitle)
     expect(result.heading).toBe(content.heading)
-    expect(result.notStartedApplications).toEqual(applications.new)
-    expect(result.inProgressApplications).toEqual(applications.inProgress)
+    expect(result.notStartedApplications).toEqual([
+      {
+        ...applications.new[0],
+        reviewHref: '/review-fuel-application/fuel-001'
+      }
+    ])
+    expect(result.inProgressApplications).toEqual([
+      {
+        ...applications.inProgress[0],
+        reviewHref: '/review-fuel-application/fuel-002'
+      }
+    ])
     expect(result.backLink).toEqual({
       href: '/manage-certification',
       text: 'Back'
