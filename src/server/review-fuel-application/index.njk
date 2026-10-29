@@ -40,6 +40,8 @@
                 {% endfor %}
 
                 {{ govukTable({
+                    caption: tableCaption,
+                    captionClasses: 'govuk-visually-hidden',
                     head: [
                         { text: content.table.brandName },
                         { text: content.table.status },

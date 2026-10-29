@@ -27,7 +27,7 @@ async function handleReviewFuelApplicationRequest(request, h) {
 
     return h.view(
       'review-fuel-application/index',
-      buildFuelApplicationViewModel(application, applicationId)
+      buildFuelApplicationViewModel(application)
     )
   } catch (error) {
     logger.error(
