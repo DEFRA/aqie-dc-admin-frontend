@@ -43,4 +43,16 @@ describe('change display status data', () => {
     })
     expect(result).toEqual({ success: true })
   })
+
+  test('includes reviewedBy in the patch body when provided', async () => {
+    patchJson.mockResolvedValue({ success: true })
+    const reviewedBy = { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+
+    await saveApplianceVisibility('APP-123', true, reviewedBy)
+
+    expect(patchJson).toHaveBeenCalledWith('/appliances/APP-123/visibility', {
+      isVisibleToPublic: true,
+      reviewedBy
+    })
+  })
 })

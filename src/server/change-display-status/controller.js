@@ -115,8 +115,18 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
     }
   }
 
+  const user = request.auth?.credentials?.user
+  const reviewedBy =
+    user?.name && user?.email
+      ? { name: user.name, email: user.email }
+      : undefined
+
   try {
-    await saveApplianceVisibility(applianceId, isVisibleToPublic === 'true')
+    await saveApplianceVisibility(
+      applianceId,
+      isVisibleToPublic === 'true',
+      reviewedBy
+    )
 
     return h.redirect(applianceRecordPath(applianceId))
   } catch (error) {

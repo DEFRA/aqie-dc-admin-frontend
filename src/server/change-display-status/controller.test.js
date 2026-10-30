@@ -234,8 +234,35 @@ describe('change display status controller', () => {
       h
     )
 
-    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', false)
+    expect(saveApplianceVisibility).toHaveBeenCalledWith(
+      'APP-123',
+      false,
+      undefined
+    )
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
+  })
+
+  test('passes the signed-in user as reviewedBy', async () => {
+    saveApplianceVisibility.mockResolvedValue({ success: true })
+    const h = { redirect: vi.fn().mockReturnThis() }
+
+    await handlePostChangeDisplayStatusPage(
+      {
+        params: { applianceId: 'APP-123' },
+        payload: { isVisibleToPublic: 'true' },
+        auth: {
+          credentials: {
+            user: { name: 'A Reviewer', email: 'a@defra.gov.uk', id: 'x' }
+          }
+        }
+      },
+      h
+    )
+
+    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true, {
+      name: 'A Reviewer',
+      email: 'a@defra.gov.uk'
+    })
   })
 
   test('uses the route appliance id on POST', async () => {
@@ -255,7 +282,11 @@ describe('change display status controller', () => {
       h
     )
 
-    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true)
+    expect(saveApplianceVisibility).toHaveBeenCalledWith(
+      'APP-123',
+      true,
+      undefined
+    )
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
     expect(result).toBe('redirected')
   })
