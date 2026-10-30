@@ -57,7 +57,7 @@ describe('action history controller', () => {
     await handleActionHistoryRequest(request, h)
 
     const [template, view] = h.view.mock.calls[0]
-    expect(template).toBe('action-history/index')
+    expect(template).toBe('appliance-record/action-history/index')
     expect(view.heading).toBe(
       'Action history for Aarrow Ecoburn 5F plus 4.9kW multi-fuel stove'
     )

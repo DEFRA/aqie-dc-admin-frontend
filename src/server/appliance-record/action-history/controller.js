@@ -56,7 +56,7 @@ async function handleActionHistoryRequest(request, h) {
     }
 
     return h.view(
-      'action-history/index',
+      'appliance-record/action-history/index',
       buildViewModel(history, applianceId, pagination)
     )
   } catch (error) {
