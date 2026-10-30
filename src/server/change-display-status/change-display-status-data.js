@@ -23,7 +23,7 @@ export async function getApplianceVisibilityState(applianceId) {
  *
  * @param {string} applianceId - The appliance identifier to update.
  * @param {boolean} isVisibleToPublic - Whether the appliance should appear on the public list.
- * @param {{name: string, email: string}} [reviewedBy] - Signed-in user; backend attributes to System when omitted.
+ * @param {{name: string, email: string}} reviewedBy - The signed-in user making the change.
  * @returns {Promise<object>} The backend response from the PATCH request.
  */
 export async function saveApplianceVisibility(
@@ -33,6 +33,6 @@ export async function saveApplianceVisibility(
 ) {
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/visibility`,
-    reviewedBy ? { isVisibleToPublic, reviewedBy } : { isVisibleToPublic }
+    { isVisibleToPublic, reviewedBy }
   )
 }

@@ -20,6 +20,8 @@ vi.mock('./change-display-status-data.js', () => ({
   saveApplianceVisibility: vi.fn()
 }))
 
+const reviewer = { name: 'A Reviewer', email: 'a@defra.gov.uk', id: 'x' }
+
 describe('change display status controller', () => {
   test('registers the GET and POST appliance record visibility routes', () => {
     const server = { route: vi.fn() }
@@ -229,7 +231,8 @@ describe('change display status controller', () => {
         params: { applianceId: 'APP-123' },
         payload: {
           isVisibleToPublic: 'false'
-        }
+        },
+        auth: { credentials: { user: reviewer } }
       },
       h
     )
@@ -237,7 +240,7 @@ describe('change display status controller', () => {
     expect(saveApplianceVisibility).toHaveBeenCalledWith(
       'APP-123',
       false,
-      undefined
+      { name: reviewer.name, email: reviewer.email }
     )
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
   })
@@ -265,6 +268,24 @@ describe('change display status controller', () => {
     })
   })
 
+  test('falls back to an unknown reviewer when no user is signed in', async () => {
+    saveApplianceVisibility.mockResolvedValue({ success: true })
+    const h = { redirect: vi.fn().mockReturnThis() }
+
+    await handlePostChangeDisplayStatusPage(
+      {
+        params: { applianceId: 'APP-123' },
+        payload: { isVisibleToPublic: 'true' }
+      },
+      h
+    )
+
+    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true, {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
+  })
+
   test('uses the route appliance id on POST', async () => {
     saveApplianceVisibility.mockResolvedValue({ success: true })
 
@@ -277,16 +298,16 @@ describe('change display status controller', () => {
         params: { applianceId: 'APP-123' },
         payload: {
           isVisibleToPublic: 'true'
-        }
+        },
+        auth: { credentials: { user: reviewer } }
       },
       h
     )
 
-    expect(saveApplianceVisibility).toHaveBeenCalledWith(
-      'APP-123',
-      true,
-      undefined
-    )
+    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', true, {
+      name: reviewer.name,
+      email: reviewer.email
+    })
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
     expect(result).toBe('redirected')
   })
