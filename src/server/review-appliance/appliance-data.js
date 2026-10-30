@@ -16,6 +16,6 @@ export async function getApplianceReview(applianceId) {
 export async function saveApplianceReview(applianceId, status, reviewedBy) {
   return patchJson(
     `/appliances/${encodeURIComponent(applianceId)}/technical-review`,
-    reviewedBy ? { status, reviewedBy } : { status }
+    { status, reviewedBy }
   )
 }

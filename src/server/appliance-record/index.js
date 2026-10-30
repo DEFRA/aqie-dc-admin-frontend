@@ -3,6 +3,7 @@ import { applianceRecordController } from './controller.js'
 import { applianceRecordDetail } from './appliance-details/index.js'
 import { applianceApplicationDetails } from './application-details/index.js'
 import { applianceRecordInstructionManual } from './instruction-manual/index.js'
+import { actionHistory } from './action-history/index.js'
 import { legacyComments } from './legacy-comments/index.js'
 import { applianceRecordTestReports } from './test-reports/index.js'
 
@@ -52,6 +53,7 @@ export const applianceRecord = {
         applianceRecordDetail,
         applianceApplicationDetails,
         applianceRecordInstructionManual,
+        actionHistory,
         legacyComments,
         applianceRecordTestReports
       ])

@@ -249,6 +249,33 @@ describe('#reviewFuelController', () => {
     })
   })
 
+  test('falls back to an unknown reviewer when the session has no name or email', async () => {
+    saveFuelReviewMock.mockResolvedValue({})
+    getFuelReviewMock.mockResolvedValue({
+      data: {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317'
+      }
+    })
+
+    await server.inject({
+      method: 'POST',
+      url: '/review-fuel/FUEL-001',
+      auth: {
+        strategy: 'session',
+        credentials: { isAuthenticated: true, user: { id: 'test' } }
+      },
+      payload: { decision: 'accept' }
+    })
+
+    expect(saveFuelReviewMock).toHaveBeenCalledWith('FUEL-001', 'accepted', {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
+  })
+
   test('rejects the fuel review and redirects to the application page', async () => {
     saveFuelReviewMock.mockResolvedValue({})
     getFuelReviewMock.mockResolvedValue({

@@ -36,10 +36,13 @@ describe('change display status data', () => {
   test('sends the visibility patch to the backend with a boolean JSON payload', async () => {
     patchJson.mockResolvedValue({ success: true })
 
-    const result = await saveApplianceVisibility('APP-123', false)
+    const reviewedBy = { name: 'A Reviewer', email: 'a@defra.gov.uk' }
+
+    const result = await saveApplianceVisibility('APP-123', false, reviewedBy)
 
     expect(patchJson).toHaveBeenCalledWith('/appliances/APP-123/visibility', {
-      isVisibleToPublic: false
+      isVisibleToPublic: false,
+      reviewedBy
     })
     expect(result).toEqual({ success: true })
   })
