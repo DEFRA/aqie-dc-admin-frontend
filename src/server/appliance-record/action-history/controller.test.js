@@ -107,6 +107,38 @@ describe('action history controller', () => {
     expect(view.backLink).toEqual({ href: '/appliance-record/APP-123' })
   })
 
+  test('uses the shared appliance record breadcrumbs', async () => {
+    getApplianceActionHistory.mockResolvedValue({
+      success: true,
+      data: history
+    })
+    const h = toolkit()
+
+    await handleActionHistoryRequest(request, h)
+
+    const view = h.view.mock.calls[0][1]
+    expect(view.breadcrumbs).toEqual([
+      { text: 'Home', href: '/manage-certification' },
+      { text: 'Appliance records', href: '/appliance-records' },
+      { text: history.name, href: '/appliance-record/APP-123' }
+    ])
+  })
+
+  test('treats a response without pagination as a single page', async () => {
+    getApplianceActionHistory.mockResolvedValue({
+      success: true,
+      data: history
+    })
+    const h = toolkit()
+
+    await handleActionHistoryRequest(request, h)
+
+    const view = h.view.mock.calls[0][1]
+    expect(view.hasPagination).toBe(false)
+    expect(view.previous).toBeNull()
+    expect(view.next).toBeNull()
+  })
+
   test('encodes the appliance id in the return link', async () => {
     getApplianceActionHistory.mockResolvedValue({
       success: true,

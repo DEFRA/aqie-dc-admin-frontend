@@ -1,11 +1,6 @@
 import Joi from 'joi'
 import { actionHistoryController } from './controller.js'
 
-/**
- * Read-only action history page for an appliance, linked from the appliance
- * record. Registered in src/server/router.js.
- */
-
 const paramsSchema = Joi.object({
   applianceId: Joi.string()
     .required()
