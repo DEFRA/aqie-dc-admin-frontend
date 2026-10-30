@@ -237,11 +237,10 @@ describe('change display status controller', () => {
       h
     )
 
-    expect(saveApplianceVisibility).toHaveBeenCalledWith(
-      'APP-123',
-      false,
-      { name: reviewer.name, email: reviewer.email }
-    )
+    expect(saveApplianceVisibility).toHaveBeenCalledWith('APP-123', false, {
+      name: reviewer.name,
+      email: reviewer.email
+    })
     expect(h.redirect).toHaveBeenCalledWith('/appliance-record/APP-123')
   })
 

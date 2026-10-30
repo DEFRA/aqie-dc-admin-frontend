@@ -11,7 +11,10 @@ vi.mock('./approval-status-data.js', () => ({
   updateCertificationStatus: vi.fn()
 }))
 
-const systemDecidedBy = { name: 'System', email: 'system@example.com' }
+const systemDecidedBy = {
+  name: 'Unknown reviewer',
+  email: 'unknown-reviewer@unknown.gov.uk'
+}
 
 describe('Approval Status Controller', () => {
   let mockRequest
@@ -257,7 +260,7 @@ describe('Approval Status Controller', () => {
       })
 
       mockRequest.auth = {
-        credentials: { name: 'Ada', email: 'ada@example.com' }
+        credentials: { user: { name: 'Ada', email: 'ada@example.com' } }
       }
 
       await approvalsStatusDecisionController.handler(mockRequest, mockH)
