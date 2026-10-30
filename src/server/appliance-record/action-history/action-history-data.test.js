@@ -18,7 +18,17 @@ describe('getApplianceActionHistory', () => {
     await getApplianceActionHistory('APP-1')
 
     expect(fetchJson).toHaveBeenCalledWith(
-      '/api/admin/appliances/APP-1/action-history'
+      '/api/admin/appliances/APP-1/action-history?page=1'
+    )
+  })
+
+  test('requests the given page', async () => {
+    fetchJson.mockResolvedValue({ success: true, data: {} })
+
+    await getApplianceActionHistory('APP-1', 3)
+
+    expect(fetchJson).toHaveBeenCalledWith(
+      '/api/admin/appliances/APP-1/action-history?page=3'
     )
   })
 
@@ -28,7 +38,7 @@ describe('getApplianceActionHistory', () => {
     await getApplianceActionHistory('APP/1 2')
 
     expect(fetchJson).toHaveBeenCalledWith(
-      '/api/admin/appliances/APP%2F1%202/action-history'
+      '/api/admin/appliances/APP%2F1%202/action-history?page=1'
     )
   })
 

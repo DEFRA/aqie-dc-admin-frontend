@@ -15,6 +15,10 @@ const paramsSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
+const querySchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1)
+})
+
 export const actionHistory = {
   plugin: {
     name: 'actionHistory',
@@ -25,7 +29,7 @@ export const actionHistory = {
           path: '/appliance-record/{applianceId}/action-history',
           ...actionHistoryController,
           options: {
-            validate: { params: paramsSchema }
+            validate: { params: paramsSchema, query: querySchema }
           }
         }
       ])

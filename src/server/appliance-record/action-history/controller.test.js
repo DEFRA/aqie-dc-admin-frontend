@@ -131,6 +131,45 @@ describe('action history controller', () => {
     expect(h.view.mock.calls[0][1].rows).toEqual([])
   })
 
+  test('requests the page from the query and builds the pager from pagination', async () => {
+    getApplianceActionHistory.mockResolvedValue({
+      success: true,
+      data: history,
+      pagination: { page: 2, limit: 10, total: 25, totalPages: 3 }
+    })
+    const h = toolkit()
+
+    await handleActionHistoryRequest(
+      { params: { applianceId: 'APP-123' }, query: { page: 2 } },
+      h
+    )
+
+    expect(getApplianceActionHistory).toHaveBeenCalledWith('APP-123', 2)
+    const view = h.view.mock.calls[0][1]
+    expect(view.hasPagination).toBe(true)
+    expect(view.previous.href).toBe(
+      '/appliance-record/APP-123/action-history?page=1'
+    )
+    expect(view.next.href).toBe(
+      '/appliance-record/APP-123/action-history?page=3'
+    )
+    expect(view.paginationItems).toHaveLength(3)
+  })
+
+  test('defaults to page 1 and hides the pager for a single page', async () => {
+    getApplianceActionHistory.mockResolvedValue({
+      success: true,
+      data: history,
+      pagination: { page: 1, limit: 10, total: 3, totalPages: 1 }
+    })
+    const h = toolkit()
+
+    await handleActionHistoryRequest(request, h)
+
+    expect(getApplianceActionHistory).toHaveBeenCalledWith('APP-123', 1)
+    expect(h.view.mock.calls[0][1].hasPagination).toBe(false)
+  })
+
   test('renders a not-found page when the appliance does not exist', async () => {
     getApplianceActionHistory.mockRejectedValue(
       Object.assign(new Error('Backend GET failed: 404'), { status: 404 })

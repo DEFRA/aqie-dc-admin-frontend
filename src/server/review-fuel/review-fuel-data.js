@@ -14,8 +14,8 @@ export async function getFuelReview(fuelId) {
  * `status` should be either 'accepted' or 'rejected'.
  */
 export async function saveFuelReview(fuelId, status, reviewedBy) {
-  return patchJson(
-    `/fuels/${encodeURIComponent(fuelId)}/technical-review`,
-    reviewedBy ? { status, reviewedBy } : { status }
-  )
+  return patchJson(`/fuels/${encodeURIComponent(fuelId)}/technical-review`, {
+    status,
+    reviewedBy
+  })
 }

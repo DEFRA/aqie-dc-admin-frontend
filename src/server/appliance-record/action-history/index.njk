@@ -27,6 +27,14 @@
       <p class="govuk-body">{{ content.emptyMessage }}</p>
     {% endif %}
 
+    {% if hasPagination %}
+      {{ govukPagination({
+        previous: previous,
+        next: next,
+        items: paginationItems
+      }) }}
+    {% endif %}
+
     <p class="govuk-body">
       <a class="govuk-link" href="{{ returnHref }}">{{ content.returnText }}</a>
     </p>
