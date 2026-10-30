@@ -1,5 +1,11 @@
 import Joi from 'joi'
 import { applianceRecordController } from './controller.js'
+import { applianceRecordDetail } from './appliance-details/index.js'
+import { applianceApplicationDetails } from './application-details/index.js'
+import { applianceRecordInstructionManual } from './instruction-manual/index.js'
+import { actionHistory } from './action-history/index.js'
+import { legacyComments } from './legacy-comments/index.js'
+import { applianceRecordTestReports } from './test-reports/index.js'
 
 /**
  * Appliance Record Route Module
@@ -42,7 +48,16 @@ const applianceIdSchema = Joi.object({
 export const applianceRecord = {
   plugin: {
     name: 'applianceRecord',
-    register(server) {
+    async register(server) {
+      await server.register([
+        applianceRecordDetail,
+        applianceApplicationDetails,
+        applianceRecordInstructionManual,
+        actionHistory,
+        legacyComments,
+        applianceRecordTestReports
+      ])
+
       server.route([
         {
           method: 'GET',

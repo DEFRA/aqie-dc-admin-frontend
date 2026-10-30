@@ -1,0 +1,87 @@
+{% extends 'layouts/page.njk' %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">{{ heading }}</h1>
+        <div class="govuk-body" data-testid="fuel-applications-page-body">
+            {% if notStartedApplications.length > 0 %}
+            <table class="govuk-table govuk-!-margin-bottom-9" data-testid="fuel-applications-not-started">
+                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.notStarted }}
+                </caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                        <th scope="col" class="govuk-table__header govuk-!-width-one-half">{{ content.columns.fuel }}
+                        </th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    {% for application in notStartedApplications %}
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
+                        <td class="govuk-table__cell govuk-!-width-one-half">
+                            {% if application.items and application.items.length > 0 %}
+                            {{ application.items[0].name }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td class="govuk-table__cell">
+                            <form method="post" action="{{ application.reviewHref }}/start" novalidate>
+                                <button type="submit" class="app-link-button">{{ content.actions.startReview }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="govuk-body">{{ content.emptyState.notStarted }}</p>
+            {% endif %}
+
+            {% if inProgressApplications.length > 0 %}
+            <table class="govuk-table" data-testid="fuel-applications-in-progress">
+                <caption class="govuk-table__caption govuk-table__caption--l">{{ content.sections.inProgress }}
+                </caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">{{ content.columns.application }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.fuel }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.reviewer }}</th>
+                        <th scope="col" class="govuk-table__header">{{ content.columns.action }}</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    {% for application in inProgressApplications %}
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell govuk-!-font-weight-bold">
+                            {{ application.id | formatApplicationId }}</td>
+                        <td class="govuk-table__cell">
+                            {% if application.items and application.items.length > 0 %}
+                            {{ application.items[0].name }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td class="govuk-table__cell">
+                            {{ application.reviewedBy.name }}
+                        </td>
+                        <td class="govuk-table__cell">
+                            <a class="govuk-link"
+                                href="{{ application.reviewHref }}">{{ content.actions.continueReview }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="govuk-body">{{ content.emptyState.inProgress }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

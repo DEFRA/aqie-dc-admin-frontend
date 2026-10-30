@@ -1,0 +1,29 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+    {% if comments.length %}
+      {% for comment in comments %}
+        <p class="govuk-body">{{ comment }}</p>
+      {% endfor %}
+    {% else %}
+      <p class="govuk-body">{{ noComments }}</p>
+    {% endif %}
+
+    <p>
+      <a class="govuk-link" href="{{ returnHref }}">{{ returnToRecord }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+{{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">
+            {{ heading }}
+        </h1>
+
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    {{ content.summaryCardTitle }}
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                {{ govukSummaryList({ rows: summaryRows }) }}
+            </div>
+        </div>
+
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    {{ content.fuelCardTitle }}
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                {% if fuelRows and fuelRows.length > 0 %}
+                {% set fuelTableRows = [] %}
+                {% for fuelRow in fuelRows %}
+                {% set fuelTableRows = (fuelTableRows.push([
+                        { text: fuelRow.brandName },
+                        { html: '<strong class="govuk-tag ' + fuelRow.statusColour + '">' + fuelRow.statusLabel + '</strong>' },
+                        { html: '<a href="' + fuelRow.actionHref + '">' + fuelRow.actionText + '</a>' }
+                    ]), fuelTableRows) %}
+                {% endfor %}
+
+                {{ govukTable({
+                    caption: tableCaption,
+                    captionClasses: 'govuk-visually-hidden',
+                    head: [
+                        { text: content.table.brandName },
+                        { text: content.table.status },
+                        { text: content.table.action }
+                    ],
+                    rows: fuelTableRows
+                }) }}
+                {% else %}
+                <p class="govuk-body">{{ content.table.empty }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="govuk-button-group govuk-!-margin-top-7">
+            {{ govukButton({
+                text: content.actions.continue,
+                href: continueReviewHref
+            }) }}
+        </div>
+
+        <p>
+            <a class="govuk-link" href="{{ returnHref }}">{{ content.actions.returnToList }}</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

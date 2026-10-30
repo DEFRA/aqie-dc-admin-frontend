@@ -93,7 +93,7 @@ describe('appliance record helpers', () => {
       applianceStatus: 'live',
       isLegacyRecord: true,
       id: 'APP-123',
-      applicationId: '0042',
+      legacy: { applicationId: '0042' },
       details: []
     }
 
@@ -112,8 +112,52 @@ describe('appliance record helpers', () => {
       }
     ])
 
-    expect(buildDetailsRows(legacy)[3].key.text).toBe(
+    // No instructionManual or legacy.comments on this fixture, so both
+    // conditional rows are hidden — application details is at index 1.
+    expect(buildDetailsRows(legacy)[1].key.text).toBe(
       'Application 0042 details'
     )
+  })
+
+  test('uses the technical review timestamp for rejected records', () => {
+    const rejected = {
+      applianceStatus: 'rejected',
+      isLegacyRecord: false,
+      technicalReview: {
+        reviewedAt: '2026-02-25T10:00:00.000Z',
+        reviewedBy: { name: 'Calvin May' }
+      },
+      details: []
+    }
+
+    const rows = buildDetailsRows(rejected)
+
+    expect(rows[0]).toMatchObject({
+      key: { text: 'Date rejected' },
+      value: { text: '25 February 2026' }
+    })
+    expect(rows[1]).toMatchObject({
+      key: { text: 'Rejected by' },
+      value: { text: 'Calvin May' }
+    })
+  })
+
+  test('uses the reviewer name from the backend object payload', () => {
+    const rejected = {
+      applianceStatus: 'rejected',
+      isLegacyRecord: false,
+      technicalReview: {
+        reviewedAt: '2026-02-25T10:00:00.000Z',
+        reviewedBy: { name: 'Calvin May', email: 'calvin@example.com' }
+      },
+      details: []
+    }
+
+    const rows = buildDetailsRows(rejected)
+
+    expect(rows[1]).toMatchObject({
+      key: { text: 'Rejected by' },
+      value: { text: 'Calvin May' }
+    })
   })
 })

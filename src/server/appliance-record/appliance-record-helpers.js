@@ -1,20 +1,11 @@
 import { applianceRecordContent } from './content.js'
+import { formatDate } from '../../config/nunjucks/filters/format-date.js'
 
 const content = applianceRecordContent.en
 
 // Backend returns appliance status as live | hidden | pending | rejected
 export const normalizeApplianceStatus = (status) =>
   content.applianceStatus[status] ? status : content.statusValues.pending
-
-export const formatDate = (dateString) => {
-  if (!dateString) return null
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  })
-}
 
 export const buildCertificationTableRows = (appliance) =>
   appliance.certifications.map((cert) => {
@@ -35,43 +26,85 @@ export const buildCertificationTableRows = (appliance) =>
     ]
   })
 
-export const buildNonLegacyDetailsRows = (appliance) =>
-  appliance.details.map((detail) => ({
-    key: { text: detail.label },
-    actions: {
-      items: [
-        {
-          href: detail.viewUrl,
-          text: content.actionText,
-          visuallyHiddenText: detail.label.toLowerCase()
-        }
-      ]
-    }
-  }))
+export const buildSubPageBreadcrumbs = (modelName, returnHref) => ({
+  breadcrumbs: [
+    { text: content.nav.home, href: content.nav.homeHref },
+    {
+      text: content.nav.applianceRecords,
+      href: content.nav.applianceRecordsHref
+    },
+    { text: modelName, href: returnHref }
+  ],
+  returnToRecord: content.nav.returnToRecord
+})
 
-export const buildLegacyDetailsRows = (appliance) => {
+export const buildNonLegacyDetailsRows = (
+  appliance,
+  { includeActionHistory = true } = {}
+) =>
+  appliance.details
+    .filter(
+      (detail) =>
+        includeActionHistory || !detail.viewUrl.endsWith('/action-history')
+    )
+    .map((detail) => ({
+      key: { text: detail.label },
+      actions: {
+        items: [
+          {
+            href: detail.viewUrl,
+            text: content.actionText,
+            visuallyHiddenText: detail.label.toLowerCase()
+          }
+        ]
+      }
+    }))
+
+export const buildLegacyDetailsRows = (
+  appliance,
+  { includeActionHistory = true } = {}
+) => {
+  const hasInstructionManual = !!(
+    appliance.instructionManual?.title ||
+    appliance.instructionManual?.version ||
+    appliance.instructionManual?.publicationDate
+  )
+  const hasLegacyComments = !!appliance.legacy?.comments?.length
+
   const details = [
     {
       label: content.legacyDetailsItems.applianceDetails,
       viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/appliance-details`
-    },
-    {
-      label: content.legacyDetailsItems.manuals,
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/manuals`
-    },
-    {
-      label: content.legacyDetailsItems.legacyComments,
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
-    },
-    {
-      label: content.formatApplicationDetailsLabel(appliance.applicationId),
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
-    },
-    {
-      label: content.legacyDetailsItems.actionHistory,
-      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
     }
   ]
+
+  if (hasInstructionManual) {
+    details.push({
+      label: content.legacyDetailsItems.manuals,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/instruction-manual`
+    })
+  }
+
+  if (hasLegacyComments) {
+    details.push({
+      label: content.legacyDetailsItems.legacyComments,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/legacy-comments`
+    })
+  }
+
+  details.push({
+    label: content.formatApplicationDetailsLabel(
+      appliance.legacy?.applicationId
+    ),
+    viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/application-details`
+  })
+
+  if (includeActionHistory) {
+    details.push({
+      label: content.legacyDetailsItems.actionHistory,
+      viewUrl: `/appliance-record/${encodeURIComponent(appliance.id)}/action-history`
+    })
+  }
 
   return details.map((detail) => ({
     key: { text: detail.label },
@@ -92,28 +125,20 @@ export const buildRejectedDetailsRows = (appliance) => {
     {
       key: { text: content.rejectedDetails.dateRejected },
       value: {
-        text: appliance.updatedAt
-          ? new Date(appliance.updatedAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric'
-            })
-          : null
+        text: formatDate(appliance.technicalReview.reviewedAt, 'd MMMM yyyy')
       }
     },
     {
       key: { text: content.rejectedDetails.rejectedBy },
       value: {
-        text:
-          appliance.technicalReview?.reviewedBy ||
-          content.rejectedDetails.notSpecified
+        text: appliance.technicalReview.reviewedBy.name
       }
     }
   ]
 
   const remainingRows = appliance.isLegacyRecord
-    ? buildLegacyDetailsRows(appliance)
-    : buildNonLegacyDetailsRows(appliance)
+    ? buildLegacyDetailsRows(appliance, { includeActionHistory: false })
+    : buildNonLegacyDetailsRows(appliance, { includeActionHistory: false })
 
   return [...rejectedRows, ...remainingRows]
 }
@@ -175,7 +200,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
         country: countryName,
         status: certification.status || 'awaiting_decision',
         dateCertified: certification.lastCertifiedAt
-          ? formatDate(certification.lastCertifiedAt)
+          ? formatDate(certification.lastCertifiedAt, 'dd/MM/yyyy')
           : null,
         changeUrl: `${encodeURIComponent(applianceId)}/approval-status-${countrySlug}`
       }
@@ -245,6 +270,12 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
   }
   if (data.isLegacyRecord !== undefined) {
     transformedData.isLegacyRecord = data.isLegacyRecord
+  }
+  if (data.legacy !== undefined) {
+    transformedData.legacy = data.legacy
+  }
+  if (data.instructionManual !== undefined) {
+    transformedData.instructionManual = data.instructionManual
   }
 
   return transformedData

@@ -1,0 +1,35 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+    {% if isLegacyRecord %}
+
+      <h2 class="govuk-heading-m">{{ sections.instructionManual }}</h2>
+      {{ govukSummaryList({ rows: instructionManualRows }) }}
+
+      <h2 class="govuk-heading-m">{{ sections.servicingManual }}</h2>
+      {{ govukSummaryList({ rows: servicingManualRows }) }}
+
+    {% else %}
+
+      {{ govukSummaryList({ rows: instructionManualRows }) }}
+
+    {% endif %}
+
+    <p>
+      <a class="govuk-link" href="{{ returnHref }}">{{ returnToRecord }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

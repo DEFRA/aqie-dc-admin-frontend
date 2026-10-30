@@ -1,3 +1,4 @@
+import { formatApplicationId } from '../../config/nunjucks/filters/format-application-id.js'
 /**
  * Appliance Record Content Layer
  *
@@ -91,8 +92,7 @@ export const applianceRecordContent = {
     // Rejected record metadata labels
     rejectedDetails: {
       dateRejected: 'Date rejected',
-      rejectedBy: 'Rejected by',
-      notSpecified: 'Not specified'
+      rejectedBy: 'Rejected by'
     },
 
     // Detail section items - references to related pages
@@ -106,7 +106,7 @@ export const applianceRecordContent = {
 
     formatApplicationDetailsLabel: (applicationId) =>
       applicationId
-        ? `Application ${applicationId} details`
+        ? `Application ${formatApplicationId(applicationId)} details`
         : 'Application details',
 
     // Detail section items - references to related pages (Legacy records)
@@ -128,6 +128,15 @@ export const applianceRecordContent = {
     // Navigation
     backLinkText: 'Back',
     returnLink: 'Return to appliance records',
+
+    // Shared sub-page navigation strings
+    nav: {
+      home: 'Home',
+      homeHref: '/manage-certification',
+      applianceRecords: 'Appliance records',
+      applianceRecordsHref: '/appliance-records',
+      returnToRecord: 'Return to record'
+    },
 
     // Error messages
     errors: {
