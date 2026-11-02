@@ -21,6 +21,7 @@ function buildApplianceRows(linkedItems) {
 
     return {
       modelName: appliance.modelName,
+      id: appliance.id,
       tag,
       actionHref: `/review-appliance/${appliance.id}`,
       actionText: tag.text
