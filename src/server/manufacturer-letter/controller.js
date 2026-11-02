@@ -1,5 +1,8 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getFuel, saveManufacturerLetterResult } from './manufacturer-letter-data.js'
+import {
+  getFuel,
+  saveManufacturerLetterResult
+} from './manufacturer-letter-data.js'
 import { manufacturerLetterContent } from './content.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 

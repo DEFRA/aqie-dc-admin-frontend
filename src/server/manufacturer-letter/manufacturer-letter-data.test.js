@@ -1,6 +1,9 @@
 import { vi } from 'vitest'
 import * as fuelService from '../common/services/common-fuel-service.js'
-import { getFuel, saveManufacturerLetterResult } from './manufacturer-letter-data.js'
+import {
+  getFuel,
+  saveManufacturerLetterResult
+} from './manufacturer-letter-data.js'
 
 const { getFuelTechnicalReviewMock, patchJsonMock } = vi.hoisted(() => ({
   getFuelTechnicalReviewMock: vi.fn(),
