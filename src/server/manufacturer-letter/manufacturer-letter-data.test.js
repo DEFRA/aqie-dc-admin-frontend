@@ -1,5 +1,6 @@
 import { vi } from 'vitest'
 import * as fuelService from '../common/services/common-fuel-service.js'
+import { getFuel, saveManufacturerLetterResult } from './manufacturer-letter-data.js'
 
 const { getFuelTechnicalReviewMock, patchJsonMock } = vi.hoisted(() => ({
   getFuelTechnicalReviewMock: vi.fn(),
@@ -13,11 +14,6 @@ vi.spyOn(fuelService, 'getFuelTechnicalReview').mockImplementation(
 vi.mock('../common/api/api.js', () => ({
   patchJson: patchJsonMock
 }))
-
-import {
-  getFuel,
-  saveManufacturerLetterResult
-} from './manufacturer-letter-data.js'
 
 describe('manufacturer-letter-data', () => {
   beforeEach(() => {
