@@ -120,9 +120,15 @@ export const approvalsStatusDecisionController = {
       }
 
       // Get the logged-in user's info for decidedBy
+      const user = request.auth?.credentials?.user
+      if (!user?.name || !user?.email) {
+        logger.warn(
+          `Missing decider name/email in auth credentials for ${applianceId}, falling back to unknown reviewer`
+        )
+      }
       const decidedBy = {
-        name: request.auth?.credentials?.name || 'System',
-        email: request.auth?.credentials?.email || 'system@example.com'
+        name: user?.name ?? 'Unknown reviewer',
+        email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
       }
 
       // Submit the update to the backend

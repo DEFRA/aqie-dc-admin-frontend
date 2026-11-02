@@ -112,11 +112,10 @@ describe('#handleApplianceDecisionRequest', () => {
       h
     )
 
-    expect(saveApplianceReviewMock).toHaveBeenCalledWith(
-      'APP-1',
-      'accepted',
-      undefined
-    )
+    expect(saveApplianceReviewMock).toHaveBeenCalledWith('APP-1', 'accepted', {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
     expect(h.redirect).toHaveBeenCalledWith(
       '/review-appliance-application/1084'
     )
@@ -132,11 +131,10 @@ describe('#handleApplianceDecisionRequest', () => {
       h
     )
 
-    expect(saveApplianceReviewMock).toHaveBeenCalledWith(
-      'APP-1',
-      'rejected',
-      undefined
-    )
+    expect(saveApplianceReviewMock).toHaveBeenCalledWith('APP-1', 'rejected', {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
   })
 
   test('passes the signed-in reviewer to the backend', async () => {

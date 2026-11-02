@@ -1,0 +1,45 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    {% if rows.length %}
+      {{ govukTable({
+        caption: content.tableCaption,
+        captionClasses: "govuk-table__caption--l govuk-visually-hidden",
+        classes: "govuk-!-margin-bottom-9",
+        head: [
+          { text: content.tableHeaders.action, classes: "govuk-!-width-one-third" },
+          { text: content.tableHeaders.completedBy, classes: "govuk-!-width-one-third" },
+          { text: content.tableHeaders.date, classes: "govuk-!-width-one-third" }
+        ],
+        rows: rows
+      }) }}
+    {% else %}
+      <p class="govuk-body">{{ content.emptyMessage }}</p>
+    {% endif %}
+
+    {% if hasPagination %}
+      {{ govukPagination({
+        previous: previous,
+        next: next,
+        items: paginationItems
+      }) }}
+    {% endif %}
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ returnHref }}">{{ content.returnText }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
