@@ -54,10 +54,17 @@ const finishApplicationReviewController = {
 async function handleFinishApplicationReviewSubmitRequest(request, h) {
   const { applicationId } = request.params
   const user = request.auth?.credentials?.user
-  const reviewedBy =
-    user?.name && user?.email
-      ? { name: user.name, email: user.email }
-      : undefined
+
+  if (!user?.name || !user?.email) {
+    logger.warn(
+      `[finish-application-review.POST] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
+    )
+  }
+
+  const reviewedBy = {
+    name: user?.name ?? 'Unknown reviewer',
+    email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+  }
 
   try {
     await completeApplication(applicationId, reviewedBy)

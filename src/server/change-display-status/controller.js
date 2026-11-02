@@ -115,8 +115,25 @@ export const handlePostChangeDisplayStatusPage = async (request, h) => {
     }
   }
 
+  const user = request.auth?.credentials?.user
+
+  if (!user?.name || !user?.email) {
+    logger.warn(
+      `[change-display-status.POST] missing reviewer name/email in auth credentials for ${applianceId}, falling back to unknown reviewer`
+    )
+  }
+
+  const reviewedBy = {
+    name: user?.name ?? 'Unknown reviewer',
+    email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+  }
+
   try {
-    await saveApplianceVisibility(applianceId, isVisibleToPublic === 'true')
+    await saveApplianceVisibility(
+      applianceId,
+      isVisibleToPublic === 'true',
+      reviewedBy
+    )
 
     return h.redirect(applianceRecordPath(applianceId))
   } catch (error) {

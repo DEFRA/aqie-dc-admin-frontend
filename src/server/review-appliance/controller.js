@@ -60,10 +60,17 @@ async function handleApplianceDecisionRequest(request, h) {
   const { applianceId } = request.params
   const status = decisionStatus[request.payload.decision]
   const user = request.auth?.credentials?.user
-  const reviewedBy =
-    user?.name && user?.email
-      ? { name: user.name, email: user.email }
-      : undefined
+
+  if (!user?.name || !user?.email) {
+    logger.warn(
+      `[reviewAppliance] missing reviewer name/email in auth credentials for ${applianceId}, falling back to unknown reviewer`
+    )
+  }
+
+  const reviewedBy = {
+    name: user?.name ?? 'Unknown reviewer',
+    email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+  }
 
   try {
     await saveApplianceReview(applianceId, status, reviewedBy)

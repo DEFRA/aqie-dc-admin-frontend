@@ -50,7 +50,7 @@ export function buildIncompleteReviewViewModel(fuel, fuelId) {
   }
 }
 
-export function buildDocumentationTasks(fuel) {
+export function buildDocumentationTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
 
   return isManufacturer
@@ -64,7 +64,7 @@ export function buildDocumentationTasks(fuel) {
     : [
         {
           title: { text: content.rebrandTaskTitle },
-          href: content.links.rebrandLetter,
+          href: `/manufacturer-letter?fuelId=${encodeURIComponent(fuelId)}`,
           status: { text: content.notReviewed }
         }
       ]
@@ -107,7 +107,7 @@ export function buildTasks(fuel, fuelId) {
     documentationHeading: isManufacturer
       ? content.manufacturerHeading
       : content.rebrandHeading,
-    documentationTasks: buildDocumentationTasks(fuel),
+    documentationTasks: buildDocumentationTasks(fuel, fuelId),
     listingTasks: buildListingTasks(fuel, fuelId)
   }
 }
