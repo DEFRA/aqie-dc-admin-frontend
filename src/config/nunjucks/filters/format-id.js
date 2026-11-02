@@ -1,8 +1,7 @@
-/** Returns the last 4 digits of any id */
+/** Strips the 4-digit random prefix and hyphen from an id, e.g. 7756-0001 -> 0001 */
 export function formatId(id) {
   if (id === undefined || id === null) {
     return id
   }
-  const idString = String(id)
-  return idString.slice(-4)
+  return String(id).replace(/^\d{4}-/, '')
 }
