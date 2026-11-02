@@ -11,13 +11,11 @@ const logger = createLogger()
 const content = fuelDetailsContent.en
 
 function buildViewModel(fuel, fuelId) {
-  const isReseller = fuel.manufacturerOrReseller === 'reseller'
+  const isReseller = fuel.supplierType === 'Rebrand'
   const displayName = isReseller
     ? (fuel.rebrandedName ?? content.notProvided)
     : (fuel.brandName ?? content.notProvided)
-  const returnHref = fuel.applicationId
-    ? `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
-    : '/fuel-applications'
+  const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
   return {
     pageTitle: content.pageTitle(displayName),

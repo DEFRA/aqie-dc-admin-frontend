@@ -1,5 +1,8 @@
 import Joi from 'joi'
-import { reviewFuelApplicationController } from './controller.js'
+import {
+  reviewFuelApplicationController,
+  startReviewFuelApplicationController
+} from './controller.js'
 
 const paramsSchema = Joi.object({
   applicationId: Joi.string()
@@ -19,6 +22,14 @@ export const reviewFuelApplication = {
           method: 'GET',
           path: '/review-fuel-application/{applicationId}',
           ...reviewFuelApplicationController,
+          options: {
+            validate: { params: paramsSchema }
+          }
+        },
+        {
+          method: 'POST',
+          path: '/review-fuel-application/{applicationId}/start',
+          ...startReviewFuelApplicationController,
           options: {
             validate: { params: paramsSchema }
           }

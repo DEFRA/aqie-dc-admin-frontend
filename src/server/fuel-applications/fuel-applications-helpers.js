@@ -2,6 +2,17 @@ import { fuelApplicationsContent } from './content.js'
 
 const content = fuelApplicationsContent.en
 
+function withReviewHref(application) {
+  return {
+    ...application,
+    reviewHref: `/review-fuel-application/${encodeURIComponent(application.id)}`
+  }
+}
+
+function toReviewRows(list) {
+  return Array.isArray(list) ? list.map(withReviewHref) : []
+}
+
 /**
  * Builds the view model used by the fuel applications landing page.
  * @param {object} applications - The backend summary payload grouped by status.
@@ -20,8 +31,8 @@ export function buildFuelApplicationsViewModel(applications) {
     pageTitle: content.pageTitle,
     heading: content.heading,
     content,
-    notStartedApplications: applications.new,
-    inProgressApplications: applications.inProgress,
+    notStartedApplications: toReviewRows(applications.new),
+    inProgressApplications: toReviewRows(applications.inProgress),
     breadcrumbs: [
       {
         text: content.navigation.home,

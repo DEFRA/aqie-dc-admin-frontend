@@ -1,0 +1,51 @@
+{#
+  Review page for a single fuel record.
+  The template renders the supplier-specific task list and CTA buttons without
+  embedding business logic in the view.
+#}
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+{{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">{{ heading }}</h1>
+
+    <h2 class="govuk-heading-l">{{ documentationHeading }}</h2>
+    {{ govukTaskList({
+      idPrefix: "review-documents",
+      items: documentationTasks
+    }) }}
+
+    <h2 class="govuk-heading-l govuk-!-margin-top-7">{{ content.listingHeading }}</h2>
+    {{ govukTaskList({
+      idPrefix: "prepare-listing",
+      items: listingTasks
+    }) }}
+
+    <form method="post" action="{{ fuelReviewAction }}" novalidate class="govuk-!-margin-bottom-0">
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.acceptButton,
+          name: "decision",
+          value: "accept"
+        }) }}
+
+        {{ govukButton({
+          text: content.rejectButton,
+          name: "decision",
+          value: "reject",
+          classes: "govuk-button--secondary"
+        }) }}
+      </div>
+    </form>
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ returnHref }}">{{ content.saveForLater }}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

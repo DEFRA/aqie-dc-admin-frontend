@@ -11,28 +11,6 @@ const logger = createLogger()
 const content = appliancesApplicationContent.en
 
 /**
- * Splits the full address string into trimmed, non-empty lines, falling
- * back to the structured address parts when no full address is available.
- */
-function buildCompanyAddress(application) {
-  if (application.companyFullAddress) {
-    return application.companyFullAddress
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-  }
-
-  return [
-    application.companyAddress.line1,
-    application.companyAddress.line2,
-    application.companyAddress.city,
-    application.companyAddress.county,
-    application.companyAddress.postcode,
-    application.companyAddress.country
-  ].filter(Boolean)
-}
-
-/**
  * Maps each linked appliance to the row shown in the appliances table,
  * including its status tag and review action link.
  */
@@ -57,7 +35,7 @@ function buildViewModel(application, applicationId) {
     applicationId,
     application,
     appliances: buildApplianceRows(application.linkedItems),
-    companyAddress: buildCompanyAddress(application),
+    companyAddress: application.fullAddress,
     finishReviewLink: content.finishReviewLink(applicationId),
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },

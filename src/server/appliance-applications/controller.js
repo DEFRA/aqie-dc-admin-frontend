@@ -5,6 +5,13 @@ import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 
+function toReviewRows(list) {
+  return (list ?? []).map((application) => ({
+    ...application,
+    reviewHref: `/review-appliance-application/${encodeURIComponent(application.id)}`
+  }))
+}
+
 async function handleApplianceApplicationsRequest(_request, h) {
   try {
     const response = await getApplianceApplications()
@@ -14,8 +21,8 @@ async function handleApplianceApplicationsRequest(_request, h) {
       pageTitle: applianceApplicationsContent.en.heading,
       heading: applianceApplicationsContent.en.heading,
       content: applianceApplicationsContent.en,
-      notStartedApplications: applications.new,
-      inProgressApplications: applications.inProgress,
+      notStartedApplications: toReviewRows(applications.new),
+      inProgressApplications: toReviewRows(applications.inProgress),
       breadcrumbs: [
         {
           text: 'Home',

@@ -92,8 +92,7 @@ export const applianceRecordContent = {
     // Rejected record metadata labels
     rejectedDetails: {
       dateRejected: 'Date rejected',
-      rejectedBy: 'Rejected by',
-      notSpecified: 'Not specified'
+      rejectedBy: 'Rejected by'
     },
 
     // Detail section items - references to related pages

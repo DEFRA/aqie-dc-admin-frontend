@@ -13,7 +13,7 @@ vi.mock('./fuel-details-data.js', () => ({
 const baseFuel = {
   id: 'fuel-uuid-1',
   applicationId: 'app-uuid-1',
-  manufacturerOrReseller: 'manufacturer',
+  supplierType: 'Manufacture',
   brandName: 'Kings Starterlog',
   additionalBrandNames: false,
   fuelAppearance: 'Are firelogs that are approx. 220mm in length',
@@ -27,7 +27,7 @@ const baseFuel = {
 const baseResellerFuel = {
   id: 'fuel-uuid-2',
   applicationId: 'app-uuid-1',
-  manufacturerOrReseller: 'reseller',
+  supplierType: 'Rebrand',
   rebrandedName: 'Grillaedin White Quebracho',
   additionalRebrandNames: false,
   originalFuelManufacturer: 'Josper S.A.U.',
@@ -177,30 +177,15 @@ describe('#handleFuelDetailsRequest', () => {
     }
   })
 
-  test('markAsCompletedHref and cancelHref point to the review page when applicationId is present', async () => {
+  test('markAsCompletedHref and cancelHref point back to the review-fuel page', async () => {
     getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     const h = toolkit()
 
     await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.markAsCompletedHref).toBe(
-      '/review-fuel-application/app-uuid-1'
-    )
-    expect(viewModel.cancelHref).toBe('/review-fuel-application/app-uuid-1')
-  })
-
-  test('falls back to /fuel-applications when applicationId is absent', async () => {
-    getFuelDetailsMock.mockResolvedValue({
-      data: { ...baseFuel, applicationId: undefined }
-    })
-    const h = toolkit()
-
-    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
-
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.markAsCompletedHref).toBe('/fuel-applications')
-    expect(viewModel.cancelHref).toBe('/fuel-applications')
+    expect(viewModel.markAsCompletedHref).toBe('/review-fuel/fuel-uuid-1')
+    expect(viewModel.cancelHref).toBe('/review-fuel/fuel-uuid-1')
   })
 
   test('renders error page when API fetch fails', async () => {

@@ -1,14 +1,8 @@
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { fuelApplicationsContent } from './content.js'
-import {
-  getFuelApplications,
-  startFuelApplicationReview
-} from './fuel-applications-data.js'
-import {
-  buildFuelApplicationReviewer,
-  buildFuelApplicationsViewModel
-} from './fuel-applications-helpers.js'
+import { getFuelApplications } from './fuel-applications-data.js'
+import { buildFuelApplicationsViewModel } from './fuel-applications-helpers.js'
 
 const logger = createLogger()
 const content = fuelApplicationsContent.en
@@ -53,62 +47,8 @@ async function handleFuelApplicationsRequest(_request, h) {
   }
 }
 
-/**
- * Starts a fuel application review by marking the application as in progress and
- * recording the reviewer details supplied by the authenticated user.
- * @param {object} request - The incoming Hapi request with the application id.
- * @param {object} h - The Hapi response toolkit.
- * @returns {Promise<object>} Redirect to the list or an error page.
- */
-async function handleStartFuelApplicationReviewRequest(request, h) {
-  const { applicationId } = request.params
-  const user = request.auth?.credentials?.user
-
-  if (!user?.name || !user?.email) {
-    logger.warn(
-      `[fuel-applications] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
-    )
-  }
-
-  const reviewedBy = buildFuelApplicationReviewer(user)
-
-  const encodedApplicationId = encodeURIComponent(applicationId)
-
-  try {
-    await startFuelApplicationReview(applicationId, reviewedBy)
-
-    return h.redirect(`/review-fuel-application/${encodedApplicationId}`)
-  } catch (error) {
-    if (error.status === statusCodes.conflict) {
-      return h.redirect(`/review-fuel-application/${encodedApplicationId}`)
-    }
-
-    logger.error('[fuel-applications.POST] failed to start review', {
-      route: '/review-fuel-application/{applicationId}/start',
-      applicationId,
-      message: error?.message ?? 'Unknown error',
-      stack: error?.stack
-    })
-
-    return h
-      .view('error/index', {
-        message: content.errors.generic
-      })
-      .code(statusCodes.internalServerError)
-  }
-}
-
 const fuelApplicationsController = {
   handler: handleFuelApplicationsRequest
 }
 
-const startFuelApplicationReviewController = {
-  handler: handleStartFuelApplicationReviewRequest
-}
-
-export {
-  handleFuelApplicationsRequest,
-  fuelApplicationsController,
-  handleStartFuelApplicationReviewRequest,
-  startFuelApplicationReviewController
-}
+export { handleFuelApplicationsRequest, fuelApplicationsController }

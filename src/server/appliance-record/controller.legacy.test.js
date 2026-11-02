@@ -4,7 +4,7 @@
  * Tests for legacy appliance record functionality.
  * Legacy records show different detail sections compared to standard records.
  *
- * Standard Details: Appliance details, Test results, Instruction manual, Application details, Action history
+ * Standard Details: Appliance details, Test results, Instruction manual, Application details
  * Legacy Details: Legacy record information, Original application details, Test results, Migration notes
  */
 

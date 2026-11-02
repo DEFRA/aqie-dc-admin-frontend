@@ -33,6 +33,7 @@ import { instructionManual } from './instruction-manual/index.js'
 import { testReports } from './test-reports/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
+import { reviewFuel } from './review-fuel/index.js'
 
 export const router = {
   plugin: {
@@ -74,6 +75,7 @@ export const router = {
         changeDisplayStatus,
         instructionManual,
         testReports,
+        reviewFuel,
         reviewFuelApplication,
         fuelDetails
       ])

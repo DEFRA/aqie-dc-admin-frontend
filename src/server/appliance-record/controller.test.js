@@ -343,7 +343,10 @@ describe('applianceRecord controller', () => {
           status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
-          technicalReview: { reviewedBy: 'Calvin May' }
+          technicalReview: {
+            reviewedAt: '2026-01-10T10:00:00.000Z',
+            reviewedBy: { name: 'Calvin May', email: 'calvin@example.com' }
+          }
         }
       }
 
@@ -359,9 +362,9 @@ describe('applianceRecord controller', () => {
       expect(callArgs.applianceStatus).toBe(content.statusValues.rejected)
       expect(callArgs.rejectedStatus).toBe(content.statusValues.rejected)
       expect(callArgs.backLinkText).toBe(content.backLinkText)
-      expect(callArgs.detailsRows).toHaveLength(7)
+      expect(callArgs.detailsRows).toHaveLength(6)
       expect(callArgs.detailsRows[0].key.text).toBe('Date rejected')
-      expect(callArgs.detailsRows[0].value.text).toBe('10/01/2026')
+      expect(callArgs.detailsRows[0].value.text).toBe('10 January 2026')
       expect(callArgs.detailsRows[1].key.text).toBe('Rejected by')
       expect(callArgs.detailsRows[1].value.text).toBe('Calvin May')
       expect(callArgs.detailsRows[2].key.text).toBe('Appliance details')
@@ -452,7 +455,10 @@ describe('applianceRecord controller', () => {
           status: 'rejected',
           canTogglePublicVisibility: false,
           updatedAt: '2026-01-10T10:00:00.000Z',
-          technicalReview: { reviewedBy: 'Calvin May' }
+          technicalReview: {
+            reviewedAt: '2026-01-10T10:00:00.000Z',
+            reviewedBy: { name: 'Calvin May', email: 'calvin@example.com' }
+          }
         }
       }
 
@@ -468,9 +474,9 @@ describe('applianceRecord controller', () => {
       expect(callArgs.applianceStatus).toBe('rejected')
       expect(callArgs.rejectedStatus).toBe('rejected')
       expect(callArgs.backLinkText).toBe('Back')
-      expect(callArgs.detailsRows).toHaveLength(7)
+      expect(callArgs.detailsRows).toHaveLength(6)
       expect(callArgs.detailsRows[0].key.text).toBe('Date rejected')
-      expect(callArgs.detailsRows[0].value.text).toBe('10/01/2026')
+      expect(callArgs.detailsRows[0].value.text).toBe('10 January 2026')
       expect(callArgs.detailsRows[1].key.text).toBe('Rejected by')
       expect(callArgs.detailsRows[1].value.text).toBe('Calvin May')
     })
