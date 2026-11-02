@@ -347,7 +347,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
     )
   })
 
-  test('passes an undefined reviewer to the backend when nobody is signed in', async () => {
+  test('falls back to an unknown reviewer when nobody is signed in', async () => {
     completeApplicationMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -356,7 +356,10 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
       h
     )
 
-    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', undefined)
+    expect(completeApplicationMock).toHaveBeenCalledWith('app-1', {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
+    })
     expect(h.redirect).toHaveBeenCalledWith(
       '/application-review-complete/app-1'
     )
