@@ -210,6 +210,11 @@ describe('change display status controller', () => {
     expect(h.view).toHaveBeenCalledWith(
       'change-display-status/index',
       expect.objectContaining({
+        content: expect.objectContaining({
+          errors: expect.objectContaining({
+            summaryTitle: 'There is a problem'
+          })
+        }),
         error: expect.objectContaining({
           field: 'isVisibleToPublic',
           message:

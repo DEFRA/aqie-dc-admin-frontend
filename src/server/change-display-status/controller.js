@@ -39,6 +39,7 @@ const buildViewModel = ({ applianceId, appliance, error }) => {
     formAction: changeDisplayStatusPath(applianceId),
     applianceId,
     isVisibleToPublic,
+    content,
     visibilityItems: content.visibilityItems(isVisibleToPublic),
     error: error && {
       field: error.field,
