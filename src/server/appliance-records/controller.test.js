@@ -14,7 +14,7 @@ describe('appliance-records controller', () => {
   it('renders records with appliance IDs and view links', async () => {
     getApplianceRecords.mockResolvedValue({
       data: [
-        { id: 'APP-1', name: 'Alpha stove', status: 'live' },
+        { id: 'APP-12345678', name: 'Alpha stove', status: 'live' },
         { id: 'APP-2', name: 'Beta stove', status: 'pending' }
       ],
       pagination: { page: 1, limit: 10, total: 2, totalPages: 1 }
@@ -40,13 +40,13 @@ describe('appliance-records controller', () => {
     const viewData = h.view.mock.calls[0][1]
     expect(viewData.applianceRows).toHaveLength(2)
     expect(viewData.applianceRows[0][0]).toMatchObject({
-      text: 'APP-1'
+      text: '5678'
     })
     expect(viewData.applianceRows[0][1]).toMatchObject({
       text: 'Alpha stove'
     })
     expect(viewData.applianceRows[0][3].html).toContain(
-      '/appliance-record/APP-1'
+      '/appliance-record/APP-12345678'
     )
     expect(viewData.filters).toEqual(
       expect.arrayContaining([

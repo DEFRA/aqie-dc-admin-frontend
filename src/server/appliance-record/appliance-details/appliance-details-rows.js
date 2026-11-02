@@ -5,6 +5,7 @@ import {
   valueText
 } from '../../appliance-details/appliance-summary-builder.js'
 import { applianceRecordDetailContent } from './content.js'
+import { formatId } from '../../../config/nunjucks/filters/format-id.js'
 
 const content = applianceRecordDetailContent.en
 
@@ -34,7 +35,7 @@ export function buildNonLegacyRows(appliance) {
   const rows = [
     {
       key: { text: content.labels.applianceId },
-      value: { text: valueText(appliance.id) }
+      value: { text: valueText(formatId(appliance.id)) }
     },
     {
       key: { text: content.labels.modelName },

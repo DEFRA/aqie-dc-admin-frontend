@@ -67,7 +67,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.summaryRows).toHaveLength(8)
     expect(viewModel.summaryRows[0].key.text).toBe('Appliance ID')
-    expect(viewModel.summaryRows[0].value.text).toBe('APP-1')
+    expect(viewModel.summaryRows[0].value.text).toBe('PP-1')
   })
 
   test('non-legacy view formats nominal output with kW', async () => {
