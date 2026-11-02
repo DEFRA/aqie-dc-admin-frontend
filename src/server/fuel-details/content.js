@@ -12,17 +12,17 @@ export const fuelDetailsContent = {
       fuelComposition: 'Fuel composition',
       sulphurContent: 'Sulphur content',
       manufacturingProcess: 'Manufacturing process',
-      monitoredQualityControlSystem: 'Monitored quality control system'
+      hasQualityControlSystem: 'Monitored quality control system'
     },
     resellerLabels: {
-      rebrandedName: 'Rebranded name',
-      additionalRebrandNamesQuestion:
+      brandName: 'Rebranded name',
+      additionalBrandNamesQuestion:
         'Will the fuel be sold under any additional rebrand names?',
-      additionalRebrandNames: 'Additional rebrand name(s)',
+      additionalBrandNames: 'Additional rebrand name(s)',
       originalFuelManufacturer: 'Original fuel manufacturer',
-      originalFuelNameOrBrand: 'Original fuel name or brand',
-      changesMadeToOriginalFuel: 'Changes made to original fuel',
-      detailOfChanges: 'Detail of changes'
+      originalFuelName: 'Original fuel name or brand',
+      isChangedOrMixed: 'Changes made to original fuel',
+      changes: 'Detail of changes'
     },
     actions: {
       change: 'Change',

@@ -1,6 +1,6 @@
 import { fuelDetailsContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getFuelDetails } from './fuel-details-data.js'
+import { getFuelDetails, saveFuelDetailsCheck } from './fuel-details-data.js'
 import {
   buildManufacturerFuelDetailsRows,
   buildResellerFuelDetailsRows
@@ -12,9 +12,7 @@ const content = fuelDetailsContent.en
 
 function buildViewModel(fuel, fuelId) {
   const isReseller = fuel.supplierType === 'Rebrand'
-  const displayName = isReseller
-    ? (fuel.rebrandedName ?? content.notProvided)
-    : (fuel.brandName ?? content.notProvided)
+  const displayName = fuel.brandName ?? content.notProvided
   const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
   return {
@@ -23,7 +21,7 @@ function buildViewModel(fuel, fuelId) {
     summaryRows: isReseller
       ? buildResellerFuelDetailsRows(fuel, fuelId)
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
-    markAsCompletedHref: returnHref,
+    fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
     cancelHref: returnHref
   }
 }
@@ -43,8 +41,36 @@ async function handleFuelDetailsRequest(request, h) {
   }
 }
 
+async function handleFuelDetailsMarkCompleteRequest(request, h) {
+  const { fuelId } = request.params
+
+  try {
+    const { data: fuel } = await getFuelDetails(fuelId)
+    const isReseller = fuel.supplierType === 'Rebrand'
+
+    await saveFuelDetailsCheck(fuelId, 'fuelDetails')
+
+    if (isReseller) {
+      await saveFuelDetailsCheck(fuelId, 'fuelDescription')
+    }
+
+    return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
+  } catch (error) {
+    logger.error(
+      `[fuelDetails] failed to mark complete ${fuelId}: ${error.message}`
+    )
+    return h
+      .view('error/index', { message: content.errors.generic })
+      .code(statusCodes.internalServerError)
+  }
+}
+
 export const fuelDetailsController = {
   handler: handleFuelDetailsRequest
 }
 
-export { handleFuelDetailsRequest }
+export const fuelDetailsMarkCompleteController = {
+  handler: handleFuelDetailsMarkCompleteRequest
+}
+
+export { handleFuelDetailsRequest, handleFuelDetailsMarkCompleteRequest }

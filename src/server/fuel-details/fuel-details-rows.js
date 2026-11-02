@@ -10,6 +10,14 @@ function buildBooleanValue(value) {
   return content.notProvided
 }
 
+function buildAdditionalBrandNamesValue(additionalBrandNames) {
+  if (Array.isArray(additionalBrandNames) && additionalBrandNames.length > 0) {
+    return content.boolean.yes
+  }
+
+  return content.boolean.no
+}
+
 function changeAction(href, visuallyHiddenText) {
   return {
     actions: {
@@ -27,6 +35,9 @@ function changeAction(href, visuallyHiddenText) {
 export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   const labels = content.manufacturerLabels
   const encoded = encodeURIComponent(fuelId)
+  const hasAdditionalNames =
+    Array.isArray(fuel.additionalBrandNames) &&
+    fuel.additionalBrandNames.length > 0
 
   const rows = [
     {
@@ -36,7 +47,9 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     },
     {
       key: { text: labels.additionalBrandNamesQuestion },
-      value: { text: buildBooleanValue(fuel.additionalBrandNames) },
+      value: {
+        text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
       ...changeAction(
         `/additional-brand-names/${encoded}`,
         'will the fuel be sold under any additional brand names'
@@ -44,14 +57,10 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     }
   ]
 
-  if (fuel.additionalBrandNames === true) {
-    const additionalNames = Array.isArray(fuel.additionalBrandNamesList)
-      ? fuel.additionalBrandNamesList.join(', ')
-      : (fuel.additionalBrandNamesList ?? content.notProvided)
-
+  if (hasAdditionalNames) {
     rows.push({
       key: { text: labels.additionalBrandNames },
-      value: { text: additionalNames },
+      value: { text: fuel.additionalBrandNames.join(', ') },
       ...changeAction(
         `/additional-brand-names/${encoded}`,
         'additional brand names'
@@ -62,22 +71,31 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   rows.push(
     {
       key: { text: labels.fuelAppearance },
-      value: { text: fuel.fuelAppearance ?? content.notProvided },
+      value: {
+        text: fuel.fuelDescription?.appearance ?? content.notProvided
+      },
       ...changeAction(`/fuel-appearance/${encoded}`, 'fuel appearance')
     },
     {
       key: { text: labels.fuelWeight },
-      value: { text: fuel.fuelWeight ?? content.notProvided },
+      value: { text: fuel.fuelDescription?.weight ?? content.notProvided },
       ...changeAction(`/fuel-weight/${encoded}`, 'fuel weight')
     },
     {
       key: { text: labels.fuelComposition },
-      value: { text: fuel.fuelComposition ?? content.notProvided },
+      value: {
+        text: fuel.fuelDescription?.composition ?? content.notProvided
+      },
       ...changeAction(`/fuel-composition/${encoded}`, 'fuel composition')
     },
     {
       key: { text: labels.sulphurContent },
-      value: { text: fuel.sulphurContent ?? content.notProvided },
+      value: {
+        text:
+          fuel.fuelDescription?.sulphurContent != null
+            ? String(fuel.fuelDescription.sulphurContent)
+            : content.notProvided
+      },
       ...changeAction(`/sulphur-content/${encoded}`, 'sulphur content')
     },
     {
@@ -89,8 +107,8 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       )
     },
     {
-      key: { text: labels.monitoredQualityControlSystem },
-      value: { text: buildBooleanValue(fuel.monitoredQualityControlSystem) },
+      key: { text: labels.hasQualityControlSystem },
+      value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },
       ...changeAction(
         `/monitored-quality-control/${encoded}`,
         'monitored quality control system'
@@ -104,34 +122,35 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
 export function buildResellerFuelDetailsRows(fuel, fuelId) {
   const labels = content.resellerLabels
   const encoded = encodeURIComponent(fuelId)
+  const hasAdditionalNames =
+    Array.isArray(fuel.additionalBrandNames) &&
+    fuel.additionalBrandNames.length > 0
 
   const rows = [
     {
-      key: { text: labels.rebrandedName },
-      value: { text: fuel.rebrandedName ?? content.notProvided },
-      ...changeAction(`/rebranded-name/${encoded}`, 'rebranded name')
+      key: { text: labels.brandName },
+      value: { text: fuel.brandName ?? content.notProvided },
+      ...changeAction(`/brand-name/${encoded}`, 'brand name')
     },
     {
-      key: { text: labels.additionalRebrandNamesQuestion },
-      value: { text: buildBooleanValue(fuel.additionalRebrandNames) },
+      key: { text: labels.additionalBrandNamesQuestion },
+      value: {
+        text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
       ...changeAction(
-        `/additional-rebrand-names/${encoded}`,
-        'will the fuel be sold under any additional rebrand names'
+        `/additional-brand-names/${encoded}`,
+        'will the fuel be sold under any additional brand names'
       )
     }
   ]
 
-  if (fuel.additionalRebrandNames === true) {
-    const additionalNames = Array.isArray(fuel.additionalRebrandNamesList)
-      ? fuel.additionalRebrandNamesList.join(', ')
-      : (fuel.additionalRebrandNamesList ?? content.notProvided)
-
+  if (hasAdditionalNames) {
     rows.push({
-      key: { text: labels.additionalRebrandNames },
-      value: { text: additionalNames },
+      key: { text: labels.additionalBrandNames },
+      value: { text: fuel.additionalBrandNames.join(', ') },
       ...changeAction(
-        `/additional-rebrand-names/${encoded}`,
-        'additional rebrand names'
+        `/additional-brand-names/${encoded}`,
+        'additional brand names'
       )
     })
   }
@@ -139,38 +158,24 @@ export function buildResellerFuelDetailsRows(fuel, fuelId) {
   rows.push(
     {
       key: { text: labels.originalFuelManufacturer },
-      value: { text: fuel.originalFuelManufacturer ?? content.notProvided },
-      ...changeAction(
-        `/original-fuel-manufacturer/${encoded}`,
-        'original fuel manufacturer'
-      )
+      value: {
+        text: fuel.originalFuel?.manufacturer ?? content.notProvided
+      }
     },
     {
-      key: { text: labels.originalFuelNameOrBrand },
-      value: { text: fuel.originalFuelNameOrBrand ?? content.notProvided },
-      ...changeAction(
-        `/original-fuel-name-or-brand/${encoded}`,
-        'original fuel name or brand'
-      )
+      key: { text: labels.originalFuelName },
+      value: { text: fuel.originalFuel?.name ?? content.notProvided }
     },
     {
-      key: { text: labels.changesMadeToOriginalFuel },
-      value: { text: buildBooleanValue(fuel.changesMadeToOriginalFuel) },
-      ...changeAction(
-        `/changes-made-to-original-fuel/${encoded}`,
-        'changes made to original fuel'
-      )
+      key: { text: labels.isChangedOrMixed },
+      value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) }
     }
   )
 
-  if (fuel.changesMadeToOriginalFuel === true) {
+  if (fuel.originalFuel?.isChangedOrMixed === true) {
     rows.push({
-      key: { text: labels.detailOfChanges },
-      value: { text: fuel.detailOfChanges ?? content.notProvided },
-      ...changeAction(
-        `/changes-made-to-original-fuel/${encoded}`,
-        'detail of changes'
-      )
+      key: { text: labels.changes },
+      value: { text: fuel.originalFuel?.changes ?? content.notProvided }
     })
   }
 

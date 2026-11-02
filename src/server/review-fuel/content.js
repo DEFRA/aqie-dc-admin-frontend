@@ -20,6 +20,7 @@ export const reviewFuelContent = {
     saveForLater: 'Save and come back later',
     notReviewed: 'Not reviewed',
     notCompleted: 'Not completed',
+    completed: 'Completed',
     applicationsHeading: 'Fuel applications',
     incompleteReview: {
       heading: 'Incomplete review',

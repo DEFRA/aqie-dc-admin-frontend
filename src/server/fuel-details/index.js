@@ -1,5 +1,8 @@
 import Joi from 'joi'
-import { fuelDetailsController } from './controller.js'
+import {
+  fuelDetailsController,
+  fuelDetailsMarkCompleteController
+} from './controller.js'
 
 const paramsSchema = Joi.object({
   fuelId: Joi.string()
@@ -19,6 +22,14 @@ export const fuelDetails = {
           method: 'GET',
           path: '/review-fuel/{fuelId}/fuel-details',
           ...fuelDetailsController,
+          options: {
+            validate: { params: paramsSchema }
+          }
+        },
+        {
+          method: 'POST',
+          path: '/review-fuel/{fuelId}/fuel-details',
+          ...fuelDetailsMarkCompleteController,
           options: {
             validate: { params: paramsSchema }
           }

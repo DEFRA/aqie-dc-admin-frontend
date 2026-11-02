@@ -70,13 +70,21 @@ export function buildDocumentationTasks(fuel) {
       ]
 }
 
+function buildFuelDetailsStatus(fuel) {
+  if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+  }
+
+  return { text: content.notCompleted }
+}
+
 export function buildListingTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
   const tasks = [
     {
       title: { text: content.checkFuelDetailsTitle },
       href: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
-      status: { text: content.notCompleted }
+      status: buildFuelDetailsStatus(fuel)
     }
   ]
 

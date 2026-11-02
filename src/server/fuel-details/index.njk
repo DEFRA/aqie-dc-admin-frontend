@@ -15,10 +15,9 @@
       rows: summaryRows
     }) }}
 
-    {{ govukButton({
-      text: "Mark as completed",
-      href: markAsCompletedHref
-    }) }}
+    <form method="post" action="{{ fuelDetailsAction }}" novalidate>
+      {{ govukButton({ text: "Mark as completed" }) }}
+    </form>
 
     <p>
       <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>

@@ -120,6 +120,39 @@ describe('#reviewFuelController', () => {
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
   })
 
+  test('shows "Not completed" as plain text when fuelDetails check is not done', () => {
+    const viewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317'
+      },
+      'FUEL-001'
+    )
+
+    expect(viewModel.listingTasks[0].status).toEqual({
+      text: 'Not completed'
+    })
+  })
+
+  test('shows green "Completed" tag when fuelDetails check is true', () => {
+    const viewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: { listingChecks: { fuelDetails: true } }
+      },
+      'FUEL-001'
+    )
+
+    expect(viewModel.listingTasks[0].status).toEqual({
+      tag: { text: 'Completed', classes: 'govuk-tag--green' }
+    })
+  })
+
   test('uses the confirmed backend fuel name field directly', () => {
     const viewModel = buildViewModel(
       {
