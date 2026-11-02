@@ -111,8 +111,10 @@ export function buildViewModel(fuel, fuelId) {
     ? `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
     : '/fuel-applications'
 
-  const { documentationHeading, documentationTasks, listingTasks } =
-    buildTasks(fuel, fuelId)
+  const { documentationHeading, documentationTasks, listingTasks } = buildTasks(
+    fuel,
+    fuelId
+  )
 
   const fuelActionPath = `/review-fuel/${encodeURIComponent(fuelId)}`
 

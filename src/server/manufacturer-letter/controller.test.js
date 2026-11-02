@@ -44,7 +44,8 @@ describe('review-manufacturer-letter controller', () => {
     expect(h.view).toHaveBeenCalledWith(
       'manufacturer-letter/index',
       expect.objectContaining({
-        heading: 'Review letter from original manufacturer of Wood Pellets Premium'
+        heading:
+          'Review letter from original manufacturer of Wood Pellets Premium'
       })
     )
   })
@@ -92,7 +93,10 @@ describe('review-manufacturer-letter controller', () => {
       h
     )
 
-    expect(saveManufacturerLetterResultMock).toHaveBeenCalledWith('FUEL-1', true)
+    expect(saveManufacturerLetterResultMock).toHaveBeenCalledWith(
+      'FUEL-1',
+      true
+    )
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1')
   })
 
@@ -105,17 +109,17 @@ describe('review-manufacturer-letter controller', () => {
       h
     )
 
-    expect(saveManufacturerLetterResultMock).toHaveBeenCalledWith('FUEL-1', false)
+    expect(saveManufacturerLetterResultMock).toHaveBeenCalledWith(
+      'FUEL-1',
+      false
+    )
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1')
   })
 
   test('POST returns error view when fuelId is missing', async () => {
     const h = toolkit()
 
-    await controller.post(
-      { query: {}, payload: { decision: 'pass' } },
-      h
-    )
+    await controller.post({ query: {}, payload: { decision: 'pass' } }, h)
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'

@@ -14,7 +14,10 @@ vi.mock('../common/api/api.js', () => ({
   patchJson: patchJsonMock
 }))
 
-import { getFuel, saveManufacturerLetterResult } from './manufacturer-letter-data.js'
+import {
+  getFuel,
+  saveManufacturerLetterResult
+} from './manufacturer-letter-data.js'
 
 describe('manufacturer-letter-data', () => {
   beforeEach(() => {
