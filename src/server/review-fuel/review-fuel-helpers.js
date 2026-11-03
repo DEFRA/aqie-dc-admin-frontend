@@ -37,37 +37,47 @@ export function buildIncompleteReviewViewModel(fuel, fuelId) {
       },
       ...(fuel.applicationId
         ? [
-            {
-              text: content.incompleteReview.applicationBreadcrumb(
-                fuel.applicationId
-              ),
-              href: applicationHref
-            }
-          ]
+          {
+            text: content.incompleteReview.applicationBreadcrumb(
+              fuel.applicationId
+            ),
+            href: applicationHref
+          }
+        ]
         : []),
       { text: fuelName, href: reviewFuelHref }
     ]
   }
 }
 
-export function buildDocumentationTasks(fuel) {
+export function buildDocumentationTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
+  const testResultStatus = fuel?.technicalReview?.documentationChecks?.testResults
 
-  return isManufacturer
-    ? [
-        {
-          title: { text: content.manufacturerTaskTitle },
-          href: content.links.testResults,
-          status: { text: content.notReviewed }
-        }
-      ]
-    : [
-        {
-          title: { text: content.rebrandTaskTitle },
-          href: content.links.rebrandLetter,
-          status: { text: content.notReviewed }
-        }
-      ]
+  if (isManufacturer) {
+    const statusText =
+      testResultStatus === true
+        ? 'Passed'
+        : testResultStatus === false
+          ? 'Failed'
+          : content.notReviewed
+
+    return [
+      {
+        title: { text: content.manufacturerTaskTitle },
+        href: content.links.testResults(fuelId),
+        status: { text: statusText }
+      }
+    ]
+  }
+
+  return [
+    {
+      title: { text: content.rebrandTaskTitle },
+      href: content.links.rebrandLetter,
+      status: { text: content.notReviewed }
+    }
+  ]
 }
 
 export function buildListingTasks(fuel) {
@@ -91,7 +101,7 @@ export function buildListingTasks(fuel) {
   return tasks
 }
 
-export function buildTasks(fuel) {
+export function buildTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
 
   return {
@@ -99,7 +109,7 @@ export function buildTasks(fuel) {
     documentationHeading: isManufacturer
       ? content.manufacturerHeading
       : content.rebrandHeading,
-    documentationTasks: buildDocumentationTasks(fuel),
+    documentationTasks: buildDocumentationTasks(fuel, fuelId),
     listingTasks: buildListingTasks(fuel)
   }
 }
@@ -112,7 +122,7 @@ export function buildViewModel(fuel, fuelId) {
     : '/fuel-applications'
 
   const { documentationHeading, documentationTasks, listingTasks } =
-    buildTasks(fuel)
+    buildTasks(fuel, fuelId)
 
   const fuelActionPath = `/review-fuel/${encodeURIComponent(fuelId)}`
 
@@ -134,13 +144,13 @@ export function buildViewModel(fuel, fuelId) {
       },
       ...(fuel.applicationId
         ? [
-            {
-              text: content.incompleteReview.applicationBreadcrumb(
-                fuel.applicationId
-              ),
-              href: applicationHref
-            }
-          ]
+          {
+            text: content.incompleteReview.applicationBreadcrumb(
+              fuel.applicationId
+            ),
+            href: applicationHref
+          }
+        ]
         : []),
       { text: fuelName, href: fuelActionPath }
     ],

@@ -93,8 +93,30 @@ describe('#reviewFuelController', () => {
     expect(viewModel.documentationHeading).toBe('Review test reports')
     expect(viewModel.documentationTasks).toHaveLength(1)
     expect(viewModel.documentationTasks[0].title.text).toBe('Add test results')
+    expect(viewModel.documentationTasks[0].href).toBe(
+      '/review-fuel/FUEL-001/test-results'
+    )
     expect(viewModel.listingTasks).toHaveLength(1)
     expect(viewModel.listingTasks[0].title.text).toBe('Check fuel details')
+  })
+
+  test('shows the saved test-result status on the review page', () => {
+    const viewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: {
+          documentationChecks: {
+            testResults: true
+          }
+        }
+      },
+      'FUEL-001'
+    )
+
+    expect(viewModel.documentationTasks[0].status.text).toBe('Passed')
   })
 
   test('renders the correct rebrand task list from the helper builder', () => {

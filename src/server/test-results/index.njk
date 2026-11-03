@@ -1,0 +1,98 @@
+{% extends "layouts/page.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% block pageTitle %}
+{% if hasErrors %}Error: {% endif %}{{ pageTitle }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        {% if hasErrors %}
+        {{ govukErrorSummary({
+          titleText: errorSummaryTitle,
+          errorList: errorList
+        }) }}
+        {% endif %}
+
+        <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+
+        <p class="govuk-body">{{ intro }}</p>
+
+        <form method="post" action="{{ formAction }}">
+            {% for field in fields %}
+            {% if errors and errors[field.name] %}
+            {{ govukInput({
+              id: field.name,
+              name: field.name,
+              value: values[field.name],
+              classes: "govuk-input--width-3 govuk-!-text-align-right",
+              type: "text",
+              inputmode: "decimal",
+              spellcheck: false,
+              label: {
+                text: field.label,
+                classes: "govuk-label--s"
+              },
+              suffix: {
+                text: field.unit
+              },
+              errorMessage: {
+                text: errors[field.name]
+              },
+              attributes: {
+                autocomplete: "off"
+              }
+            }) }}
+            {% else %}
+            {{ govukInput({
+              id: field.name,
+              name: field.name,
+              value: values[field.name],
+              classes: "govuk-input--width-3 govuk-!-text-align-right",
+              type: "text",
+              inputmode: "decimal",
+              spellcheck: false,
+              label: {
+                text: field.label,
+                classes: "govuk-label--s"
+              },
+              suffix: {
+                text: field.unit
+              },
+              attributes: {
+                autocomplete: "off"
+              }
+            }) }}
+            {% endif %}
+            {% endfor %}
+
+            <div class="govuk-button-group govuk-!-margin-top-7">
+                {{ govukButton({
+            text: submitPassed,
+            name: "result",
+            value: "true",
+            attributes: {
+              "data-prevent-double-click": "true"
+            }
+          }) }}
+
+                {{ govukButton({
+            text: submitFailed,
+            name: "result",
+            value: "false",
+            classes: "govuk-button--secondary",
+            attributes: {
+              "data-prevent-double-click": "true"
+            }
+          }) }}
+            </div>
+        </form>
+
+        <p><a class="govuk-link" href="{{ previousPageUrl }}">{{ cancel }}</a></p>
+    </div>
+</div>
+{% endblock %}

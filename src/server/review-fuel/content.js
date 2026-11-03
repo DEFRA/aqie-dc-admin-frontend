@@ -39,7 +39,8 @@ export const reviewFuelContent = {
       back: 'Back'
     },
     links: {
-      testResults: '/test-results',
+      testResults: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/test-results`,
       fuelDetails: '/fuel-details',
       rebrandLetter: '/review-manufacturer-letter',
       fuelDescription: '/fuel-description'
