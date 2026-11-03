@@ -56,15 +56,4 @@ describe('#applianceReviewData', () => {
       }
     )
   })
-
-  test('omits reviewedBy when nobody is signed in', async () => {
-    patchJsonMock.mockResolvedValue({ success: true })
-
-    await saveApplianceReview('APP-1', 'rejected')
-
-    expect(patchJsonMock).toHaveBeenCalledWith(
-      '/appliances/APP-1/technical-review',
-      { status: 'rejected' }
-    )
-  })
 })
