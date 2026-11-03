@@ -43,10 +43,10 @@ async function handleFuelDecisionRequest(request, h) {
   const auth = request.auth || {}
   const credentials = auth.credentials || {}
   const user = credentials.user
-  const reviewedBy =
-    user && user.name && user.email
-      ? { name: user.name, email: user.email }
-      : undefined
+  const reviewedBy = {
+    name: user?.name ?? 'Unknown reviewer',
+    email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+  }
 
   try {
     await saveFuelReview(fuelId, status, reviewedBy)
