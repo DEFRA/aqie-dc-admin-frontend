@@ -11,8 +11,7 @@ vi.mock('./appliance-details-data.js', () => ({
 }))
 
 const baseAppliance = {
-  id: 'APP-1',
-  modelName: 'Model X',
+  id: '7756-0001',
   modelNumber: '123',
   applianceType: 'heat',
   isVariant: false,
@@ -67,7 +66,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.summaryRows).toHaveLength(8)
     expect(viewModel.summaryRows[0].key.text).toBe('Appliance ID')
-    expect(viewModel.summaryRows[0].value.text).toBe('APP-1')
+    expect(viewModel.summaryRows[0].value.text).toBe('0001')
   })
 
   test('non-legacy view formats nominal output with kW', async () => {
