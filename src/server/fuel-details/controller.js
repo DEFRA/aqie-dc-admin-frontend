@@ -10,6 +10,54 @@ import { statusCodes } from '../common/constants/status-codes.js'
 const logger = createLogger()
 const content = fuelDetailsContent.en
 
+function buildAdditionalBrandNamesString(additionalBrandNames) {
+  if (Array.isArray(additionalBrandNames) && additionalBrandNames.length > 0) {
+    return additionalBrandNames.join(', ')
+  }
+
+  return null
+}
+
+function buildManufacturePayload(fuel) {
+  return {
+    brandName: fuel.brandName,
+    hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
+    additionalBrandNames: buildAdditionalBrandNamesString(
+      fuel.additionalBrandNames
+    ),
+    hasQualityControlSystem: fuel.hasQualityControlSystem,
+    manufacturingProcess: fuel.manufacturingProcess,
+    fuelDescription: {
+      appearance: fuel.fuelDescription?.appearance,
+      weight: fuel.fuelDescription?.weight,
+      composition: fuel.fuelDescription?.composition,
+      sulphurContent: fuel.fuelDescription?.sulphurContent
+    }
+  }
+}
+
+function buildRebrandFuelDetailsPayload(fuel) {
+  return {
+    brandName: fuel.brandName,
+    hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
+    additionalBrandNames: buildAdditionalBrandNamesString(
+      fuel.additionalBrandNames
+    )
+  }
+}
+
+function buildRebrandFuelDescriptionPayload(fuel) {
+  return {
+    fuelDescription: {
+      appearance: fuel.fuelDescription?.appearance,
+      weight: fuel.fuelDescription?.weight,
+      composition: fuel.fuelDescription?.composition,
+      sulphurContent: fuel.fuelDescription?.sulphurContent
+    },
+    manufacturingProcess: fuel.manufacturingProcess
+  }
+}
+
 function buildViewModel(fuel, fuelId) {
   const isReseller = fuel.supplierType === 'Rebrand'
   const displayName = fuel.brandName ?? content.notProvided
@@ -48,10 +96,23 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
     const { data: fuel } = await getFuelDetails(fuelId)
     const isReseller = fuel.supplierType === 'Rebrand'
 
-    await saveFuelDetailsCheck(fuelId, 'fuelDetails')
-
     if (isReseller) {
-      await saveFuelDetailsCheck(fuelId, 'fuelDescription')
+      await saveFuelDetailsCheck(
+        fuelId,
+        'fuelDetails',
+        buildRebrandFuelDetailsPayload(fuel)
+      )
+      await saveFuelDetailsCheck(
+        fuelId,
+        'fuelDescription',
+        buildRebrandFuelDescriptionPayload(fuel)
+      )
+    } else {
+      await saveFuelDetailsCheck(
+        fuelId,
+        'fuelDetails',
+        buildManufacturePayload(fuel)
+      )
     }
 
     return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)

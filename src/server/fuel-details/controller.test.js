@@ -21,6 +21,7 @@ const baseFuel = {
   supplierType: 'Manufacture',
   brandName: 'Kings Starterlog',
   additionalBrandNames: [],
+  hasAdditionalBrandNames: false,
   fuelDescription: {
     appearance: 'Are firelogs that are approx. 220mm in length',
     weight: 'Has an average weight of approx. 600 grams',
@@ -37,6 +38,7 @@ const baseResellerFuel = {
   supplierType: 'Rebrand',
   brandName: 'Grillaedin White Quebracho',
   additionalBrandNames: [],
+  hasAdditionalBrandNames: false,
   originalFuel: {
     manufacturer: 'Josper S.A.U.',
     name: 'WHITE QUEBRACHO CHARCOAL (SP51)',
@@ -312,9 +314,51 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     expect(saveFuelDetailsCheckMock).toHaveBeenCalledTimes(1)
     expect(saveFuelDetailsCheckMock).toHaveBeenCalledWith(
       'fuel-uuid-1',
-      'fuelDetails'
+      'fuelDetails',
+      expect.objectContaining({
+        brandName: 'Kings Starterlog',
+        hasAdditionalBrandNames: false,
+        hasQualityControlSystem: true,
+        manufacturingProcess: 'Was manufactured by heat treatment',
+        fuelDescription: expect.objectContaining({
+          appearance: 'Are firelogs that are approx. 220mm in length',
+          weight: 'Has an average weight of approx. 600 grams',
+          composition: 'Comprises of slack wax',
+          sulphurContent: 0.1
+        })
+      })
     )
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
+  })
+
+  test('sends null for additionalBrandNames when array is empty', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
+    saveFuelDetailsCheckMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    const [, , data] = saveFuelDetailsCheckMock.mock.calls[0]
+    expect(data.additionalBrandNames).toBeNull()
+  })
+
+  test('sends additionalBrandNames as comma-separated string when non-empty', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: { ...baseFuel, additionalBrandNames: ['Brand One', 'Brand Two'] }
+    })
+    saveFuelDetailsCheckMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    const [, , data] = saveFuelDetailsCheckMock.mock.calls[0]
+    expect(data.additionalBrandNames).toBe('Brand One, Brand Two')
   })
 
   test('calls two PATCHes for a rebrand — fuelDetails then fuelDescription — and redirects', async () => {
@@ -331,14 +375,40 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     expect(saveFuelDetailsCheckMock).toHaveBeenNthCalledWith(
       1,
       'fuel-uuid-2',
-      'fuelDetails'
+      'fuelDetails',
+      expect.objectContaining({
+        brandName: 'Grillaedin White Quebracho',
+        hasAdditionalBrandNames: false
+      })
     )
     expect(saveFuelDetailsCheckMock).toHaveBeenNthCalledWith(
       2,
       'fuel-uuid-2',
-      'fuelDescription'
+      'fuelDescription',
+      expect.objectContaining({
+        manufacturingProcess: 'Traditional charcoal production',
+        fuelDescription: expect.objectContaining({
+          appearance: 'Small charcoal pieces'
+        })
+      })
     )
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
+  })
+
+  test('rebrand fuelDetails payload does not include fuelDescription, hasQualityControlSystem or manufacturingProcess', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+    saveFuelDetailsCheckMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    const [, , firstPayload] = saveFuelDetailsCheckMock.mock.calls[0]
+    expect(firstPayload).not.toHaveProperty('fuelDescription')
+    expect(firstPayload).not.toHaveProperty('hasQualityControlSystem')
+    expect(firstPayload).not.toHaveProperty('manufacturingProcess')
   })
 
   test('does not send fuelDescription PATCH for a manufacturer', async () => {
