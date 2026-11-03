@@ -13,18 +13,15 @@ export const testResultsContent = {
         name: 'smokeEmission',
         label: 'Smoke emission measurement',
         unit: 'g/h',
-        emptyMessage: 'smokeEmission must be a non-negative number when passed',
-        failedMessage:
-          'smokeEmission must be a non-negative number or null when failed'
+        emptyMessage: 'Enter the smoke emission measurement',
+        numberMessage: 'The smoke emission measurement must be a number'
       },
       {
         name: 'sulphurContent',
         label: 'Sulphur content',
         unit: '%',
-        emptyMessage:
-          'sulphurContent must be a non-negative number when passed',
-        failedMessage:
-          'sulphurContent must be a non-negative number or null when failed'
+        emptyMessage: 'Enter the sulphur content',
+        numberMessage: 'The sulphur content must be a number'
       }
     ],
     errors: {

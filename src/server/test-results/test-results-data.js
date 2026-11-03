@@ -4,6 +4,14 @@ export async function getFuelTechnicalReview(fuelId) {
   return fetchJson(`/fuels/${encodeURIComponent(fuelId)}/technical-review`)
 }
 
+const normaliseSavedValue = (value) => {
+  if (value === '' || value === null || typeof value === 'undefined') {
+    return null
+  }
+
+  return value
+}
+
 export async function saveFuelTechnicalReview(fuelId, result, values = {}) {
   return patchJson(
     `/fuels/${encodeURIComponent(fuelId)}/technical-review/checks`,
@@ -12,8 +20,8 @@ export async function saveFuelTechnicalReview(fuelId, result, values = {}) {
       result,
       data: {
         testResults: {
-          smokeEmission: values.smokeEmission ?? null,
-          sulphurContent: values.sulphurContent ?? null
+          smokeEmission: normaliseSavedValue(values.smokeEmission),
+          sulphurContent: normaliseSavedValue(values.sulphurContent)
         }
       }
     }

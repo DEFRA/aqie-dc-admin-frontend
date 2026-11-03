@@ -20,14 +20,33 @@ const getFuelId = (request) => request.params.fuelId
 const getPreviousPageUrl = (fuelId) =>
   `/review-fuel/${encodeURIComponent(fuelId)}`
 
-const getFuelName = (fuel = {}) => fuel.name ?? 'fuel'
+const getResponseData = (payload = {}) => {
+  if (payload && payload.data) {
+    return payload.data
+  }
+
+  return payload
+}
+
+const getFuelName = (fuel = {}) => {
+  const fuelData = getResponseData(fuel)
+
+  return fuelData.name || 'fuel'
+}
 
 const getExistingValues = (fuel = {}) => {
-  const testResults = fuel.testResults ?? {}
+  const fuelData = getResponseData(fuel)
+  const testResults = fuelData.testResults || {}
 
   return {
-    smokeEmission: testResults.smokeEmission ?? '',
-    sulphurContent: testResults.sulphurContent ?? ''
+    smokeEmission:
+      typeof testResults.smokeEmission === 'undefined'
+        ? ''
+        : testResults.smokeEmission,
+    sulphurContent:
+      typeof testResults.sulphurContent === 'undefined'
+        ? ''
+        : testResults.sulphurContent
   }
 }
 

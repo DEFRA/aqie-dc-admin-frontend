@@ -87,12 +87,8 @@ describe('test-results', () => {
     })
 
     expect(response.statusCode).toBe(statusCodes.badRequest)
-    expect(response.payload).toContain(
-      'smokeEmission must be a non-negative number when passed'
-    )
-    expect(response.payload).toContain(
-      'sulphurContent must be a non-negative number when passed'
-    )
+    expect(response.payload).toContain('Enter the smoke emission measurement')
+    expect(response.payload).toContain('Enter the sulphur content')
   })
 
   test('allows a failed result when values are empty or null', async () => {
@@ -156,7 +152,7 @@ describe('test-results', () => {
 
     expect(response.statusCode).toBe(statusCodes.badRequest)
     expect(response.payload).toContain(
-      'smokeEmission must be a non-negative number or null when failed'
+      'The smoke emission measurement must be a number'
     )
   })
 

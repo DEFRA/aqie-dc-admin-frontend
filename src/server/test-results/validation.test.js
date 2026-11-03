@@ -35,8 +35,8 @@ describe('validatePassedTestResults', () => {
 
     expect(result.isValid).toBe(false)
     expect(result.errors).toEqual({
-      smokeEmission: 'smokeEmission must be a non-negative number when passed',
-      sulphurContent: 'sulphurContent must be a non-negative number when passed'
+      smokeEmission: 'Enter the smoke emission measurement',
+      sulphurContent: 'Enter the sulphur content'
     })
     expect(result.errorList).toHaveLength(2)
   })
@@ -49,7 +49,19 @@ describe('validatePassedTestResults', () => {
 
     expect(result.isValid).toBe(false)
     expect(result.errors.smokeEmission).toBe(
-      'smokeEmission must be a non-negative number when passed'
+      'The smoke emission measurement must be a number'
+    )
+  })
+
+  test('rejects alphabetic values when passed', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: 'abc',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors.smokeEmission).toBe(
+      'The smoke emission measurement must be a number'
     )
   })
 
@@ -118,7 +130,7 @@ describe('validateFailedTestResults', () => {
 
     expect(result.isValid).toBe(false)
     expect(result.errors.smokeEmission).toBe(
-      'smokeEmission must be a non-negative number or null when failed'
+      'The smoke emission measurement must be a number'
     )
   })
 })
