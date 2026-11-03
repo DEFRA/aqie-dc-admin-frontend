@@ -40,9 +40,11 @@ async function handleReviewFuelRequest(request, h) {
 async function handleFuelDecisionRequest(request, h) {
   const { fuelId } = request.params
   const status = decisionStatus[request.payload.decision]
-  const user = request.auth?.credentials?.user
+  const auth = request.auth || {}
+  const credentials = auth.credentials || {}
+  const user = credentials.user
   const reviewedBy =
-    user?.name && user?.email
+    user && user.name && user.email
       ? { name: user.name, email: user.email }
       : undefined
 
@@ -50,7 +52,7 @@ async function handleFuelDecisionRequest(request, h) {
     await saveFuelReview(fuelId, status, reviewedBy)
 
     const { data: fuel } = await getFuelReview(fuelId)
-    const applicationId = fuel?.applicationId
+    const applicationId = fuel && fuel.applicationId ? fuel.applicationId : null
 
     if (!applicationId) {
       logger.warn(

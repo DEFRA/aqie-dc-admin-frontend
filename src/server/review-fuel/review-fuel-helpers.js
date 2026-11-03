@@ -37,13 +37,13 @@ export function buildIncompleteReviewViewModel(fuel, fuelId) {
       },
       ...(fuel.applicationId
         ? [
-          {
-            text: content.incompleteReview.applicationBreadcrumb(
-              fuel.applicationId
-            ),
-            href: applicationHref
-          }
-        ]
+            {
+              text: content.incompleteReview.applicationBreadcrumb(
+                fuel.applicationId
+              ),
+              href: applicationHref
+            }
+          ]
         : []),
       { text: fuelName, href: reviewFuelHref }
     ]
@@ -52,21 +52,23 @@ export function buildIncompleteReviewViewModel(fuel, fuelId) {
 
 export function buildDocumentationTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
-  const testResultStatus = fuel?.technicalReview?.documentationChecks?.testResults
+  const technicalReview = fuel.technicalReview || {}
+  const documentationChecks = technicalReview.documentationChecks || {}
+  const testResultStatus = documentationChecks.testResults
 
   if (isManufacturer) {
-    const statusText =
+    const status =
       testResultStatus === true
-        ? 'Passed'
+        ? content.documentationStatuses.passed
         : testResultStatus === false
-          ? 'Failed'
-          : content.notReviewed
+          ? content.documentationStatuses.failed
+          : content.documentationStatuses.notReviewed
 
     return [
       {
         title: { text: content.manufacturerTaskTitle },
         href: content.links.testResults(fuelId),
-        status: { text: statusText }
+        status
       }
     ]
   }
@@ -75,7 +77,7 @@ export function buildDocumentationTasks(fuel, fuelId) {
     {
       title: { text: content.rebrandTaskTitle },
       href: content.links.rebrandLetter,
-      status: { text: content.notReviewed }
+      status: content.documentationStatuses.notReviewed
     }
   ]
 }
@@ -121,8 +123,10 @@ export function buildViewModel(fuel, fuelId) {
     ? `/review-fuel-application/${encodeURIComponent(fuel.applicationId)}`
     : '/fuel-applications'
 
-  const { documentationHeading, documentationTasks, listingTasks } =
-    buildTasks(fuel, fuelId)
+  const { documentationHeading, documentationTasks, listingTasks } = buildTasks(
+    fuel,
+    fuelId
+  )
 
   const fuelActionPath = `/review-fuel/${encodeURIComponent(fuelId)}`
 
@@ -144,13 +148,13 @@ export function buildViewModel(fuel, fuelId) {
       },
       ...(fuel.applicationId
         ? [
-          {
-            text: content.incompleteReview.applicationBreadcrumb(
-              fuel.applicationId
-            ),
-            href: applicationHref
-          }
-        ]
+            {
+              text: content.incompleteReview.applicationBreadcrumb(
+                fuel.applicationId
+              ),
+              href: applicationHref
+            }
+          ]
         : []),
       { text: fuelName, href: fuelActionPath }
     ],

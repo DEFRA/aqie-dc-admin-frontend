@@ -100,8 +100,8 @@ describe('#reviewFuelController', () => {
     expect(viewModel.listingTasks[0].title.text).toBe('Check fuel details')
   })
 
-  test('shows the saved test-result status on the review page', () => {
-    const viewModel = buildViewModel(
+  test('shows the saved test-result status with the GOV.UK tag colours', () => {
+    const passedViewModel = buildViewModel(
       {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',
@@ -116,7 +116,30 @@ describe('#reviewFuelController', () => {
       'FUEL-001'
     )
 
-    expect(viewModel.documentationTasks[0].status.text).toBe('Passed')
+    expect(passedViewModel.documentationTasks[0].status.tag).toEqual({
+      text: 'Passed',
+      classes: 'govuk-tag--green'
+    })
+
+    const failedViewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-002',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: {
+          documentationChecks: {
+            testResults: false
+          }
+        }
+      },
+      'FUEL-002'
+    )
+
+    expect(failedViewModel.documentationTasks[0].status.tag).toEqual({
+      text: 'Failed',
+      classes: 'govuk-tag--red'
+    })
   })
 
   test('renders the correct rebrand task list from the helper builder', () => {
