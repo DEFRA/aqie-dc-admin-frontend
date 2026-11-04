@@ -20,7 +20,7 @@ function buildAdditionalBrandNamesString(additionalBrandNames) {
 
 function buildManufacturePayload(fuel) {
   return {
-    brandName: fuel.brandName,
+    brandName: fuel.name,
     hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
     additionalBrandNames: buildAdditionalBrandNamesString(
       fuel.additionalBrandNames
@@ -38,7 +38,7 @@ function buildManufacturePayload(fuel) {
 
 function buildRebrandFuelDetailsPayload(fuel) {
   return {
-    brandName: fuel.brandName,
+    brandName: fuel.name,
     hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
     additionalBrandNames: buildAdditionalBrandNamesString(
       fuel.additionalBrandNames
@@ -60,7 +60,7 @@ function buildRebrandFuelDescriptionPayload(fuel) {
 
 function buildViewModel(fuel, fuelId) {
   const isReseller = fuel.supplierType === 'Rebrand'
-  const displayName = fuel.brandName ?? content.notProvided
+  const displayName = fuel.name ?? content.notProvided
   const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
   return {

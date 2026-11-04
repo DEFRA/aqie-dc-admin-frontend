@@ -19,7 +19,7 @@ const baseFuel = {
   id: 'fuel-uuid-1',
   applicationId: 'app-uuid-1',
   supplierType: 'Manufacture',
-  brandName: 'Kings Starterlog',
+  name: 'Kings Starterlog',
   additionalBrandNames: [],
   hasAdditionalBrandNames: false,
   fuelDescription: {
@@ -36,7 +36,7 @@ const baseResellerFuel = {
   id: 'fuel-uuid-2',
   applicationId: 'app-uuid-1',
   supplierType: 'Rebrand',
-  brandName: 'Grillaedin White Quebracho',
+  name: 'Grillaedin White Quebracho',
   additionalBrandNames: [],
   hasAdditionalBrandNames: false,
   originalFuel: {
@@ -69,7 +69,7 @@ describe('#handleFuelDetailsRequest', () => {
     saveFuelDetailsCheckMock.mockReset()
   })
 
-  test('renders the fuel details page with heading and title from fuel.brandName', async () => {
+  test('renders the fuel details page with heading and title from fuel.name', async () => {
     getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     const h = toolkit()
 
@@ -157,7 +157,7 @@ describe('#handleFuelDetailsRequest', () => {
 
   test('uses "Not provided" as the heading when brandName is absent', async () => {
     getFuelDetailsMock.mockResolvedValue({
-      data: { ...baseFuel, brandName: undefined }
+      data: { ...baseFuel, name: undefined }
     })
     const h = toolkit()
 

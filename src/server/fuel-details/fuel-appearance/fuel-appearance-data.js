@@ -1,7 +1,8 @@
-import { fetchJson, patchJson } from '../../common/api/api.js'
+import { patchJson } from '../../common/api/api.js'
+import { getFuelTechnicalReview } from '../../common/services/common-fuel-service.js'
 
 export async function getFuelAppearance(fuelId) {
-  return fetchJson(`/fuels/${encodeURIComponent(fuelId)}/technical-review`)
+  return getFuelTechnicalReview(fuelId)
 }
 
 export async function saveFuelAppearance(fuelId, appearance) {
