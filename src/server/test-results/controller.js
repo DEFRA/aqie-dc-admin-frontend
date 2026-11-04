@@ -22,10 +22,6 @@ const getFuelId = (request) => request.params.fuelId
 const getPreviousPageUrl = (fuelId) =>
   `/review-fuel/${encodeURIComponent(fuelId)}`
 
-const getFuelName = (fuel = {}) => {
-  return fuel.name || 'fuel'
-}
-
 const getExistingValues = (fuel = {}) => {
   const responseData = fuel.data ?? fuel
   const testResults = responseData.testResults ?? responseData
@@ -67,7 +63,7 @@ export const getTestResults = async (request, h) => {
       VIEW_NAME,
       createViewModel({
         fuelId,
-        fuelName: getFuelName(fuel),
+        fuelName: fuel.name,
         values: getExistingValues(fuel)
       })
     )
@@ -87,7 +83,7 @@ export const postTestResults = async (request, h) => {
   const payload = request.payload ?? {}
   const result = payload.result === true
 
-  if (typeof payload.result === 'undefined') {
+  if (payload.result === undefined) {
     throw Boom.badRequest('Select an action')
   }
 
@@ -112,7 +108,7 @@ export const postTestResults = async (request, h) => {
         VIEW_NAME,
         createViewModel({
           fuelId,
-          fuelName: getFuelName(fuel),
+          fuelName: fuel.name,
           values: validation.values,
           errors: validation.errors,
           errorList: validation.errorList
