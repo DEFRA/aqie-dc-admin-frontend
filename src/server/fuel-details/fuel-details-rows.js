@@ -185,10 +185,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
     rows.push({
       key: { text: labels.changes },
       value: { text: fuel.originalFuel?.changes ?? content.notProvided },
-      ...changeAction(
-        `/detail-of-changes/${encoded}`,
-        'detail of changes'
-      )
+      ...changeAction(`/detail-of-changes/${encoded}`, 'detail of changes')
     })
   }
 

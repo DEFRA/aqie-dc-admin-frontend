@@ -120,7 +120,7 @@ describe('#reviewFuelController', () => {
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
   })
 
-  test('shows "Not completed" as plain text when manufacturer fuelDetails checks are not done', () => {
+  test('shows "Not completed" as plain text when fuelDetails check is not done', () => {
     const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-001',
@@ -137,105 +137,20 @@ describe('#reviewFuelController', () => {
     })
   })
 
-  test('shows green "Completed" tag when all manufacturer checks are true', () => {
+  test('shows green "Completed" tag when fuelDetails check is true', () => {
     const viewModel = buildViewModel(
       {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',
         supplierType: SUPPLIER_TYPE.MANUFACTURE,
         applicationId: 'app-0317',
-        technicalReview: {
-          listingChecks: {
-            brandName: true,
-            additionalBrandNames: true,
-            fuelAppearance: true,
-            fuelWeight: true,
-            fuelComposition: true,
-            sulphurContent: true,
-            manufacturingProcess: true,
-            hasQualityControlSystem: true
-          }
-        }
+        technicalReview: { listingChecks: { fuelDetails: true } }
       },
       'FUEL-001'
     )
 
     expect(viewModel.listingTasks[0].status).toEqual({
       tag: { text: 'Completed', classes: 'govuk-tag--green' }
-    })
-  })
-
-  test('shows "Not completed" when only some manufacturer checks are true', () => {
-    const viewModel = buildViewModel(
-      {
-        fuelId: 'FUEL-001',
-        name: 'Kings Starterlog',
-        supplierType: SUPPLIER_TYPE.MANUFACTURE,
-        applicationId: 'app-0317',
-        technicalReview: {
-          listingChecks: {
-            brandName: true,
-            additionalBrandNames: true,
-            fuelAppearance: true,
-            fuelWeight: false,
-            fuelComposition: false,
-            sulphurContent: false,
-            manufacturingProcess: false,
-            hasQualityControlSystem: false
-          }
-        }
-      },
-      'FUEL-001'
-    )
-
-    expect(viewModel.listingTasks[0].status).toEqual({
-      text: 'Not completed'
-    })
-  })
-
-  test('shows green "Completed" tag when all rebrand checks are true', () => {
-    const viewModel = buildViewModel(
-      {
-        fuelId: 'FUEL-002',
-        name: 'Rebrand Fuel',
-        supplierType: SUPPLIER_TYPE.REBRAND,
-        applicationId: 'app-0317',
-        technicalReview: {
-          listingChecks: {
-            brandName: true,
-            additionalBrandNames: true,
-            fuelDescription: true
-          }
-        }
-      },
-      'FUEL-002'
-    )
-
-    expect(viewModel.listingTasks[0].status).toEqual({
-      tag: { text: 'Completed', classes: 'govuk-tag--green' }
-    })
-  })
-
-  test('shows "Not completed" when rebrand checks are incomplete', () => {
-    const viewModel = buildViewModel(
-      {
-        fuelId: 'FUEL-002',
-        name: 'Rebrand Fuel',
-        supplierType: SUPPLIER_TYPE.REBRAND,
-        applicationId: 'app-0317',
-        technicalReview: {
-          listingChecks: {
-            brandName: true,
-            additionalBrandNames: false,
-            fuelDescription: false
-          }
-        }
-      },
-      'FUEL-002'
-    )
-
-    expect(viewModel.listingTasks[0].status).toEqual({
-      text: 'Not completed'
     })
   })
 

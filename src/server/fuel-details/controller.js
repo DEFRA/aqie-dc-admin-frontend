@@ -46,8 +46,7 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
   const { fuelId } = request.params
 
   try {
-    const { data: fuel } = await getFuelDetails(fuelId)
-    await markFuelDetailsCompleted(fuelId, fuel.supplierType)
+    await markFuelDetailsCompleted(fuelId)
 
     return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
   } catch (error) {

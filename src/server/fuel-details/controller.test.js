@@ -419,8 +419,7 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     markFuelDetailsCompletedMock.mockReset()
   })
 
-  test('marks all manufacturer checks as complete and redirects', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
+  test('marks the check as complete and redirects', async () => {
     markFuelDetailsCompletedMock.mockResolvedValue({})
     const h = toolkit()
 
@@ -429,28 +428,8 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
       h
     )
 
-    expect(markFuelDetailsCompletedMock).toHaveBeenCalledWith(
-      'fuel-uuid-1',
-      'Manufacture'
-    )
+    expect(markFuelDetailsCompletedMock).toHaveBeenCalledWith('fuel-uuid-1')
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
-  })
-
-  test('marks all rebrand checks as complete and redirects', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-    markFuelDetailsCompletedMock.mockResolvedValue({})
-    const h = toolkit()
-
-    await handleFuelDetailsMarkCompleteRequest(
-      { params: { fuelId: 'fuel-uuid-2' } },
-      h
-    )
-
-    expect(markFuelDetailsCompletedMock).toHaveBeenCalledWith(
-      'fuel-uuid-2',
-      'Rebrand'
-    )
-    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
   })
 
   test('renders error page when the mark complete fails', async () => {
