@@ -7,6 +7,7 @@ import {
   saveFuelTechnicalReview
 } from './test-results-data.js'
 import {
+  getTestResultsValues,
   toNumberOrNull,
   validatePassedTestResults,
   validateFailedTestResults
@@ -26,18 +27,10 @@ const getFuelName = (fuel = {}) => {
 }
 
 const getExistingValues = (fuel = {}) => {
-  const testResults = fuel.testResults || {}
+  const responseData = fuel.data ?? fuel
+  const testResults = responseData.testResults ?? responseData
 
-  return {
-    smokeEmission:
-      typeof testResults.smokeEmission === 'undefined'
-        ? ''
-        : testResults.smokeEmission,
-    sulphurContent:
-      typeof testResults.sulphurContent === 'undefined'
-        ? ''
-        : testResults.sulphurContent
-  }
+  return getTestResultsValues(testResults)
 }
 
 const createViewModel = ({
