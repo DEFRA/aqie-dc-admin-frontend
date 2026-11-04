@@ -42,7 +42,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   const rows = [
     {
       key: { text: labels.brandName },
-      value: { text: fuel.brandName ?? content.notProvided },
+      value: { text: fuel.name ?? content.notProvided },
       ...changeAction(`/brand-name/${encoded}`, 'brand name')
     },
     {
@@ -126,7 +126,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
   const rows = [
     {
       key: { text: labels.brandName },
-      value: { text: fuel.brandName ?? content.notProvided },
+      value: { text: fuel.name ?? content.notProvided },
       ...changeAction(`/brand-name/${encoded}`, 'brand name')
     },
     {

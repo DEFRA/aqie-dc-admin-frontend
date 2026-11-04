@@ -19,7 +19,7 @@ const baseFuel = {
   id: 'fuel-uuid-1',
   applicationId: 'app-uuid-1',
   supplierType: 'Manufacture',
-  brandName: 'Kings Starterlog',
+  name: 'Kings Starterlog',
   additionalBrandNames: [],
   hasAdditionalBrandNames: false,
   fuelDescription: {
@@ -37,7 +37,7 @@ const baseRebranderFuel = {
   id: 'fuel-uuid-2',
   applicationId: 'app-uuid-1',
   supplierType: 'Rebrand',
-  brandName: 'Grillaedin White Quebracho',
+  name: 'Grillaedin White Quebracho',
   additionalBrandNames: [],
   hasAdditionalBrandNames: false,
   originalFuel: {
@@ -71,7 +71,7 @@ describe('#handleFuelDetailsRequest', () => {
     saveFuelDetailsCheckMock.mockReset()
   })
 
-  test('renders the fuel details page with heading and title from fuel.brandName', async () => {
+  test('renders the fuel details page with heading and title from fuel.name', async () => {
     getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     const h = toolkit()
 
@@ -157,9 +157,9 @@ describe('#handleFuelDetailsRequest', () => {
     expect(viewModel.cancelHref).toBe('/review-fuel/fuel-uuid-1')
   })
 
-  test('uses "Not provided" as the heading when brandName is absent', async () => {
+  test('uses "Not provided" as the heading when name is absent', async () => {
     getFuelDetailsMock.mockResolvedValue({
-      data: { ...baseFuel, brandName: undefined }
+      data: { ...baseFuel, name: undefined }
     })
     const h = toolkit()
 
@@ -210,115 +210,113 @@ describe('#handleFuelDetailsRequest', () => {
     expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
 
-  describe('rebrander journey', () => {
-    test('uses fuel.brandName in the heading for a rebrand fuel', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-      const h = toolkit()
+  test('rebrander: uses fuel.name in the heading for a rebrand fuel', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    const h = toolkit()
 
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
 
-      expect(h.view).toHaveBeenCalledWith(
-        'fuel-details/index',
-        expect.objectContaining({
-          heading: 'Check fuel details for Grillaedin White Quebracho'
-        })
-      )
-    })
-
-    test('builds 5 summary rows for a rebrand when additionalBrandNames is empty and isChangedOrMixed is false', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-      const h = toolkit()
-
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
-
-      const [, viewModel] = h.view.mock.calls[0]
-      expect(viewModel.summaryRows).toHaveLength(5)
-    })
-
-    test('builds 6 summary rows for a rebrand when isChangedOrMixed is true', async () => {
-      getFuelDetailsMock.mockResolvedValue({
-        data: {
-          ...baseRebranderFuel,
-          originalFuel: {
-            ...baseRebranderFuel.originalFuel,
-            isChangedOrMixed: true,
-            changes: 'Made pieces smaller'
-          }
-        }
+    expect(h.view).toHaveBeenCalledWith(
+      'fuel-details/index',
+      expect.objectContaining({
+        heading: 'Check fuel details for Grillaedin White Quebracho'
       })
-      const h = toolkit()
+    )
+  })
 
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+  test('rebrander: builds 5 summary rows when additionalBrandNames is empty and isChangedOrMixed is false', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    const h = toolkit()
 
-      const [, viewModel] = h.view.mock.calls[0]
-      expect(viewModel.summaryRows).toHaveLength(6)
-    })
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
 
-    test('shows originalFuel fields for a rebrand', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-      const h = toolkit()
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryRows).toHaveLength(5)
+  })
 
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
-
-      const [, viewModel] = h.view.mock.calls[0]
-      const valueFor = (label) =>
-        viewModel.summaryRows.find((r) => r.key.text === label).value.text
-
-      expect(valueFor('Original fuel manufacturer')).toBe('Josper S.A.U.')
-      expect(valueFor('Original fuel name or brand')).toBe(
-        'WHITE QUEBRACHO CHARCOAL (SP51)'
-      )
-      expect(valueFor('Changes made to original fuel')).toBe('No')
-    })
-
-    test('shows changes detail row when isChangedOrMixed is true', async () => {
-      getFuelDetailsMock.mockResolvedValue({
-        data: {
-          ...baseRebranderFuel,
-          originalFuel: {
-            ...baseRebranderFuel.originalFuel,
-            isChangedOrMixed: true,
-            changes: 'Made pieces smaller'
-          }
+  test('rebrander: builds 6 summary rows when isChangedOrMixed is true', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: {
+        ...baseRebranderFuel,
+        originalFuel: {
+          ...baseRebranderFuel.originalFuel,
+          isChangedOrMixed: true,
+          changes: 'Made pieces smaller'
         }
-      })
-      const h = toolkit()
+      }
+    })
+    const h = toolkit()
 
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
 
-      const [, viewModel] = h.view.mock.calls[0]
-      const row = viewModel.summaryRows.find(
-        (r) => r.key.text === 'Detail of changes'
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.summaryRows).toHaveLength(6)
+  })
+
+  test('rebrander: shows originalFuel fields', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const valueFor = (label) =>
+      viewModel.summaryRows.find((r) => r.key.text === label).value.text
+
+    expect(valueFor('Original fuel manufacturer')).toBe('Josper S.A.U.')
+    expect(valueFor('Original fuel name or brand')).toBe(
+      'WHITE QUEBRACHO CHARCOAL (SP51)'
+    )
+    expect(valueFor('Changes made to original fuel')).toBe('No')
+  })
+
+  test('rebrander: shows changes detail row when isChangedOrMixed is true', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: {
+        ...baseRebranderFuel,
+        originalFuel: {
+          ...baseRebranderFuel.originalFuel,
+          isChangedOrMixed: true,
+          changes: 'Made pieces smaller'
+        }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const row = viewModel.summaryRows.find(
+      (r) => r.key.text === 'Detail of changes'
+    )
+    expect(row.value.text).toBe('Made pieces smaller')
+  })
+
+  test('rebrander: omits changes detail row when isChangedOrMixed is false', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const row = viewModel.summaryRows.find(
+      (r) => r.key.text === 'Detail of changes'
+    )
+    expect(row).toBeUndefined()
+  })
+
+  test('rebrander: omits hasQualityControlSystem row', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(
+      viewModel.summaryRows.find(
+        (r) => r.key.text === 'Monitored quality control system'
       )
-      expect(row.value.text).toBe('Made pieces smaller')
-    })
-
-    test('omits changes detail row when isChangedOrMixed is false', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-      const h = toolkit()
-
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
-
-      const [, viewModel] = h.view.mock.calls[0]
-      const row = viewModel.summaryRows.find(
-        (r) => r.key.text === 'Detail of changes'
-      )
-      expect(row).toBeUndefined()
-    })
-
-    test('omits hasQualityControlSystem row for rebrand', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
-      const h = toolkit()
-
-      await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
-
-      const [, viewModel] = h.view.mock.calls[0]
-      expect(
-        viewModel.summaryRows.find(
-          (r) => r.key.text === 'Monitored quality control system'
-        )
-      ).toBeUndefined()
-    })
+    ).toBeUndefined()
   })
 })
 
