@@ -76,18 +76,18 @@ export function buildDocumentationTasks(fuel, fuelId) {
   return [
     {
       title: { text: content.rebrandTaskTitle },
-      href: content.links.rebrandLetter,
+      href: content.links.manufacturerLetter(fuelId),
       status: content.documentationStatuses.notReviewed
     }
   ]
 }
 
-export function buildListingTasks(fuel) {
+export function buildListingTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
   const tasks = [
     {
       title: { text: content.checkFuelDetailsTitle },
-      href: content.links.fuelDetails,
+      href: content.links.fuelDetails(fuelId),
       status: { text: content.notCompleted }
     }
   ]
@@ -95,7 +95,7 @@ export function buildListingTasks(fuel) {
   if (!isManufacturer) {
     tasks.push({
       title: { text: content.addFuelDescriptionTitle },
-      href: content.links.fuelDescription,
+      href: content.links.fuelDescription(fuelId),
       status: { text: content.notCompleted }
     })
   }
@@ -112,7 +112,7 @@ export function buildTasks(fuel, fuelId) {
       ? content.manufacturerHeading
       : content.rebrandHeading,
     documentationTasks: buildDocumentationTasks(fuel, fuelId),
-    listingTasks: buildListingTasks(fuel)
+    listingTasks: buildListingTasks(fuel, fuelId)
   }
 }
 

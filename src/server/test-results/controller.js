@@ -7,6 +7,7 @@ import {
   saveFuelTechnicalReview
 } from './test-results-data.js'
 import {
+  toNumberOrNull,
   validatePassedTestResults,
   validateFailedTestResults
 } from './validation.js'
@@ -20,23 +21,12 @@ const getFuelId = (request) => request.params.fuelId
 const getPreviousPageUrl = (fuelId) =>
   `/review-fuel/${encodeURIComponent(fuelId)}`
 
-const getResponseData = (payload = {}) => {
-  if (payload && payload.data) {
-    return payload.data
-  }
-
-  return payload
-}
-
 const getFuelName = (fuel = {}) => {
-  const fuelData = getResponseData(fuel)
-
-  return fuelData.name || 'fuel'
+  return fuel.name || 'fuel'
 }
 
 const getExistingValues = (fuel = {}) => {
-  const fuelData = getResponseData(fuel)
-  const testResults = fuelData.testResults || {}
+  const testResults = fuel.testResults || {}
 
   return {
     smokeEmission:
@@ -48,20 +38,6 @@ const getExistingValues = (fuel = {}) => {
         ? ''
         : testResults.sulphurContent
   }
-}
-
-const toNumberOrNull = (value) => {
-  if (value === '' || value === null || value === undefined) {
-    return null
-  }
-
-  const trimmed = String(value).trim()
-
-  if (trimmed === '') {
-    return null
-  }
-
-  return Number(trimmed)
 }
 
 const createViewModel = ({
@@ -92,8 +68,7 @@ export const getTestResults = async (request, h) => {
   const fuelId = getFuelId(request)
 
   try {
-    const response = await getFuelTechnicalReview(fuelId)
-    const fuel = response.data ?? response
+    const { data: fuel } = await getFuelTechnicalReview(fuelId)
 
     return h.view(
       VIEW_NAME,
@@ -117,7 +92,7 @@ export const getTestResults = async (request, h) => {
 export const postTestResults = async (request, h) => {
   const fuelId = getFuelId(request)
   const payload = request.payload ?? {}
-  const result = payload.result === true || payload.result === 'true'
+  const result = payload.result === true
 
   if (typeof payload.result === 'undefined') {
     throw Boom.badRequest('Select an action')
@@ -131,8 +106,8 @@ export const postTestResults = async (request, h) => {
     let fuel = {}
 
     try {
-      const response = await getFuelTechnicalReview(fuelId)
-      fuel = response.data ?? response
+      const { data } = await getFuelTechnicalReview(fuelId)
+      fuel = data
     } catch (error) {
       logger.warn(
         `[testResults] unable to reload fuel details after validation failure for ${fuelId}: ${error.message}`

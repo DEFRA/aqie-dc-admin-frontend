@@ -21,8 +21,7 @@ async function handleReviewFuelRequest(request, h) {
   const { fuelId } = request.params
 
   try {
-    const response = await getFuelReview(fuelId)
-    const fuel = response.data
+    const { data: fuel } = await getFuelReview(fuelId)
 
     return h.view('review-fuel/index', buildViewModel(fuel, fuelId))
   } catch (error) {
@@ -52,7 +51,7 @@ async function handleFuelDecisionRequest(request, h) {
     await saveFuelReview(fuelId, status, reviewedBy)
 
     const { data: fuel } = await getFuelReview(fuelId)
-    const applicationId = fuel && fuel.applicationId ? fuel.applicationId : null
+    const applicationId = fuel.applicationId
 
     if (!applicationId) {
       logger.warn(

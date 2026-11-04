@@ -46,9 +46,12 @@ export const reviewFuelContent = {
     links: {
       testResults: (fuelId) =>
         `/review-fuel/${encodeURIComponent(fuelId)}/test-results`,
-      fuelDetails: '/fuel-details',
-      rebrandLetter: '/review-manufacturer-letter',
-      fuelDescription: '/fuel-description'
+      fuelDetails: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
+      manufacturerLetter: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/manufacturer-letter`,
+      fuelDescription: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/fuel-description`
     },
     errors: {
       generic: 'Sorry, there is a problem with the service'

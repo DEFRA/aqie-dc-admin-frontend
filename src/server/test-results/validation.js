@@ -30,6 +30,20 @@ export const getTestResultsValues = (payload = {}) => ({
   sulphurContent: normaliseValue(payload.sulphurContent)
 })
 
+export const toNumberOrNull = (value) => {
+  if (value === '' || value === null || value === undefined) {
+    return null
+  }
+
+  const trimmed = String(value).trim()
+
+  if (trimmed === '') {
+    return null
+  }
+
+  return Number(trimmed)
+}
+
 const isValidDecimal = (value) => {
   return decimalPattern.test(value) && Number.isFinite(Number(value))
 }

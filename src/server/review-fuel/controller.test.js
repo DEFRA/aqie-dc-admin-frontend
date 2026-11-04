@@ -98,6 +98,9 @@ describe('#reviewFuelController', () => {
     )
     expect(viewModel.listingTasks).toHaveLength(1)
     expect(viewModel.listingTasks[0].title.text).toBe('Check fuel details')
+    expect(viewModel.listingTasks[0].href).toBe(
+      '/review-fuel/FUEL-001/fuel-details'
+    )
   })
 
   test('shows the saved test-result status with the GOV.UK tag colours', () => {
@@ -161,8 +164,17 @@ describe('#reviewFuelController', () => {
     expect(viewModel.documentationTasks[0].title.text).toBe(
       'Review letter from original manufacturer'
     )
+    expect(viewModel.documentationTasks[0].href).toBe(
+      '/review-fuel/FUEL-002/manufacturer-letter'
+    )
     expect(viewModel.listingTasks).toHaveLength(2)
+    expect(viewModel.listingTasks[0].href).toBe(
+      '/review-fuel/FUEL-002/fuel-details'
+    )
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
+    expect(viewModel.listingTasks[1].href).toBe(
+      '/review-fuel/FUEL-002/fuel-description'
+    )
   })
 
   test('uses the confirmed backend fuel name field directly', () => {

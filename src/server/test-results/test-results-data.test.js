@@ -1,19 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fetchJson, patchJson } from '../common/api/api.js'
+import * as fuelService from '../common/services/common-fuel-service.js'
+import { patchJson } from '../common/api/api.js'
 import {
   getFuelTechnicalReview,
   saveFuelTechnicalReview
 } from './test-results-data.js'
 
+const { getFuelTechnicalReviewMock } = vi.hoisted(() => ({
+  getFuelTechnicalReviewMock: vi.fn()
+}))
+
+vi.spyOn(fuelService, 'getFuelTechnicalReview').mockImplementation(
+  getFuelTechnicalReviewMock
+)
+
 vi.mock('../common/api/api.js', () => ({
-  fetchJson: vi.fn(),
   patchJson: vi.fn()
 }))
 
 describe('test-results-data', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    getFuelTechnicalReviewMock.mockReset()
   })
 
   it('gets the current fuel technical review data', async () => {
@@ -28,11 +37,11 @@ describe('test-results-data', () => {
       }
     }
 
-    fetchJson.mockResolvedValue(expected)
+    getFuelTechnicalReviewMock.mockResolvedValue(expected)
 
     const result = await getFuelTechnicalReview('FUEL-001')
 
-    expect(fetchJson).toHaveBeenCalledWith('/fuels/FUEL-001/technical-review')
+    expect(getFuelTechnicalReviewMock).toHaveBeenCalledWith('FUEL-001')
     expect(result).toEqual(expected)
   })
 

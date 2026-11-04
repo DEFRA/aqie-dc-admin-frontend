@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import {
   getTestResultsValues,
+  toNumberOrNull,
   validatePassedTestResults,
   validateFailedTestResults
 } from './validation.js'
@@ -99,6 +100,21 @@ describe('getTestResultsValues', () => {
       smokeEmission: '0',
       sulphurContent: '0'
     })
+  })
+})
+
+describe('toNumberOrNull', () => {
+  test('returns null for empty or blank values', () => {
+    expect(toNumberOrNull('')).toBeNull()
+    expect(toNumberOrNull('   ')).toBeNull()
+    expect(toNumberOrNull(null)).toBeNull()
+    expect(toNumberOrNull(undefined)).toBeNull()
+  })
+
+  test('converts valid numeric strings to numbers', () => {
+    expect(toNumberOrNull('1.25')).toBe(1.25)
+    expect(toNumberOrNull('0')).toBe(0)
+    expect(toNumberOrNull('  3.5  ')).toBe(3.5)
   })
 })
 

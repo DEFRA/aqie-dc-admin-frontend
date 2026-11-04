@@ -1,16 +1,7 @@
-import { fetchJson, patchJson } from '../common/api/api.js'
+import { patchJson } from '../common/api/api.js'
+import { getFuelTechnicalReview } from '../common/services/common-fuel-service.js'
 
-export async function getFuelTechnicalReview(fuelId) {
-  return fetchJson(`/fuels/${encodeURIComponent(fuelId)}/technical-review`)
-}
-
-const normaliseSavedValue = (value) => {
-  if (value === '' || value === null || typeof value === 'undefined') {
-    return null
-  }
-
-  return value
-}
+export { getFuelTechnicalReview }
 
 export async function saveFuelTechnicalReview(fuelId, result, values = {}) {
   return patchJson(
@@ -20,8 +11,8 @@ export async function saveFuelTechnicalReview(fuelId, result, values = {}) {
       result,
       data: {
         testResults: {
-          smokeEmission: normaliseSavedValue(values.smokeEmission),
-          sulphurContent: normaliseSavedValue(values.sulphurContent)
+          smokeEmission: values.smokeEmission,
+          sulphurContent: values.sulphurContent
         }
       }
     }
