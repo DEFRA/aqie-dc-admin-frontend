@@ -3,7 +3,7 @@ import { createLogger } from '../common/helpers/logging/logger.js'
 import { getFuelDetails, saveFuelDetailsCheck } from './fuel-details-data.js'
 import {
   buildManufacturerFuelDetailsRows,
-  buildResellerFuelDetailsRows
+  buildRebranderFuelDetailsRows
 } from './fuel-details-rows.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
@@ -28,10 +28,10 @@ function buildManufacturePayload(fuel) {
     hasQualityControlSystem: fuel.hasQualityControlSystem,
     manufacturingProcess: fuel.manufacturingProcess,
     fuelDescription: {
-      appearance: fuel.fuelDescription?.appearance,
-      weight: fuel.fuelDescription?.weight,
-      composition: fuel.fuelDescription?.composition,
-      sulphurContent: fuel.fuelDescription?.sulphurContent
+      appearance: fuel.fuelDescription.appearance,
+      weight: fuel.fuelDescription.weight,
+      composition: fuel.fuelDescription.composition,
+      sulphurContent: fuel.fuelDescription.sulphurContent
     }
   }
 }
@@ -49,28 +49,29 @@ function buildRebrandFuelDetailsPayload(fuel) {
 function buildRebrandFuelDescriptionPayload(fuel) {
   return {
     fuelDescription: {
-      appearance: fuel.fuelDescription?.appearance,
-      weight: fuel.fuelDescription?.weight,
-      composition: fuel.fuelDescription?.composition,
-      sulphurContent: fuel.fuelDescription?.sulphurContent
+      appearance: fuel.fuelDescription.appearance,
+      weight: fuel.fuelDescription.weight,
+      composition: fuel.fuelDescription.composition,
+      sulphurContent: fuel.fuelDescription.sulphurContent
     },
     manufacturingProcess: fuel.manufacturingProcess
   }
 }
 
 function buildViewModel(fuel, fuelId) {
-  const isReseller = fuel.supplierType === 'Rebrand'
+  const isRebrander = fuel.supplierType === 'Rebrand'
   const displayName = fuel.brandName ?? content.notProvided
   const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
   return {
     pageTitle: content.pageTitle(displayName),
     heading: content.heading(displayName),
-    summaryRows: isReseller
-      ? buildResellerFuelDetailsRows(fuel, fuelId)
+    summaryRows: isRebrander
+      ? buildRebranderFuelDetailsRows(fuel, fuelId)
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
     fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
-    cancelHref: returnHref
+    cancelHref: returnHref,
+    isAlreadyComplete: fuel.technicalReview?.listingChecks?.fuelDetails === true
   }
 }
 
@@ -94,9 +95,15 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelDetails(fuelId)
-    const isReseller = fuel.supplierType === 'Rebrand'
+    const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
-    if (isReseller) {
+    if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+      return h.redirect(returnHref)
+    }
+
+    const isRebrander = fuel.supplierType === 'Rebrand'
+
+    if (isRebrander) {
       await saveFuelDetailsCheck(
         fuelId,
         'fuelDetails',
@@ -115,7 +122,7 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
       )
     }
 
-    return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
+    return h.redirect(returnHref)
   } catch (error) {
     logger.error(
       `[fuelDetails] failed to mark complete ${fuelId}: ${error.message}`

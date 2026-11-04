@@ -14,7 +14,7 @@ export const fuelDetailsContent = {
       manufacturingProcess: 'Manufacturing process',
       hasQualityControlSystem: 'Monitored quality control system'
     },
-    resellerLabels: {
+    rebranderLabels: {
       brandName: 'Rebranded name',
       additionalBrandNamesQuestion:
         'Will the fuel be sold under any additional rebrand names?',

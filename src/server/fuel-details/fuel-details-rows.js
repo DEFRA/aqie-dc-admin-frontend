@@ -91,10 +91,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.sulphurContent },
       value: {
-        text:
-          fuel.fuelDescription?.sulphurContent != null
-            ? String(fuel.fuelDescription.sulphurContent)
-            : content.notProvided
+        text: fuel.fuelDescription.sulphurContent ?? content.notProvided
       },
       ...changeAction(`/sulphur-content/${encoded}`, 'sulphur content')
     },
@@ -119,8 +116,8 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   return rows
 }
 
-export function buildResellerFuelDetailsRows(fuel, fuelId) {
-  const labels = content.resellerLabels
+export function buildRebranderFuelDetailsRows(fuel, fuelId) {
+  const labels = content.rebranderLabels
   const encoded = encodeURIComponent(fuelId)
   const hasAdditionalNames =
     Array.isArray(fuel.additionalBrandNames) &&

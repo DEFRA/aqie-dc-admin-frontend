@@ -32,7 +32,7 @@ const baseFuel = {
   hasQualityControlSystem: true
 }
 
-const baseResellerFuel = {
+const baseRebranderFuel = {
   id: 'fuel-uuid-2',
   applicationId: 'app-uuid-1',
   supplierType: 'Rebrand',
@@ -126,7 +126,7 @@ describe('#handleFuelDetailsRequest', () => {
       'Has an average weight of approx. 600 grams'
     )
     expect(valueFor('Fuel composition')).toBe('Comprises of slack wax')
-    expect(valueFor('Sulphur content')).toBe('0.1')
+    expect(valueFor('Sulphur content')).toBe(0.1)
   })
 
   test('reads hasQualityControlSystem for manufacturer rows', async () => {
@@ -171,6 +171,31 @@ describe('#handleFuelDetailsRequest', () => {
     )
   })
 
+  test('sets isAlreadyComplete to false when fuelDetails check is not set', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.isAlreadyComplete).toBe(false)
+  })
+
+  test('sets isAlreadyComplete to true when fuelDetails check is complete', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: {
+        ...baseFuel,
+        technicalReview: { listingChecks: { fuelDetails: true } }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.isAlreadyComplete).toBe(true)
+  })
+
   test('renders error page when API fetch fails', async () => {
     getFuelDetailsMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
@@ -183,9 +208,9 @@ describe('#handleFuelDetailsRequest', () => {
     expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
 
-  describe('reseller journey', () => {
+  describe('rebrander journey', () => {
     test('uses fuel.brandName in the heading for a rebrand fuel', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
       const h = toolkit()
 
       await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
@@ -199,7 +224,7 @@ describe('#handleFuelDetailsRequest', () => {
     })
 
     test('builds 5 summary rows for a rebrand when additionalBrandNames is empty and isChangedOrMixed is false', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
       const h = toolkit()
 
       await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
@@ -211,9 +236,9 @@ describe('#handleFuelDetailsRequest', () => {
     test('builds 6 summary rows for a rebrand when isChangedOrMixed is true', async () => {
       getFuelDetailsMock.mockResolvedValue({
         data: {
-          ...baseResellerFuel,
+          ...baseRebranderFuel,
           originalFuel: {
-            ...baseResellerFuel.originalFuel,
+            ...baseRebranderFuel.originalFuel,
             isChangedOrMixed: true,
             changes: 'Made pieces smaller'
           }
@@ -228,7 +253,7 @@ describe('#handleFuelDetailsRequest', () => {
     })
 
     test('shows originalFuel fields for a rebrand', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
       const h = toolkit()
 
       await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
@@ -247,9 +272,9 @@ describe('#handleFuelDetailsRequest', () => {
     test('shows changes detail row when isChangedOrMixed is true', async () => {
       getFuelDetailsMock.mockResolvedValue({
         data: {
-          ...baseResellerFuel,
+          ...baseRebranderFuel,
           originalFuel: {
-            ...baseResellerFuel.originalFuel,
+            ...baseRebranderFuel.originalFuel,
             isChangedOrMixed: true,
             changes: 'Made pieces smaller'
           }
@@ -267,7 +292,7 @@ describe('#handleFuelDetailsRequest', () => {
     })
 
     test('omits changes detail row when isChangedOrMixed is false', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
       const h = toolkit()
 
       await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
@@ -280,7 +305,7 @@ describe('#handleFuelDetailsRequest', () => {
     })
 
     test('omits hasQualityControlSystem row for rebrand', async () => {
-      getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+      getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
       const h = toolkit()
 
       await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
@@ -299,6 +324,24 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
   beforeEach(() => {
     getFuelDetailsMock.mockReset()
     saveFuelDetailsCheckMock.mockReset()
+  })
+
+  test('redirects without saving when fuelDetails check is already complete', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: {
+        ...baseFuel,
+        technicalReview: { listingChecks: { fuelDetails: true } }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    expect(saveFuelDetailsCheckMock).not.toHaveBeenCalled()
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
   })
 
   test('calls one PATCH with check fuelDetails for a manufacturer and redirects', async () => {
@@ -362,7 +405,7 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
   })
 
   test('calls two PATCHes for a rebrand — fuelDetails then fuelDescription — and redirects', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
     saveFuelDetailsCheckMock.mockResolvedValue({})
     const h = toolkit()
 
@@ -396,7 +439,7 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
   })
 
   test('rebrand fuelDetails payload does not include fuelDescription, hasQualityControlSystem or manufacturingProcess', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseResellerFuel })
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
     saveFuelDetailsCheckMock.mockResolvedValue({})
     const h = toolkit()
 
