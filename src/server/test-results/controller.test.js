@@ -45,12 +45,13 @@ describe('test-results', () => {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',
         supplierType: 'Manufacture',
+        testResults: {
+          smokeEmission: 1.25,
+          sulphurContent: 0.5
+        },
         technicalReview: {
           documentationChecks: {
-            testResults: {
-              smokeEmission: 1.25,
-              sulphurContent: 0.5
-            }
+            testResults: true
           }
         }
       }
@@ -73,12 +74,13 @@ describe('test-results', () => {
         fuelId: 'FUEL-001',
         name: 'Kings Starterlog',
         supplierType: 'Manufacture',
+        testResults: {
+          smokeEmission: null,
+          sulphurContent: null
+        },
         technicalReview: {
           documentationChecks: {
-            testResults: {
-              smokeEmission: null,
-              sulphurContent: null
-            }
+            testResults: null
           }
         }
       }

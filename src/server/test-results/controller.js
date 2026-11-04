@@ -23,7 +23,7 @@ const getPreviousPageUrl = (fuelId) =>
   `/review-fuel/${encodeURIComponent(fuelId)}`
 
 const getExistingValues = (fuel = {}) => {
-  const testResults = fuel.technicalReview.documentationChecks.testResults || {}
+  const testResults = fuel.testResults || {}
 
   return getTestResultsValues(testResults)
 }
