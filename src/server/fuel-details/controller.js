@@ -71,7 +71,7 @@ function buildViewModel(fuel, fuelId) {
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
     fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
     cancelHref: returnHref,
-    isAlreadyComplete: fuel.technicalReview?.listingChecks?.fuelDetails === true
+    isAlreadyComplete: fuel.technicalReview.listingChecks.fuelDetails === true
   }
 }
 
@@ -97,7 +97,7 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
     const { data: fuel } = await getFuelDetails(fuelId)
     const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
-    if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+    if (fuel.technicalReview.listingChecks.fuelDetails === true) {
       return h.redirect(returnHref)
     }
 

@@ -29,7 +29,8 @@ const baseFuel = {
     sulphurContent: 0.1
   },
   manufacturingProcess: 'Was manufactured by heat treatment',
-  hasQualityControlSystem: true
+  hasQualityControlSystem: true,
+  technicalReview: { listingChecks: { fuelDetails: false } }
 }
 
 const baseRebranderFuel = {
@@ -51,7 +52,8 @@ const baseRebranderFuel = {
     composition: 'White quebracho wood',
     sulphurContent: 0.05
   },
-  manufacturingProcess: 'Traditional charcoal production'
+  manufacturingProcess: 'Traditional charcoal production',
+  technicalReview: { listingChecks: { fuelDetails: false } }
 }
 
 function toolkit() {
