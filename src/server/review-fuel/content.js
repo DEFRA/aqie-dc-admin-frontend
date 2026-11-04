@@ -20,6 +20,7 @@ export const reviewFuelContent = {
     saveForLater: 'Save and come back later',
     notReviewed: 'Not reviewed',
     notCompleted: 'Not completed',
+    completed: 'Completed',
     applicationsHeading: 'Fuel applications',
     incompleteReview: {
       heading: 'Incomplete review',
@@ -40,7 +41,6 @@ export const reviewFuelContent = {
     },
     links: {
       testResults: '/test-results',
-      fuelDetails: '/fuel-details',
       rebrandLetter: '/review-manufacturer-letter',
       fuelDescription: '/fuel-description'
     },

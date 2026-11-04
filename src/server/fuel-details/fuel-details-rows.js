@@ -1,0 +1,183 @@
+import { fuelDetailsContent } from './content.js'
+
+const content = fuelDetailsContent.en
+
+function buildBooleanValue(value) {
+  if (typeof value === 'boolean') {
+    return value ? content.boolean.yes : content.boolean.no
+  }
+
+  return content.notProvided
+}
+
+function buildAdditionalBrandNamesValue(additionalBrandNames) {
+  if (Array.isArray(additionalBrandNames) && additionalBrandNames.length > 0) {
+    return content.boolean.yes
+  }
+
+  return content.boolean.no
+}
+
+function changeAction(href, visuallyHiddenText) {
+  return {
+    actions: {
+      items: [
+        {
+          href,
+          text: content.actions.change,
+          visuallyHiddenText
+        }
+      ]
+    }
+  }
+}
+
+export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
+  const labels = content.manufacturerLabels
+  const encoded = encodeURIComponent(fuelId)
+  const hasAdditionalNames =
+    Array.isArray(fuel.additionalBrandNames) &&
+    fuel.additionalBrandNames.length > 0
+
+  const rows = [
+    {
+      key: { text: labels.brandName },
+      value: { text: fuel.name ?? content.notProvided },
+      ...changeAction(`/brand-name/${encoded}`, 'brand name')
+    },
+    {
+      key: { text: labels.additionalBrandNamesQuestion },
+      value: {
+        text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
+      ...changeAction(
+        `/additional-brand-names/${encoded}`,
+        'will the fuel be sold under any additional brand names'
+      )
+    }
+  ]
+
+  if (hasAdditionalNames) {
+    rows.push({
+      key: { text: labels.additionalBrandNames },
+      value: { text: fuel.additionalBrandNames.join(', ') },
+      ...changeAction(
+        `/additional-brand-names/${encoded}`,
+        'additional brand names'
+      )
+    })
+  }
+
+  rows.push(
+    {
+      key: { text: labels.fuelAppearance },
+      value: {
+        text: fuel.fuelDescription?.appearance ?? content.notProvided
+      },
+      ...changeAction(`/fuel-appearance/${encoded}`, 'fuel appearance')
+    },
+    {
+      key: { text: labels.fuelWeight },
+      value: { text: fuel.fuelDescription?.weight ?? content.notProvided },
+      ...changeAction(`/fuel-weight/${encoded}`, 'fuel weight')
+    },
+    {
+      key: { text: labels.fuelComposition },
+      value: {
+        text: fuel.fuelDescription?.composition ?? content.notProvided
+      },
+      ...changeAction(`/fuel-composition/${encoded}`, 'fuel composition')
+    },
+    {
+      key: { text: labels.sulphurContent },
+      value: {
+        text:
+          fuel.fuelDescription?.sulphurContent != null
+            ? String(fuel.fuelDescription.sulphurContent)
+            : content.notProvided
+      },
+      ...changeAction(`/sulphur-content/${encoded}`, 'sulphur content')
+    },
+    {
+      key: { text: labels.manufacturingProcess },
+      value: { text: fuel.manufacturingProcess ?? content.notProvided },
+      ...changeAction(
+        `/manufacturing-process/${encoded}`,
+        'manufacturing process'
+      )
+    },
+    {
+      key: { text: labels.hasQualityControlSystem },
+      value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },
+      ...changeAction(
+        `/monitored-quality-control/${encoded}`,
+        'monitored quality control system'
+      )
+    }
+  )
+
+  return rows
+}
+
+export function buildResellerFuelDetailsRows(fuel, fuelId) {
+  const labels = content.resellerLabels
+  const encoded = encodeURIComponent(fuelId)
+  const hasAdditionalNames =
+    Array.isArray(fuel.additionalBrandNames) &&
+    fuel.additionalBrandNames.length > 0
+
+  const rows = [
+    {
+      key: { text: labels.brandName },
+      value: { text: fuel.name ?? content.notProvided },
+      ...changeAction(`/brand-name/${encoded}`, 'brand name')
+    },
+    {
+      key: { text: labels.additionalBrandNamesQuestion },
+      value: {
+        text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
+      ...changeAction(
+        `/additional-brand-names/${encoded}`,
+        'will the fuel be sold under any additional brand names'
+      )
+    }
+  ]
+
+  if (hasAdditionalNames) {
+    rows.push({
+      key: { text: labels.additionalBrandNames },
+      value: { text: fuel.additionalBrandNames.join(', ') },
+      ...changeAction(
+        `/additional-brand-names/${encoded}`,
+        'additional brand names'
+      )
+    })
+  }
+
+  rows.push(
+    {
+      key: { text: labels.originalFuelManufacturer },
+      value: {
+        text: fuel.originalFuel?.manufacturer ?? content.notProvided
+      }
+    },
+    {
+      key: { text: labels.originalFuelName },
+      value: { text: fuel.originalFuel?.name ?? content.notProvided }
+    },
+    {
+      key: { text: labels.isChangedOrMixed },
+      value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) }
+    }
+  )
+
+  if (fuel.originalFuel?.isChangedOrMixed === true) {
+    rows.push({
+      key: { text: labels.changes },
+      value: { text: fuel.originalFuel?.changes ?? content.notProvided }
+    })
+  }
+
+  return rows
+}

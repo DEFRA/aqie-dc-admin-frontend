@@ -1,0 +1,29 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+    {{ govukSummaryList({
+      rows: summaryRows
+    }) }}
+
+    <form method="post" action="{{ fuelDetailsAction }}" novalidate>
+      {{ govukButton({ text: "Mark as completed" }) }}
+    </form>
+
+    <p>
+      <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
