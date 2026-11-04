@@ -71,8 +71,38 @@ export function buildDocumentationTasks(fuel, fuelId) {
 }
 
 function buildFuelDetailsStatus(fuel) {
-  if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
-    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+  const isManufacturer = isManufacturerFuel(fuel)
+  const checks = fuel.technicalReview?.listingChecks
+
+  if (!checks) {
+    return { text: content.notCompleted }
+  }
+
+  // For manufacturers, all 8 checks must be complete
+  if (isManufacturer) {
+    const manufacturerChecksComplete =
+      checks.brandName === true &&
+      checks.additionalBrandNames === true &&
+      checks.fuelAppearance === true &&
+      checks.fuelWeight === true &&
+      checks.fuelComposition === true &&
+      checks.sulphurContent === true &&
+      checks.manufacturingProcess === true &&
+      checks.hasQualityControlSystem === true
+
+    if (manufacturerChecksComplete) {
+      return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+    }
+  } else {
+    // For rebranders, all 3 checks must be complete
+    const rebrandChecksComplete =
+      checks.brandName === true &&
+      checks.additionalBrandNames === true &&
+      checks.fuelDescription === true
+
+    if (rebrandChecksComplete) {
+      return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+    }
   }
 
   return { text: content.notCompleted }
