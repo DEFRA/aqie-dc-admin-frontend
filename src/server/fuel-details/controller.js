@@ -1,6 +1,9 @@
 import { fuelDetailsContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getFuelDetails, markFuelDetailsCompleted } from './fuel-details-data.js'
+import {
+  getFuelDetails,
+  markFuelDetailsCompleted
+} from './fuel-details-data.js'
 import {
   buildManufacturerFuelDetailsRows,
   buildRebranderFuelDetailsRows
@@ -23,7 +26,7 @@ function buildViewModel(fuel, fuelId) {
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
     fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
     cancelHref: returnHref,
-    isAlreadyComplete: fuel.technicalReview.listingChecks.fuelDetails === true
+    isAlreadyComplete: false
   }
 }
 

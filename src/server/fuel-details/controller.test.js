@@ -182,7 +182,7 @@ describe('#handleFuelDetailsRequest', () => {
     expect(viewModel.isAlreadyComplete).toBe(false)
   })
 
-  test('sets isAlreadyComplete to true when fuelDetails check is complete', async () => {
+  test('sets isAlreadyComplete to false always', async () => {
     getFuelDetailsMock.mockResolvedValue({
       data: {
         ...baseFuel,
@@ -194,7 +194,7 @@ describe('#handleFuelDetailsRequest', () => {
     await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(true)
+    expect(viewModel.isAlreadyComplete).toBe(false)
   })
 
   test('renders error page when API fetch fails', async () => {
