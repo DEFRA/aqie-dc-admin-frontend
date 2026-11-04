@@ -1,0 +1,152 @@
+import { describe, expect, test } from 'vitest'
+
+import {
+  getTestResultsValues,
+  toNumberOrNull,
+  validatePassedTestResults,
+  validateFailedTestResults
+} from './validation.js'
+
+describe('validatePassedTestResults', () => {
+  test('accepts valid smoke and sulphur measurements', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: '1.25',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.isValid).toBe(true)
+    expect(result.errors).toEqual({})
+    expect(result.errorList).toEqual([])
+  })
+
+  test('accepts zero values', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: '0',
+      sulphurContent: '0.0'
+    })
+
+    expect(result.isValid).toBe(true)
+  })
+
+  test('rejects empty values when passed', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: '',
+      sulphurContent: ''
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors).toEqual({
+      smokeEmission: 'Enter the smoke emission measurement',
+      sulphurContent: 'Enter the sulphur content'
+    })
+    expect(result.errorList).toHaveLength(2)
+  })
+
+  test('rejects negative values when passed', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: '-1',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors.smokeEmission).toBe(
+      'The smoke emission measurement must be a number'
+    )
+  })
+
+  test('rejects alphabetic values when passed', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: 'abc',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors.smokeEmission).toBe(
+      'The smoke emission measurement must be a number'
+    )
+  })
+
+  test('preserves original submitted values after validation failure', () => {
+    const result = validatePassedTestResults({
+      smokeEmission: '-1',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.values.smokeEmission).toBe('-1')
+    expect(result.values.sulphurContent).toBe('0.5')
+  })
+})
+
+describe('getTestResultsValues', () => {
+  test('maps backend values to form values', () => {
+    const result = getTestResultsValues({
+      smokeEmission: 1.25,
+      sulphurContent: 0.5
+    })
+
+    expect(result).toEqual({
+      smokeEmission: '1.25',
+      sulphurContent: '0.5'
+    })
+  })
+
+  test('preserves zero values', () => {
+    const result = getTestResultsValues({
+      smokeEmission: 0,
+      sulphurContent: 0
+    })
+
+    expect(result).toEqual({
+      smokeEmission: '0',
+      sulphurContent: '0'
+    })
+  })
+})
+
+describe('toNumberOrNull', () => {
+  test('returns null for empty or blank values', () => {
+    expect(toNumberOrNull('')).toBeNull()
+    expect(toNumberOrNull('   ')).toBeNull()
+    expect(toNumberOrNull(null)).toBeNull()
+    expect(toNumberOrNull(undefined)).toBeNull()
+  })
+
+  test('converts valid numeric strings to numbers', () => {
+    expect(toNumberOrNull('1.25')).toBe(1.25)
+    expect(toNumberOrNull('0')).toBe(0)
+    expect(toNumberOrNull('  3.5  ')).toBe(3.5)
+  })
+})
+
+describe('validateFailedTestResults', () => {
+  test('accepts empty values when failed', () => {
+    const result = validateFailedTestResults({
+      smokeEmission: '',
+      sulphurContent: ''
+    })
+
+    expect(result.isValid).toBe(true)
+    expect(result.errors).toEqual({})
+  })
+
+  test('accepts partial values when failed', () => {
+    const result = validateFailedTestResults({
+      smokeEmission: '2.3',
+      sulphurContent: ''
+    })
+
+    expect(result.isValid).toBe(true)
+  })
+
+  test('rejects negative values when failed', () => {
+    const result = validateFailedTestResults({
+      smokeEmission: '-1',
+      sulphurContent: '0.5'
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors.smokeEmission).toBe(
+      'The smoke emission measurement must be a number'
+    )
+  })
+})

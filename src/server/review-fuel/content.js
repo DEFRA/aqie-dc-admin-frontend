@@ -21,6 +21,11 @@ export const reviewFuelContent = {
     notReviewed: 'Not reviewed',
     notCompleted: 'Not completed',
     completed: 'Completed',
+    documentationStatuses: {
+      passed: { tag: { text: 'Passed', classes: 'govuk-tag--green' } },
+      failed: { tag: { text: 'Failed', classes: 'govuk-tag--red' } },
+      notReviewed: { text: 'Not reviewed' }
+    },
     applicationsHeading: 'Fuel applications',
     incompleteReview: {
       heading: 'Incomplete review',
@@ -40,9 +45,14 @@ export const reviewFuelContent = {
       back: 'Back'
     },
     links: {
-      testResults: '/test-results',
-      rebrandLetter: '/review-manufacturer-letter',
-      fuelDescription: '/fuel-description'
+      testResults: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/test-results`,
+      fuelDetails: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
+      manufacturerLetter: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/manufacturer-letter`,
+      fuelDescription: (fuelId) =>
+        `/review-fuel/${encodeURIComponent(fuelId)}/fuel-description`
     },
     errors: {
       generic: 'Sorry, there is a problem with the service'
