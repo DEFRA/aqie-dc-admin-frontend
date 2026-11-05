@@ -78,6 +78,14 @@ function buildFuelDetailsStatus(fuel) {
   return { text: content.notCompleted }
 }
 
+function buildFuelDescriptionStatus(fuel) {
+  if (fuel.technicalReview.listingChecks.fuelDescription === true) {
+    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+  }
+
+  return { text: content.notCompleted }
+}
+
 export function buildListingTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
   const tasks = [
@@ -91,8 +99,8 @@ export function buildListingTasks(fuel, fuelId) {
   if (!isManufacturer) {
     tasks.push({
       title: { text: content.addFuelDescriptionTitle },
-      href: content.links.fuelDescription,
-      status: { text: content.notCompleted }
+      href: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-description`,
+      status: buildFuelDescriptionStatus(fuel)
     })
   }
 

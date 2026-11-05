@@ -1,0 +1,50 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if errorSummaryItems %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errorSummaryItems
+      }) }}
+    {% endif %}
+
+    <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+    <h2 class="govuk-heading-m">{{ content.originalFuelHeading }}</h2>
+
+    {{ govukSummaryList({
+      rows: originalFuelRows
+    }) }}
+
+    {{ govukSummaryList({
+      rows: descriptionRows
+    }) }}
+
+    {% if isAlreadyComplete %}
+      <strong class="govuk-tag govuk-tag--green">Completed</strong>
+
+      <p class="govuk-!-margin-top-4">
+        <a class="govuk-link" href="{{ cancelHref }}">Return to fuel overview</a>
+      </p>
+    {% else %}
+      <form method="post" action="{{ fuelDescriptionAction }}" novalidate>
+        {{ govukButton({ text: "Mark as completed" }) }}
+      </form>
+
+      <p>
+        <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>
+      </p>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}
