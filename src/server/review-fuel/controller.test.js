@@ -93,8 +93,56 @@ describe('#reviewFuelController', () => {
     expect(viewModel.documentationHeading).toBe('Review test reports')
     expect(viewModel.documentationTasks).toHaveLength(1)
     expect(viewModel.documentationTasks[0].title.text).toBe('Add test results')
+    expect(viewModel.documentationTasks[0].href).toBe(
+      '/review-fuel/FUEL-001/test-results'
+    )
     expect(viewModel.listingTasks).toHaveLength(1)
     expect(viewModel.listingTasks[0].title.text).toBe('Check fuel details')
+    expect(viewModel.listingTasks[0].href).toBe(
+      '/review-fuel/FUEL-001/fuel-details'
+    )
+  })
+
+  test('shows the saved test-result status with the GOV.UK tag colours', () => {
+    const passedViewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: {
+          documentationChecks: {
+            testResults: true
+          }
+        }
+      },
+      'FUEL-001'
+    )
+
+    expect(passedViewModel.documentationTasks[0].status.tag).toEqual({
+      text: 'Passed',
+      classes: 'govuk-tag--green'
+    })
+
+    const failedViewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-002',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: {
+          documentationChecks: {
+            testResults: false
+          }
+        }
+      },
+      'FUEL-002'
+    )
+
+    expect(failedViewModel.documentationTasks[0].status.tag).toEqual({
+      text: 'Failed',
+      classes: 'govuk-tag--red'
+    })
   })
 
   test('renders the correct rebrand task list from the helper builder', () => {
@@ -116,8 +164,51 @@ describe('#reviewFuelController', () => {
     expect(viewModel.documentationTasks[0].title.text).toBe(
       'Review letter from original manufacturer'
     )
+    expect(viewModel.documentationTasks[0].href).toBe(
+      '/review-fuel/FUEL-002/manufacturer-letter'
+    )
     expect(viewModel.listingTasks).toHaveLength(2)
+    expect(viewModel.listingTasks[0].href).toBe(
+      '/review-fuel/FUEL-002/fuel-details'
+    )
     expect(viewModel.listingTasks[1].title.text).toBe('Add fuel description')
+    expect(viewModel.listingTasks[1].href).toBe(
+      '/review-fuel/FUEL-002/fuel-description'
+    )
+  })
+
+  test('shows "Not completed" as plain text when fuelDetails check is not done', () => {
+    const viewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: { listingChecks: {} }
+      },
+      'FUEL-001'
+    )
+
+    expect(viewModel.listingTasks[0].status).toEqual({
+      text: 'Not completed'
+    })
+  })
+
+  test('shows green "Completed" tag when fuelDetails check is true', () => {
+    const viewModel = buildViewModel(
+      {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317',
+        technicalReview: { listingChecks: { fuelDetails: true } }
+      },
+      'FUEL-001'
+    )
+
+    expect(viewModel.listingTasks[0].status).toEqual({
+      tag: { text: 'Completed', classes: 'govuk-tag--green' }
+    })
   })
 
   test('uses the confirmed backend fuel name field directly', () => {
@@ -246,6 +337,33 @@ describe('#reviewFuelController', () => {
     expect(saveFuelReviewMock).toHaveBeenCalledWith('FUEL-001', 'accepted', {
       name: 'John doe',
       email: 'test@yopmail.com'
+    })
+  })
+
+  test('falls back to an unknown reviewer when the session has no name or email', async () => {
+    saveFuelReviewMock.mockResolvedValue({})
+    getFuelReviewMock.mockResolvedValue({
+      data: {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317'
+      }
+    })
+
+    await server.inject({
+      method: 'POST',
+      url: '/review-fuel/FUEL-001',
+      auth: {
+        strategy: 'session',
+        credentials: { isAuthenticated: true, user: { id: 'test' } }
+      },
+      payload: { decision: 'accept' }
+    })
+
+    expect(saveFuelReviewMock).toHaveBeenCalledWith('FUEL-001', 'accepted', {
+      name: 'Unknown reviewer',
+      email: 'unknown-reviewer@unknown.gov.uk'
     })
   })
 

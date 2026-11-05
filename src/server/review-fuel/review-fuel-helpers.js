@@ -52,38 +52,58 @@ export function buildIncompleteReviewViewModel(fuel, fuelId) {
 
 export function buildDocumentationTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
+  const technicalReview = fuel.technicalReview || {}
+  const documentationChecks = technicalReview.documentationChecks || {}
+  const testResultStatus = documentationChecks.testResults
 
-  return isManufacturer
-    ? [
-        {
-          title: { text: content.manufacturerTaskTitle },
-          href: content.links.testResults,
-          status: { text: content.notReviewed }
-        }
-      ]
-    : [
-        {
-          title: { text: content.rebrandTaskTitle },
-          href: `/manufacturer-letter?fuelId=${encodeURIComponent(fuelId)}`,
-          status: { text: content.notReviewed }
-        }
-      ]
+  if (isManufacturer) {
+    const status =
+      testResultStatus === true
+        ? content.documentationStatuses.passed
+        : testResultStatus === false
+          ? content.documentationStatuses.failed
+          : content.documentationStatuses.notReviewed
+
+    return [
+      {
+        title: { text: content.manufacturerTaskTitle },
+        href: content.links.testResults(fuelId),
+        status
+      }
+    ]
+  }
+
+  return [
+    {
+      title: { text: content.rebrandTaskTitle },
+      href: content.links.manufacturerLetter(fuelId),
+      status: content.documentationStatuses.notReviewed
+    }
+  ]
 }
 
-export function buildListingTasks(fuel) {
+function buildFuelDetailsStatus(fuel) {
+  if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+  }
+
+  return { text: content.notCompleted }
+}
+
+export function buildListingTasks(fuel, fuelId) {
   const isManufacturer = isManufacturerFuel(fuel)
   const tasks = [
     {
       title: { text: content.checkFuelDetailsTitle },
-      href: content.links.fuelDetails,
-      status: { text: content.notCompleted }
+      href: content.links.fuelDetails(fuelId),
+      status: buildFuelDetailsStatus(fuel)
     }
   ]
 
   if (!isManufacturer) {
     tasks.push({
       title: { text: content.addFuelDescriptionTitle },
-      href: content.links.fuelDescription,
+      href: content.links.fuelDescription(fuelId),
       status: { text: content.notCompleted }
     })
   }
@@ -100,7 +120,7 @@ export function buildTasks(fuel, fuelId) {
       ? content.manufacturerHeading
       : content.rebrandHeading,
     documentationTasks: buildDocumentationTasks(fuel, fuelId),
-    listingTasks: buildListingTasks(fuel)
+    listingTasks: buildListingTasks(fuel, fuelId)
   }
 }
 

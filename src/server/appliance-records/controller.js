@@ -3,6 +3,7 @@ import { getApplianceRecords } from './appliance-records-data.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import { buildPaginationConfig } from '../common/helpers/pagination-builder.js'
 import { statusCodes } from '../common/constants/status-codes.js'
+import { formatId } from '../../config/nunjucks/filters/format-id.js'
 
 const logger = createLogger()
 const content = applianceRecordsContent.en
@@ -51,7 +52,7 @@ function buildApplianceRows(rawData, contentLabels) {
     const href = `/appliance-record/${encodeURIComponent(item.id || applianceId)}`
 
     return [
-      { text: applianceId },
+      { text: formatId(applianceId) },
       { text: name },
       {
         html: `<strong class="govuk-tag ${statusClass}">
