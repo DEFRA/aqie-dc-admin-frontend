@@ -6,7 +6,7 @@ import { fetchJson, patchJson } from '../common/api/api.js'
  * uses supplierType to decide which task list to render.
  */
 export async function getFuelReview(fuelId) {
-  return fetchJson(`/fuels/${encodeURIComponent(fuelId)}`)
+  return fetchJson(`/fuels/${encodeURIComponent(fuelId)}/technical-review`)
 }
 
 /**
