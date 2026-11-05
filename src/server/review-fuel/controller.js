@@ -21,8 +21,7 @@ async function handleReviewFuelRequest(request, h) {
   const { fuelId } = request.params
 
   try {
-    const response = await getFuelReview(fuelId)
-    const fuel = response.data
+    const { data: fuel } = await getFuelReview(fuelId)
 
     return h.view('review-fuel/index', buildViewModel(fuel, fuelId))
   } catch (error) {
@@ -40,24 +39,19 @@ async function handleReviewFuelRequest(request, h) {
 async function handleFuelDecisionRequest(request, h) {
   const { fuelId } = request.params
   const status = decisionStatus[request.payload.decision]
-  const user = request.auth?.credentials?.user
-
-  if (!user?.name || !user?.email) {
-    logger.warn(
-      `[reviewFuel] missing reviewer name/email in auth credentials for ${fuelId}, falling back to unknown reviewer`
-    )
-  }
-
+  const auth = request.auth || {}
+  const credentials = auth.credentials || {}
+  const user = credentials.user
   const reviewedBy = {
     name: user?.name ?? 'Unknown reviewer',
     email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
   }
 
   try {
-    await saveFuelReview(fuelId, status, reviewedBy)
-
     const { data: fuel } = await getFuelReview(fuelId)
-    const applicationId = fuel?.applicationId
+    const applicationId = fuel.applicationId
+
+    await saveFuelReview(fuelId, status, reviewedBy)
 
     if (!applicationId) {
       logger.warn(

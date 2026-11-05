@@ -91,10 +91,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.sulphurContent },
       value: {
-        text:
-          fuel.fuelDescription?.sulphurContent != null
-            ? String(fuel.fuelDescription.sulphurContent)
-            : content.notProvided
+        text: fuel.fuelDescription.sulphurContent ?? content.notProvided
       },
       ...changeAction(`/sulphur-content/${encoded}`, 'sulphur content')
     },
@@ -120,7 +117,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
 }
 
 export function buildRebranderFuelDetailsRows(fuel, fuelId) {
-  const labels = content.resellerLabels
+  const labels = content.rebranderLabels
   const encoded = encodeURIComponent(fuelId)
   const hasAdditionalNames =
     Array.isArray(fuel.additionalBrandNames) &&
@@ -160,22 +157,35 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.originalFuelManufacturer },
       value: {
         text: fuel.originalFuel?.manufacturer ?? content.notProvided
-      }
+      },
+      ...changeAction(
+        `/original-fuel-manufacturer/${encoded}`,
+        'original fuel manufacturer'
+      )
     },
     {
       key: { text: labels.originalFuelName },
-      value: { text: fuel.originalFuel?.name ?? content.notProvided }
+      value: { text: fuel.originalFuel?.name ?? content.notProvided },
+      ...changeAction(
+        `/original-fuel-name/${encoded}`,
+        'original fuel name or brand'
+      )
     },
     {
       key: { text: labels.isChangedOrMixed },
-      value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) }
+      value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) },
+      ...changeAction(
+        `/changes-made-to-original-fuel/${encoded}`,
+        'changes made to original fuel'
+      )
     }
   )
 
   if (fuel.originalFuel?.isChangedOrMixed === true) {
     rows.push({
       key: { text: labels.changes },
-      value: { text: fuel.originalFuel?.changes ?? content.notProvided }
+      value: { text: fuel.originalFuel?.changes ?? content.notProvided },
+      ...changeAction(`/detail-of-changes/${encoded}`, 'detail of changes')
     })
   }
 
