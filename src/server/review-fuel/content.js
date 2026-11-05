@@ -20,6 +20,7 @@ export const reviewFuelContent = {
     saveForLater: 'Save and come back later',
     notReviewed: 'Not reviewed',
     notCompleted: 'Not completed',
+    completed: 'Completed',
     documentationStatuses: {
       passed: { tag: { text: 'Passed', classes: 'govuk-tag--green' } },
       failed: { tag: { text: 'Failed', classes: 'govuk-tag--red' } },
