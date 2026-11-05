@@ -119,7 +119,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   return rows
 }
 
-export function buildResellerFuelDetailsRows(fuel, fuelId) {
+export function buildRebranderFuelDetailsRows(fuel, fuelId) {
   const labels = content.resellerLabels
   const encoded = encodeURIComponent(fuelId)
   const hasAdditionalNames =

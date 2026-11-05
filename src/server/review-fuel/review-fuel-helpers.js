@@ -71,7 +71,7 @@ export function buildDocumentationTasks(fuel, fuelId) {
 }
 
 function buildFuelDetailsStatus(fuel) {
-  if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+  if (fuel.technicalReview.listingChecks.fuelDetails === true) {
     return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
   }
 
