@@ -55,6 +55,7 @@ export function buildDocumentationTasks(fuel, fuelId) {
   const technicalReview = fuel.technicalReview || {}
   const documentationChecks = technicalReview.documentationChecks || {}
   const testResultStatus = documentationChecks.testResults
+  const manufacturerLetterStatus = documentationChecks.manufacturerLetter
 
   if (isManufacturer) {
     const status =
@@ -73,11 +74,18 @@ export function buildDocumentationTasks(fuel, fuelId) {
     ]
   }
 
+  const manufacturerLetterDisplayStatus =
+    manufacturerLetterStatus === true
+      ? content.documentationStatuses.passed
+      : manufacturerLetterStatus === false
+        ? content.documentationStatuses.failed
+        : content.documentationStatuses.notReviewed
+
   return [
     {
       title: { text: content.rebrandTaskTitle },
       href: content.links.manufacturerLetter(fuelId),
-      status: content.documentationStatuses.notReviewed
+      status: manufacturerLetterDisplayStatus
     }
   ]
 }
