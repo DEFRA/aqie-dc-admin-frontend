@@ -169,7 +169,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
       actionText: 'Continue review',
       actionHref: '/review-fuel/FUEL-123'
     })
-    expect(viewModel.continueReviewHref).toBe('/incomplete-review')
+    expect(viewModel.continueReviewHref).toBe('/incomplete-application-review')
   })
 
   test('maps the backend brandName field to the fuel table row', async () => {
