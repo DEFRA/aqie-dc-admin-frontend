@@ -426,7 +426,47 @@ describe('#reviewFuelController', () => {
     expect(response.headers.location).toBe('/fuel-applications')
   })
 
+  test('still redirects to the application after a successful accept when the follow-up fetch would conflict', async () => {
+    getFuelReviewMock.mockResolvedValue({
+      data: {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317'
+      }
+    })
+    saveFuelReviewMock.mockResolvedValue({})
+
+    const response = await server.inject({
+      method: 'POST',
+      url: '/review-fuel/FUEL-001',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      },
+      payload: { decision: 'accept' }
+    })
+
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/review-fuel-application/app-0317')
+    expect(saveFuelReviewMock).toHaveBeenCalledWith('FUEL-001', 'accepted', {
+      name: 'John doe',
+      email: 'test@yopmail.com'
+    })
+  })
+
   test('redirects back to the incomplete review page when the backend rejects the decision as a conflict', async () => {
+    getFuelReviewMock.mockResolvedValue({
+      data: {
+        fuelId: 'FUEL-001',
+        name: 'Kings Starterlog',
+        supplierType: SUPPLIER_TYPE.MANUFACTURE,
+        applicationId: 'app-0317'
+      }
+    })
     saveFuelReviewMock.mockRejectedValue({ status: statusCodes.conflict })
 
     const response = await server.inject({

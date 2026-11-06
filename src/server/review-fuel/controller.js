@@ -48,10 +48,10 @@ async function handleFuelDecisionRequest(request, h) {
   }
 
   try {
-    await saveFuelReview(fuelId, status, reviewedBy)
-
     const { data: fuel } = await getFuelReview(fuelId)
     const applicationId = fuel.applicationId
+
+    await saveFuelReview(fuelId, status, reviewedBy)
 
     if (!applicationId) {
       logger.warn(

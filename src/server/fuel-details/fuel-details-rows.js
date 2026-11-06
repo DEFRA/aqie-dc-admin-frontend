@@ -127,7 +127,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.brandName },
       value: { text: fuel.name ?? content.notProvided },
-      ...changeAction(`/brand-name/${encoded}`, 'brand name')
+      ...changeAction(`/rebrand-name/${encoded}`, 'brand name')
     },
     {
       key: { text: labels.additionalBrandNamesQuestion },
