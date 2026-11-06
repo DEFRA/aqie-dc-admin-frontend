@@ -180,7 +180,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
       data: {
         ...baseAppliance,
         isLegacyRecord: true,
-        legacy: { id: 'LEGACY-APP-1' },
+        legacy: { applianceId: 'LEGACY-APP-1' },
         permittedToBurnWood: true
       }
     })
