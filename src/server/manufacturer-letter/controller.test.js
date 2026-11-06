@@ -39,7 +39,7 @@ describe('review-manufacturer-letter controller', () => {
     getFuelMock.mockResolvedValue({ data: baseFuel })
     const h = toolkit()
 
-    await controller.get({ query: { fuelId: 'FUEL-1' } }, h)
+    await controller.get({ params: { fuelId: 'FUEL-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith(
       'manufacturer-letter/index',
@@ -50,23 +50,13 @@ describe('review-manufacturer-letter controller', () => {
     )
   })
 
-  test('GET returns error view when fuelId is missing', async () => {
-    const h = toolkit()
-
-    await controller.get({ query: {} }, h)
-
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
-  })
-
   test('GET returns error view for non-Rebrand fuel', async () => {
     getFuelMock.mockResolvedValue({
       data: { ...baseFuel, supplierType: 'Manufacture' }
     })
     const h = toolkit()
 
-    await controller.get({ query: { fuelId: 'FUEL-1' } }, h)
+    await controller.get({ params: { fuelId: 'FUEL-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Manufacturer letter does not apply to a Manufacture fuel'
@@ -77,7 +67,7 @@ describe('review-manufacturer-letter controller', () => {
     getFuelMock.mockRejectedValue(new Error('boom'))
     const h = toolkit()
 
-    await controller.get({ query: { fuelId: 'FUEL-1' } }, h)
+    await controller.get({ params: { fuelId: 'FUEL-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
@@ -89,7 +79,7 @@ describe('review-manufacturer-letter controller', () => {
     const h = toolkit()
 
     await controller.post(
-      { query: { fuelId: 'FUEL-1' }, payload: { decision: 'pass' } },
+      { params: { fuelId: 'FUEL-1' }, payload: { decision: 'pass' } },
       h
     )
 
@@ -105,7 +95,7 @@ describe('review-manufacturer-letter controller', () => {
     const h = toolkit()
 
     await controller.post(
-      { query: { fuelId: 'FUEL-1' }, payload: { decision: 'fail' } },
+      { params: { fuelId: 'FUEL-1' }, payload: { decision: 'fail' } },
       h
     )
 
@@ -116,22 +106,12 @@ describe('review-manufacturer-letter controller', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1')
   })
 
-  test('POST returns error view when fuelId is missing', async () => {
-    const h = toolkit()
-
-    await controller.post({ query: {}, payload: { decision: 'pass' } }, h)
-
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
-  })
-
   test('POST returns error view on backend failure', async () => {
     saveManufacturerLetterResultMock.mockRejectedValue(new Error('boom'))
     const h = toolkit()
 
     await controller.post(
-      { query: { fuelId: 'FUEL-1' }, payload: { decision: 'pass' } },
+      { params: { fuelId: 'FUEL-1' }, payload: { decision: 'pass' } },
       h
     )
 
