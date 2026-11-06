@@ -91,7 +91,19 @@ export function buildDocumentationTasks(fuel, fuelId) {
 }
 
 function buildFuelDetailsStatus(fuel) {
-  if (fuel.technicalReview?.listingChecks?.fuelDetails === true) {
+  const listingChecks = (fuel.technicalReview || {}).listingChecks || {}
+
+  if (listingChecks.fuelDetails === true) {
+    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
+  }
+
+  return { text: content.notCompleted }
+}
+
+function buildFuelDescriptionStatus(fuel) {
+  const listingChecks = (fuel.technicalReview || {}).listingChecks || {}
+
+  if (listingChecks.fuelDescription === true) {
     return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
   }
 
@@ -112,7 +124,7 @@ export function buildListingTasks(fuel, fuelId) {
     tasks.push({
       title: { text: content.addFuelDescriptionTitle },
       href: content.links.fuelDescription(fuelId),
-      status: { text: content.notCompleted }
+      status: buildFuelDescriptionStatus(fuel)
     })
   }
 

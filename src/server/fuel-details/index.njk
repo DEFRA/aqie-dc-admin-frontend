@@ -17,7 +17,6 @@
 
     {% if isAlreadyComplete %}
       <strong class="govuk-tag govuk-tag--green">Completed</strong>
-
       <p class="govuk-!-margin-top-4">
         <a class="govuk-link" href="{{ cancelHref }}">Return to fuel overview</a>
       </p>
@@ -25,7 +24,6 @@
       <form method="post" action="{{ fuelDetailsAction }}" novalidate>
         {{ govukButton({ text: "Mark as completed" }) }}
       </form>
-
       <p>
         <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>
       </p>
