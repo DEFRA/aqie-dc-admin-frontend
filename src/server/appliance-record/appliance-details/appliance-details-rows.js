@@ -92,7 +92,7 @@ export function buildLegacyRows(appliance) {
   return [
     {
       key: { text: content.labels.legacyApplianceId },
-      value: { text: valueText(appliance.legacy?.id) }
+      value: { text: valueText(appliance.legacy?.applianceId) }
     },
     {
       key: { text: content.labels.modelName },
