@@ -160,6 +160,20 @@ describe('#handleFuelDescriptionRequest', () => {
     })
     expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
+
+  test('renders 404 when the fuel is not found', async () => {
+    const error = new Error('Fuel not found')
+    error.status = statusCodes.notFound
+    getFuelDescriptionMock.mockRejectedValue(error)
+    const h = toolkit()
+
+    await handleFuelDescriptionRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.notFound)
+  })
 })
 
 describe('#handleFuelDescriptionMarkCompleteRequest', () => {
@@ -292,5 +306,23 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
       message: 'Sorry, there is a problem with the service'
     })
     expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
+  })
+
+  test('renders 404 when the fuel is not found on POST', async () => {
+    const error = new Error('Fuel not found')
+    error.status = statusCodes.notFound
+    getFuelDescriptionMock.mockRejectedValue(error)
+    const h = toolkit()
+
+    await handleFuelDescriptionMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    expect(saveFuelDescriptionCheckMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.notFound)
   })
 })

@@ -39,52 +39,55 @@ function buildDescriptionRow(label, value, href, errorMessage) {
   }
 }
 
-function buildDescriptionRows(fuel, encoded, errors) {
-  return [
-    buildDescriptionRow(
-      content.labels.fuelAppearance,
-      fuel.fuelDescription.appearance,
-      `/fuel-appearance/${encoded}`,
-      errors && errors.appearance
-    ),
-    buildDescriptionRow(
-      content.labels.fuelWeight,
-      fuel.fuelDescription.weight,
-      `/fuel-weight/${encoded}`,
-      errors && errors.weight
-    ),
-    buildDescriptionRow(
-      content.labels.fuelComposition,
-      fuel.fuelDescription.composition,
-      `/fuel-composition/${encoded}`,
-      errors && errors.composition
-    ),
-    buildDescriptionRow(
-      content.labels.sulphurContent,
-      fuel.fuelDescription.sulphurContent,
-      `/sulphur-content/${encoded}`,
-      errors && errors.sulphurContent
-    ),
-    buildDescriptionRow(
-      content.labels.manufacturingProcess,
-      fuel.manufacturingProcess,
-      `/manufacturing-process/${encoded}`,
-      errors && errors.manufacturingProcess
-    )
-  ]
-}
-
-function buildErrorSummaryItems(errors, encoded) {
-  const hrefMap = {
+function buildFieldHrefs(encoded) {
+  return {
     appearance: `/fuel-appearance/${encoded}`,
     weight: `/fuel-weight/${encoded}`,
     composition: `/fuel-composition/${encoded}`,
     sulphurContent: `/sulphur-content/${encoded}`,
     manufacturingProcess: `/manufacturing-process/${encoded}`
   }
+}
+
+function buildDescriptionRows(fuel, hrefs, errors) {
+  return [
+    buildDescriptionRow(
+      content.labels.fuelAppearance,
+      fuel.fuelDescription.appearance,
+      hrefs.appearance,
+      errors?.appearance
+    ),
+    buildDescriptionRow(
+      content.labels.fuelWeight,
+      fuel.fuelDescription.weight,
+      hrefs.weight,
+      errors?.weight
+    ),
+    buildDescriptionRow(
+      content.labels.fuelComposition,
+      fuel.fuelDescription.composition,
+      hrefs.composition,
+      errors?.composition
+    ),
+    buildDescriptionRow(
+      content.labels.sulphurContent,
+      fuel.fuelDescription.sulphurContent,
+      hrefs.sulphurContent,
+      errors?.sulphurContent
+    ),
+    buildDescriptionRow(
+      content.labels.manufacturingProcess,
+      fuel.manufacturingProcess,
+      hrefs.manufacturingProcess,
+      errors?.manufacturingProcess
+    )
+  ]
+}
+
+function buildErrorSummaryItems(errors, hrefs) {
   return Object.entries(errors).map(([key, message]) => ({
     text: message,
-    href: hrefMap[key]
+    href: hrefs[key]
   }))
 }
 
@@ -117,6 +120,7 @@ function buildViewModel(fuel, fuelId, errors) {
   const encoded = encodeURIComponent(fuelId)
   const returnHref = `/review-fuel/${encoded}`
   const name = fuel.name ?? content.notProvided
+  const hrefs = buildFieldHrefs(encoded)
 
   return {
     pageTitle: errors
@@ -125,8 +129,8 @@ function buildViewModel(fuel, fuelId, errors) {
     heading: content.heading(name),
     content,
     originalFuelRows: buildOriginalFuelRows(fuel),
-    descriptionRows: buildDescriptionRows(fuel, encoded, errors),
-    errorSummaryItems: errors ? buildErrorSummaryItems(errors, encoded) : null,
+    descriptionRows: buildDescriptionRows(fuel, hrefs, errors),
+    errorSummaryItems: errors ? buildErrorSummaryItems(errors, hrefs) : null,
     fuelDescriptionAction: `/review-fuel/${encoded}/fuel-description`,
     cancelHref: returnHref,
     isAlreadyComplete:
@@ -141,10 +145,12 @@ async function handleFuelDescriptionRequest(request, h) {
     const { data: fuel } = await getFuelDescription(fuelId)
     return h.view('fuel-description/index', buildViewModel(fuel, fuelId, null))
   } catch (error) {
+    const code =
+      error.status === statusCodes.notFound
+        ? statusCodes.notFound
+        : statusCodes.internalServerError
     logger.error(`[fuelDescription] failed to load ${fuelId}: ${error.message}`)
-    return h
-      .view('error/index', { message: content.errors.generic })
-      .code(statusCodes.internalServerError)
+    return h.view('error/index', { message: content.errors.generic }).code(code)
   }
 }
 
@@ -179,12 +185,14 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
 
     return h.redirect(returnHref)
   } catch (error) {
+    const code =
+      error.status === statusCodes.notFound
+        ? statusCodes.notFound
+        : statusCodes.internalServerError
     logger.error(
       `[fuelDescription] failed to mark complete ${fuelId}: ${error.message}`
     )
-    return h
-      .view('error/index', { message: content.errors.generic })
-      .code(statusCodes.internalServerError)
+    return h.view('error/index', { message: content.errors.generic }).code(code)
   }
 }
 
