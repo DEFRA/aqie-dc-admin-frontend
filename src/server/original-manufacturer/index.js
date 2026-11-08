@@ -1,0 +1,43 @@
+import Joi from 'joi'
+import {
+  originalManufacturerController,
+  originalManufacturerDecisionController
+} from './controller.js'
+
+const paramsSchema = Joi.object({
+  fuelId: Joi.string()
+    .required()
+    .trim()
+    .min(1)
+    .max(64)
+    .pattern(/^[A-Za-z0-9-]+$/)
+})
+
+export const originalManufacturer = {
+  plugin: {
+    name: 'originalManufacturer',
+    register(server) {
+      server.route([
+        {
+          method: 'GET',
+          path: '/original-manufacturer/{fuelId}',
+          ...originalManufacturerController,
+          options: { validate: { params: paramsSchema } }
+        },
+        {
+          method: 'POST',
+          path: '/original-manufacturer/{fuelId}',
+          ...originalManufacturerDecisionController,
+          options: {
+            validate: {
+              params: paramsSchema,
+              payload: Joi.object({
+                manufacturer: Joi.string().trim().allow('').required()
+              })
+            }
+          }
+        }
+      ])
+    }
+  }
+}
