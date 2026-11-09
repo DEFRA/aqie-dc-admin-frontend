@@ -24,23 +24,25 @@ describe('original-manufacturer-data', () => {
     expect(getFuelTechnicalReview).toHaveBeenCalledWith('FUEL-1')
   })
 
-  test('saves the original manufacturer without overwriting required originalFuel fields', async () => {
+  test('saves the original manufacturer with partial originalFuel payload', async () => {
     patchJson.mockResolvedValue({ success: true })
-    getFuelTechnicalReview.mockResolvedValue({
-      data: {
-        originalFuel: {
-          name: 'Fuel name',
-          isChangedOrMixed: false
-        }
-      }
-    })
 
     await saveOriginalManufacturer('FUEL-1', 'Josper S.A.U.')
 
     expect(patchJson).toHaveBeenCalledWith('/fuels/FUEL-1', {
       originalFuel: {
-        name: 'Fuel name',
-        isChangedOrMixed: false,
+        manufacturer: 'Josper S.A.U.'
+      }
+    })
+  })
+
+  test('encodes fuel id in patch request', async () => {
+    patchJson.mockResolvedValue({ success: true })
+
+    await saveOriginalManufacturer('FUEL/1', 'Josper S.A.U.')
+
+    expect(patchJson).toHaveBeenCalledWith('/fuels/FUEL%2F1', {
+      originalFuel: {
         manufacturer: 'Josper S.A.U.'
       }
     })
