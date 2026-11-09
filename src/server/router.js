@@ -36,6 +36,7 @@ import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
 import { rebrandName } from './rebrand-name/index.js'
 import { additionalRebrandNames } from './additional-rebrand-names/index.js'
+import { originalManufacturer } from './original-manufacturer/index.js'
 import { reviewFuel } from './review-fuel/index.js'
 import { manufacturerLetter } from './manufacturer-letter/index.js'
 
@@ -85,6 +86,7 @@ export const router = {
         fuelDetails,
         rebrandName,
         additionalRebrandNames,
+        originalManufacturer,
         manufacturerLetter
       ])
 

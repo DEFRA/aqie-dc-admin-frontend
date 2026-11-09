@@ -181,7 +181,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
         text: fuel.originalFuel?.manufacturer ?? content.notProvided
       },
       ...changeAction(
-        `/original-fuel-manufacturer/${encoded}`,
+        `/original-manufacturer/${encoded}`,
         'original fuel manufacturer'
       )
     },
