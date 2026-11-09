@@ -31,11 +31,7 @@ async function handleOriginalManufacturerRequest(request, h) {
   try {
     const { data: fuel } = await getFuelForOriginalManufacturer(fuelId)
 
-    let formValue = ''
-
-    if (fuel.originalFuel && fuel.originalFuel.manufacturer) {
-      formValue = fuel.originalFuel.manufacturer
-    }
+    const formValue = fuel.originalFuel.manufacturer ?? ''
 
     return renderOriginalManufacturerPage(h, fuelId, fuel, formValue, null)
   } catch (error) {
