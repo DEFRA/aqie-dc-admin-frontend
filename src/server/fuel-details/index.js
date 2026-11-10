@@ -13,6 +13,16 @@ const paramsSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
+const subRouteStubs = [
+  '/brand-name',
+  '/additional-brand-names',
+  '/fuel-weight',
+  '/fuel-composition',
+  '/sulphur-content',
+  '/manufacturing-process',
+  '/quality-control'
+]
+
 export const fuelDetails = {
   plugin: {
     name: 'fuelDetails',
@@ -33,7 +43,17 @@ export const fuelDetails = {
           options: {
             validate: { params: paramsSchema }
           }
-        }
+        },
+        ...subRouteStubs.map((route) => ({
+          method: 'GET',
+          path: `${route}/{fuelId}`,
+          handler(request, h) {
+            return h.redirect(
+              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-details`
+            )
+          },
+          options: { validate: { params: paramsSchema } }
+        }))
       ])
     }
   }
