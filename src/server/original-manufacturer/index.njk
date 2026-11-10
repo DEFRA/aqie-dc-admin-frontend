@@ -1,0 +1,59 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    {% set originalManufacturerError = null %}
+    {% set inputClasses = '' %}
+    {% if error and error.field == 'manufacturer' %}
+      {% set originalManufacturerError = { text: error.message } %}
+      {% set inputClasses = 'govuk-input--error' %}
+    {% endif %}
+
+    <form method="post"
+          action="{{ originalManufacturerAction }}"
+          novalidate>
+      {{ govukInput({
+        id: "original-fuel-manufacturer",
+        name: "manufacturer",
+        value: formValue,
+        label: {
+          text: content.label,
+          classes: "govuk-label--xl",
+          isPageHeading: true
+        },
+        errorMessage: originalManufacturerError,
+        classes: inputClasses
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+
+        <a class="govuk-link" href="{{ fuelDetailsHref }}">{{ content.cancel }}</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
