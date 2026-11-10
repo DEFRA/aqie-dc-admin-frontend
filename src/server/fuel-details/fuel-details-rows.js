@@ -189,7 +189,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.originalFuelName },
       value: { text: fuel.originalFuel?.name ?? content.notProvided },
       ...changeAction(
-        `/original-fuel-name/${encoded}`,
+        `/original-brand/${encoded}`,
         'original fuel name or brand'
       )
     },
