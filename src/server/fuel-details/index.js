@@ -48,9 +48,12 @@ export const fuelDetails = {
           method: 'GET',
           path: `${route}/{fuelId}`,
           handler(request, h) {
-            return h.redirect(
-              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-details`
-            )
+            const encoded = encodeURIComponent(request.params.fuelId)
+            const returnPage =
+              request.query.returnTo === 'fuel-description'
+                ? 'fuel-description'
+                : 'fuel-details'
+            return h.redirect(`/review-fuel/${encoded}/${returnPage}`)
           },
           options: { validate: { params: paramsSchema } }
         }))
