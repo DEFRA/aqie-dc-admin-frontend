@@ -33,46 +33,6 @@ export const fuelDescription = {
           options: {
             validate: { params: paramsSchema }
           }
-        },
-        {
-          method: 'GET',
-          path: '/fuel-weight/{fuelId}',
-          handler(request, h) {
-            return h.redirect(
-              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-description`
-            )
-          },
-          options: { validate: { params: paramsSchema } }
-        },
-        {
-          method: 'GET',
-          path: '/fuel-composition/{fuelId}',
-          handler(request, h) {
-            return h.redirect(
-              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-description`
-            )
-          },
-          options: { validate: { params: paramsSchema } }
-        },
-        {
-          method: 'GET',
-          path: '/sulphur-content/{fuelId}',
-          handler(request, h) {
-            return h.redirect(
-              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-description`
-            )
-          },
-          options: { validate: { params: paramsSchema } }
-        },
-        {
-          method: 'GET',
-          path: '/manufacturing-process/{fuelId}',
-          handler(request, h) {
-            return h.redirect(
-              `/review-fuel/${encodeURIComponent(request.params.fuelId)}/fuel-description`
-            )
-          },
-          options: { validate: { params: paramsSchema } }
         }
       ])
     }
