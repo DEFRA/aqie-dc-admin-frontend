@@ -11,11 +11,25 @@ function buildBooleanValue(value) {
 }
 
 function buildAdditionalBrandNamesValue(additionalBrandNames) {
+  if (typeof additionalBrandNames === 'string') {
+    return additionalBrandNames.trim()
+      ? content.boolean.yes
+      : content.boolean.no
+  }
+
   if (Array.isArray(additionalBrandNames) && additionalBrandNames.length > 0) {
     return content.boolean.yes
   }
 
   return content.boolean.no
+}
+
+function formatAdditionalBrandNamesValue(additionalBrandNames) {
+  if (Array.isArray(additionalBrandNames)) {
+    return additionalBrandNames.join(', ')
+  }
+
+  return additionalBrandNames ?? ''
 }
 
 function changeAction(href, visuallyHiddenText) {
@@ -36,8 +50,10 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   const labels = content.manufacturerLabels
   const encoded = encodeURIComponent(fuelId)
   const hasAdditionalNames =
-    Array.isArray(fuel.additionalBrandNames) &&
-    fuel.additionalBrandNames.length > 0
+    (typeof fuel.additionalBrandNames === 'string' &&
+      fuel.additionalBrandNames.trim().length > 0) ||
+    (Array.isArray(fuel.additionalBrandNames) &&
+      fuel.additionalBrandNames.length > 0)
 
   const rows = [
     {
@@ -60,7 +76,9 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   if (hasAdditionalNames) {
     rows.push({
       key: { text: labels.additionalBrandNames },
-      value: { text: fuel.additionalBrandNames.join(', ') },
+      value: {
+        text: formatAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
       ...changeAction(
         `/additional-brand-names/${encoded}`,
         'additional brand names'
@@ -120,8 +138,10 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
   const labels = content.rebranderLabels
   const encoded = encodeURIComponent(fuelId)
   const hasAdditionalNames =
-    Array.isArray(fuel.additionalBrandNames) &&
-    fuel.additionalBrandNames.length > 0
+    (typeof fuel.additionalBrandNames === 'string' &&
+      fuel.additionalBrandNames.trim().length > 0) ||
+    (Array.isArray(fuel.additionalBrandNames) &&
+      fuel.additionalBrandNames.length > 0)
 
   const rows = [
     {
@@ -135,8 +155,8 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
         text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/additional-brand-names/${encoded}`,
-        'will the fuel be sold under any additional brand names'
+        `/additional-rebrand-names/${encoded}`,
+        'will the fuel be sold under any additional rebrand names'
       )
     }
   ]
@@ -144,10 +164,12 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
   if (hasAdditionalNames) {
     rows.push({
       key: { text: labels.additionalBrandNames },
-      value: { text: fuel.additionalBrandNames.join(', ') },
+      value: {
+        text: formatAdditionalBrandNamesValue(fuel.additionalBrandNames)
+      },
       ...changeAction(
-        `/additional-brand-names/${encoded}`,
-        'additional brand names'
+        `/additional-rebrand-names/${encoded}`,
+        'additional rebrand names'
       )
     })
   }
