@@ -50,28 +50,29 @@ function buildFieldHrefs(encoded) {
 }
 
 function buildDescriptionRows(fuel, hrefs, errors) {
+  const desc = fuel.fuelDescription ?? {}
   return [
     buildDescriptionRow(
       content.labels.fuelAppearance,
-      fuel.fuelDescription.appearance,
+      desc.appearance,
       hrefs.appearance,
       errors?.appearance
     ),
     buildDescriptionRow(
       content.labels.fuelWeight,
-      fuel.fuelDescription.weight,
+      desc.weight,
       hrefs.weight,
       errors?.weight
     ),
     buildDescriptionRow(
       content.labels.fuelComposition,
-      fuel.fuelDescription.composition,
+      desc.composition,
       hrefs.composition,
       errors?.composition
     ),
     buildDescriptionRow(
       content.labels.sulphurContent,
-      fuel.fuelDescription.sulphurContent,
+      desc.sulphurContent,
       hrefs.sulphurContent,
       errors?.sulphurContent
     ),
@@ -92,21 +93,19 @@ function buildErrorSummaryItems(errors, hrefs) {
 }
 
 function validateFields(fuel) {
+  const desc = fuel.fuelDescription ?? {}
   const errors = {}
 
-  if (!fuel.fuelDescription.appearance) {
+  if (!desc.appearance) {
     errors.appearance = content.errors.fuelAppearance
   }
-  if (!fuel.fuelDescription.weight) {
+  if (!desc.weight) {
     errors.weight = content.errors.fuelWeight
   }
-  if (!fuel.fuelDescription.composition) {
+  if (!desc.composition) {
     errors.composition = content.errors.fuelComposition
   }
-  if (
-    fuel.fuelDescription.sulphurContent === null ||
-    fuel.fuelDescription.sulphurContent === undefined
-  ) {
+  if (desc.sulphurContent === null || desc.sulphurContent === undefined) {
     errors.sulphurContent = content.errors.sulphurContent
   }
   if (!fuel.manufacturingProcess) {
@@ -173,12 +172,13 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
         .code(statusCodes.badRequest)
     }
 
+    const desc = fuel.fuelDescription ?? {}
     await saveFuelDescriptionCheck(fuelId, {
       fuelDescription: {
-        appearance: fuel.fuelDescription.appearance,
-        weight: fuel.fuelDescription.weight,
-        composition: fuel.fuelDescription.composition,
-        sulphurContent: fuel.fuelDescription.sulphurContent
+        appearance: desc.appearance,
+        weight: desc.weight,
+        composition: desc.composition,
+        sulphurContent: desc.sulphurContent
       },
       manufacturingProcess: fuel.manufacturingProcess
     })

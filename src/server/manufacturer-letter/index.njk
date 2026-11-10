@@ -14,7 +14,7 @@
 
     <p class="govuk-body">{{ intro }}</p>
 
-    <form method="post" action="/manufacturer-letter?fuelId={{ fuelId }}" novalidate>
+    <form method="post" action="/review-fuel/{{ fuelId }}/manufacturer-letter" novalidate>
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
           text: passButtonText,

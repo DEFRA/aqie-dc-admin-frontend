@@ -1,6 +1,9 @@
 import { fuelDetailsContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getFuelDetails, saveFuelDetailsCheck } from './fuel-details-data.js'
+import {
+  getFuelDetails,
+  markFuelDetailsCompleted
+} from './fuel-details-data.js'
 import {
   buildManufacturerFuelDetailsRows,
   buildRebranderFuelDetailsRows
@@ -9,42 +12,6 @@ import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = fuelDetailsContent.en
-
-function buildAdditionalBrandNamesString(additionalBrandNames) {
-  if (Array.isArray(additionalBrandNames) && additionalBrandNames.length > 0) {
-    return additionalBrandNames.join(', ')
-  }
-
-  return null
-}
-
-function buildManufacturePayload(fuel) {
-  return {
-    brandName: fuel.name,
-    hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
-    additionalBrandNames: buildAdditionalBrandNamesString(
-      fuel.additionalBrandNames
-    ),
-    hasQualityControlSystem: fuel.hasQualityControlSystem,
-    manufacturingProcess: fuel.manufacturingProcess,
-    fuelDescription: {
-      appearance: fuel.fuelDescription.appearance,
-      weight: fuel.fuelDescription.weight,
-      composition: fuel.fuelDescription.composition,
-      sulphurContent: fuel.fuelDescription.sulphurContent
-    }
-  }
-}
-
-function buildRebrandFuelDetailsPayload(fuel) {
-  return {
-    brandName: fuel.name,
-    hasAdditionalBrandNames: fuel.hasAdditionalBrandNames,
-    additionalBrandNames: buildAdditionalBrandNamesString(
-      fuel.additionalBrandNames
-    )
-  }
-}
 
 function buildViewModel(fuel, fuelId) {
   const isRebrander = fuel.supplierType === 'Rebrand'
@@ -89,15 +56,7 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
       return h.redirect(returnHref)
     }
 
-    const isRebrander = fuel.supplierType === 'Rebrand'
-
-    await saveFuelDetailsCheck(
-      fuelId,
-      'fuelDetails',
-      isRebrander
-        ? buildRebrandFuelDetailsPayload(fuel)
-        : buildManufacturePayload(fuel)
-    )
+    await markFuelDetailsCompleted(fuelId)
 
     return h.redirect(returnHref)
   } catch (error) {

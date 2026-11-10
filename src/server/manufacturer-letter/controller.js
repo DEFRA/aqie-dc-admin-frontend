@@ -25,16 +25,11 @@ function renderServiceError(h, message = content.errors.generic) {
 
 /**
  * Loads the manufacturer-letter review page for a single fuel.
- * The fuelId is passed via query string parameter.
+ * The fuelId is passed via route parameter.
  * Only allows Rebrand fuels; Manufacture fuels are rejected.
  */
 async function loadManufacturerLetterPage(request, h) {
-  const { fuelId } = request.query
-
-  if (!fuelId) {
-    logger.error('[manufacturerLetter] missing fuelId in query string')
-    return renderServiceError(h)
-  }
+  const { fuelId } = request.params
 
   try {
     const { data: fuel } = await getFuel(fuelId)
@@ -69,13 +64,8 @@ async function loadManufacturerLetterPage(request, h) {
  * Saves the pass/fail result for the manufacturer-letter review and returns to the review screen.
  */
 async function submitManufacturerLetterDecision(request, h) {
-  const { fuelId } = request.query
+  const { fuelId } = request.params
   const pass = checkResult[request.payload.decision]
-
-  if (!fuelId) {
-    logger.error('[manufacturerLetter] missing fuelId in query string')
-    return renderServiceError(h)
-  }
 
   try {
     await saveManufacturerLetterResult(fuelId, pass)
