@@ -17,7 +17,7 @@ export const qualityControl = {
       server.route([
         {
           method: 'GET',
-          path: '/quality-control/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/quality-control',
           ...qualityControlController,
           options: {
             validate: { params: paramsSchema }

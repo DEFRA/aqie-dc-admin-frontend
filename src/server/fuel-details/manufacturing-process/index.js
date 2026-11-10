@@ -17,7 +17,7 @@ export const manufacturingProcess = {
       server.route([
         {
           method: 'GET',
-          path: '/manufacturing-process/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/manufacturing-process',
           ...manufacturingProcessController,
           options: {
             validate: { params: paramsSchema }

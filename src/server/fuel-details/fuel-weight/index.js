@@ -17,7 +17,7 @@ export const fuelWeight = {
       server.route([
         {
           method: 'GET',
-          path: '/fuel-weight/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/fuel-weight',
           ...fuelWeightController,
           options: {
             validate: { params: paramsSchema }

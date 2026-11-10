@@ -17,7 +17,7 @@ export const sulphurContent = {
       server.route([
         {
           method: 'GET',
-          path: '/sulphur-content/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/sulphur-content',
           ...sulphurContentController,
           options: {
             validate: { params: paramsSchema }

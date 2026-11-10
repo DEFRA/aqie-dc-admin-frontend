@@ -40,10 +40,7 @@ describe('#handleFuelAppearanceRequest', () => {
     })
     const h = toolkit()
 
-    await handleFuelAppearanceRequest(
-      { params: { fuelId: 'fuel-uuid-1' }, query: {} },
-      h
-    )
+    await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith(
       'fuel-details/fuel-appearance/index',
@@ -58,49 +55,24 @@ describe('#handleFuelAppearanceRequest', () => {
     getFuelAppearanceMock.mockResolvedValue({ data: { fuelDescription: {} } })
     const h = toolkit()
 
-    await handleFuelAppearanceRequest(
-      { params: { fuelId: 'fuel-uuid-1' }, query: {} },
-      h
-    )
+    await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.formValue).toBe('')
   })
 
-  test('fuelDetailsHref and fuelAppearanceAction point to fuel-details URLs by default', async () => {
+  test('fuelDetailsHref and fuelAppearanceAction point to the correct URLs', async () => {
     getFuelAppearanceMock.mockResolvedValue({ data: { fuelDescription: {} } })
     const h = toolkit()
 
-    await handleFuelAppearanceRequest(
-      { params: { fuelId: 'fuel-uuid-1' }, query: {} },
-      h
-    )
+    await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
     expect(viewModel.fuelDetailsHref).toBe(
       '/review-fuel/fuel-uuid-1/fuel-details'
     )
-    expect(viewModel.fuelAppearanceAction).toBe('/fuel-appearance/fuel-uuid-1')
-  })
-
-  test('fuelDetailsHref and fuelAppearanceAction point to fuel-description URLs when returnTo=fuel-description', async () => {
-    getFuelAppearanceMock.mockResolvedValue({ data: { fuelDescription: {} } })
-    const h = toolkit()
-
-    await handleFuelAppearanceRequest(
-      {
-        params: { fuelId: 'fuel-uuid-1' },
-        query: { returnTo: 'fuel-description' }
-      },
-      h
-    )
-
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.fuelDetailsHref).toBe(
-      '/review-fuel/fuel-uuid-1/fuel-description'
-    )
     expect(viewModel.fuelAppearanceAction).toBe(
-      '/fuel-appearance/fuel-uuid-1?returnTo=fuel-description'
+      '/review-fuel/fuel-uuid-1/fuel-details/fuel-appearance'
     )
   })
 
@@ -108,10 +80,7 @@ describe('#handleFuelAppearanceRequest', () => {
     getFuelAppearanceMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 
-    await handleFuelAppearanceRequest(
-      { params: { fuelId: 'fuel-uuid-1' }, query: {} },
-      h
-    )
+    await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
@@ -133,7 +102,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     await handleFuelAppearanceSaveRequest(
       {
         params: { fuelId: 'fuel-uuid-1' },
-        query: {},
         payload: { appearance: 'Are firelogs that are approx. 220mm in length' }
       },
       h
@@ -148,24 +116,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     )
   })
 
-  test('saves and redirects to fuel-description when returnTo=fuel-description', async () => {
-    saveFuelAppearanceMock.mockResolvedValue({})
-    const h = toolkit()
-
-    await handleFuelAppearanceSaveRequest(
-      {
-        params: { fuelId: 'fuel-uuid-1' },
-        query: { returnTo: 'fuel-description' },
-        payload: { appearance: 'Are firelogs that are approx. 220mm in length' }
-      },
-      h
-    )
-
-    expect(h.redirect).toHaveBeenCalledWith(
-      '/review-fuel/fuel-uuid-1/fuel-description'
-    )
-  })
-
   test('trims whitespace before saving', async () => {
     saveFuelAppearanceMock.mockResolvedValue({})
     const h = toolkit()
@@ -173,7 +123,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     await handleFuelAppearanceSaveRequest(
       {
         params: { fuelId: 'fuel-uuid-1' },
-        query: {},
         payload: { appearance: '  Some description  ' }
       },
       h
@@ -191,7 +140,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     await handleFuelAppearanceSaveRequest(
       {
         params: { fuelId: 'fuel-uuid-1' },
-        query: {},
         payload: { appearance: '' }
       },
       h
@@ -216,7 +164,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     await handleFuelAppearanceSaveRequest(
       {
         params: { fuelId: 'fuel-uuid-1' },
-        query: {},
         payload: { appearance: '   ' }
       },
       h
@@ -233,7 +180,6 @@ describe('#handleFuelAppearanceSaveRequest', () => {
     await handleFuelAppearanceSaveRequest(
       {
         params: { fuelId: 'fuel-uuid-1' },
-        query: {},
         payload: { appearance: 'Some description' }
       },
       h

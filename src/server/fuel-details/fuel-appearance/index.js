@@ -15,13 +15,13 @@ export const fuelAppearance = {
       server.route([
         {
           method: 'GET',
-          path: '/fuel-appearance/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/fuel-appearance',
           ...fuelAppearanceController,
           options: { validate: { params: paramsSchema } }
         },
         {
           method: 'POST',
-          path: '/fuel-appearance/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/fuel-appearance',
           ...fuelAppearanceSaveController,
           options: {
             validate: {

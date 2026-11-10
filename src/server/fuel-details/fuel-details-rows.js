@@ -59,7 +59,10 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.brandName },
       value: { text: fuel.name ?? content.notProvided },
-      ...changeAction(`/brand-name/${encoded}`, 'brand name')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-details/brand-name`,
+        'brand name'
+      )
     },
     {
       key: { text: labels.additionalBrandNamesQuestion },
@@ -67,7 +70,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/additional-brand-names/${encoded}`,
+        `/review-fuel/${encoded}/fuel-details/additional-brand-names`,
         'will the fuel be sold under any additional brand names'
       )
     }
@@ -80,7 +83,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: formatAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/additional-brand-names/${encoded}`,
+        `/review-fuel/${encoded}/fuel-details/additional-brand-names`,
         'additional brand names'
       )
     })
@@ -92,32 +95,44 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       value: {
         text: fuel.fuelDescription?.appearance ?? content.notProvided
       },
-      ...changeAction(`/fuel-appearance/${encoded}`, 'fuel appearance')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-details/fuel-appearance`,
+        'fuel appearance'
+      )
     },
     {
       key: { text: labels.fuelWeight },
       value: { text: fuel.fuelDescription?.weight ?? content.notProvided },
-      ...changeAction(`/fuel-weight/${encoded}`, 'fuel weight')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-details/fuel-weight`,
+        'fuel weight'
+      )
     },
     {
       key: { text: labels.fuelComposition },
       value: {
         text: fuel.fuelDescription?.composition ?? content.notProvided
       },
-      ...changeAction(`/fuel-composition/${encoded}`, 'fuel composition')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-details/fuel-composition`,
+        'fuel composition'
+      )
     },
     {
       key: { text: labels.sulphurContent },
       value: {
         text: fuel.fuelDescription.sulphurContent ?? content.notProvided
       },
-      ...changeAction(`/sulphur-content/${encoded}`, 'sulphur content')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-details/sulphur-content`,
+        'sulphur content'
+      )
     },
     {
       key: { text: labels.manufacturingProcess },
       value: { text: fuel.manufacturingProcess ?? content.notProvided },
       ...changeAction(
-        `/manufacturing-process/${encoded}`,
+        `/review-fuel/${encoded}/fuel-details/manufacturing-process`,
         'manufacturing process'
       )
     },
@@ -125,7 +140,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.hasQualityControlSystem },
       value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },
       ...changeAction(
-        `/quality-control/${encoded}`,
+        `/review-fuel/${encoded}/fuel-details/quality-control`,
         'monitored quality control system'
       )
     }

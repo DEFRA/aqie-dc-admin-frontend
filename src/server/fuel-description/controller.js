@@ -41,11 +41,11 @@ function buildDescriptionRow(label, value, href, errorMessage) {
 
 function buildFieldHrefs(encoded) {
   return {
-    appearance: `/fuel-appearance/${encoded}?returnTo=fuel-description`,
-    weight: `/fuel-weight/${encoded}?returnTo=fuel-description`,
-    composition: `/fuel-composition/${encoded}?returnTo=fuel-description`,
-    sulphurContent: `/sulphur-content/${encoded}?returnTo=fuel-description`,
-    manufacturingProcess: `/manufacturing-process/${encoded}?returnTo=fuel-description`
+    appearance: `/review-fuel/${encoded}/fuel-description/fuel-appearance`,
+    weight: `/review-fuel/${encoded}/fuel-description/fuel-weight`,
+    composition: `/review-fuel/${encoded}/fuel-description/fuel-composition`,
+    sulphurContent: `/review-fuel/${encoded}/fuel-description/sulphur-content`,
+    manufacturingProcess: `/review-fuel/${encoded}/fuel-description/manufacturing-process`
   }
 }
 

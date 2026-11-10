@@ -17,7 +17,7 @@ export const additionalBrandNames = {
       server.route([
         {
           method: 'GET',
-          path: '/additional-brand-names/{fuelId}',
+          path: '/review-fuel/{fuelId}/fuel-details/additional-brand-names',
           ...additionalBrandNamesController,
           options: {
             validate: { params: paramsSchema }
