@@ -2,21 +2,13 @@ import { additionalRebrandNamesContent } from './content.js'
 
 const content = additionalRebrandNamesContent.en
 
-export function normaliseAdditionalBrandNamesValue(value) {
-  if (Array.isArray(value)) {
-    return value.join(', ')
-  }
-
-  return value ?? ''
-}
-
 export function getAdditionalRebrandNamesValues(fuel = {}) {
-  const additionalBrandNamesValue = normaliseAdditionalBrandNamesValue(
-    fuel.additionalBrandNames
-  )
+  const additionalBrandNamesValue = fuel.additionalBrandNames ?? ''
 
   return {
-    hasAdditionalBrandNames: Boolean(additionalBrandNamesValue.trim()),
+    hasAdditionalBrandNames:
+      typeof additionalBrandNamesValue === 'string' &&
+      additionalBrandNamesValue.trim().length > 0,
     additionalBrandNames: additionalBrandNamesValue
   }
 }

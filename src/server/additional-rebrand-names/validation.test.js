@@ -2,34 +2,14 @@ import { describe, expect, test } from 'vitest'
 
 import {
   getAdditionalRebrandNamesValues,
-  normaliseAdditionalBrandNamesValue,
   validateAdditionalRebrandNames
 } from './validation.js'
 
-describe('normaliseAdditionalBrandNamesValue', () => {
-  test('returns the original value when it is already a string', () => {
-    expect(normaliseAdditionalBrandNamesValue('Rebrand 1, Rebrand 2')).toBe(
-      'Rebrand 1, Rebrand 2'
-    )
-  })
-
-  test('returns an empty string when value is nullish', () => {
-    expect(normaliseAdditionalBrandNamesValue(null)).toBe('')
-    expect(normaliseAdditionalBrandNamesValue(undefined)).toBe('')
-  })
-
-  test('joins array values into a comma separated string', () => {
-    expect(normaliseAdditionalBrandNamesValue(['Rebrand 1', 'Rebrand 2'])).toBe(
-      'Rebrand 1, Rebrand 2'
-    )
-  })
-})
-
 describe('getAdditionalRebrandNamesValues', () => {
-  test('maps saved fuel values into form values', () => {
+  test('maps a saved string value into the form values without conversion', () => {
     expect(
       getAdditionalRebrandNamesValues({
-        additionalBrandNames: ['Rebrand 1', 'Rebrand 2']
+        additionalBrandNames: 'Rebrand 1, Rebrand 2'
       })
     ).toEqual({
       hasAdditionalBrandNames: true,
@@ -37,7 +17,7 @@ describe('getAdditionalRebrandNamesValues', () => {
     })
   })
 
-  test('returns a cleared selection when the fuel has no saved values', () => {
+  test('returns an empty value when the saved fuel name is nullish', () => {
     expect(
       getAdditionalRebrandNamesValues({ additionalBrandNames: null })
     ).toEqual({

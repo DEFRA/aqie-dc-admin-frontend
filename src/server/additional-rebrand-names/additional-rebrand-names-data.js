@@ -14,13 +14,10 @@ export async function getFuelForAdditionalRebrandNames(fuelId) {
 }
 
 export async function saveAdditionalRebrandNames(fuelId, additionalBrandNames) {
-  const payload = {}
-  const trimmedValue =
-    typeof additionalBrandNames === 'string'
-      ? additionalBrandNames.trim()
-      : additionalBrandNames
+  const trimmedValue = additionalBrandNames?.trim() ?? null
+  const payloadValue = trimmedValue === '' ? null : trimmedValue
 
-  payload.additionalBrandNames = trimmedValue || null
-
-  return patchJson(`/fuels/${encodeURIComponent(fuelId)}`, payload)
+  return patchJson(`/fuels/${encodeURIComponent(fuelId)}`, {
+    additionalBrandNames: payloadValue
+  })
 }
