@@ -107,7 +107,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.hasQualityControlSystem },
       value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },
       ...changeAction(
-        `/monitored-quality-control/${encoded}`,
+        `/quality-control/${encoded}`,
         'monitored quality control system'
       )
     }

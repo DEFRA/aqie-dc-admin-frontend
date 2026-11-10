@@ -36,6 +36,13 @@ import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
 import { fuelAppearance } from './fuel-details/fuel-appearance/index.js'
 import { fuelDescription } from './fuel-description/index.js'
+import { brandName } from './fuel-details/brand-name/index.js'
+import { additionalBrandNames } from './fuel-details/additional-brand-names/index.js'
+import { fuelWeight } from './fuel-details/fuel-weight/index.js'
+import { fuelComposition } from './fuel-details/fuel-composition/index.js'
+import { sulphurContent } from './fuel-details/sulphur-content/index.js'
+import { manufacturingProcess } from './fuel-details/manufacturing-process/index.js'
+import { qualityControl } from './fuel-details/quality-control/index.js'
 import { rebrandName } from './rebrand-name/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
 import { originalBrand } from './original-brand/index.js'
@@ -88,6 +95,13 @@ export const router = {
         fuelDetails,
         fuelAppearance,
         fuelDescription,
+        brandName,
+        additionalBrandNames,
+        fuelWeight,
+        fuelComposition,
+        sulphurContent,
+        manufacturingProcess,
+        qualityControl,
         rebrandName,
         originalManufacturer,
         originalBrand,
