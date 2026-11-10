@@ -44,6 +44,7 @@ import { sulphurContent } from './fuel-details/sulphur-content/index.js'
 import { manufacturingProcess } from './fuel-details/manufacturing-process/index.js'
 import { qualityControl } from './fuel-details/quality-control/index.js'
 import { rebrandName } from './rebrand-name/index.js'
+import { additionalRebrandNames } from './additional-rebrand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
 import { originalBrand } from './original-brand/index.js'
 import { reviewFuel } from './review-fuel/index.js'
@@ -103,6 +104,7 @@ export const router = {
         manufacturingProcess,
         qualityControl,
         rebrandName,
+        additionalRebrandNames,
         originalManufacturer,
         originalBrand,
         manufacturerLetter
