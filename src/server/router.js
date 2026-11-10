@@ -35,6 +35,7 @@ import { testResults } from './test-results/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
 import { rebrandName } from './rebrand-name/index.js'
+import { additionalRebrandNames } from './additional-rebrand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
 import { originalBrand } from './original-brand/index.js'
 import { reviewFuel } from './review-fuel/index.js'
@@ -85,6 +86,7 @@ export const router = {
         reviewFuelApplication,
         fuelDetails,
         rebrandName,
+        additionalRebrandNames,
         originalManufacturer,
         originalBrand,
         manufacturerLetter
