@@ -4,18 +4,11 @@ import {
   getFuelAppearance,
   saveFuelAppearance
 } from './fuel-appearance-data.js'
+import { getFuelReviewHref } from '../common/helpers/fuel-review-href.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = fuelAppearanceContent.en
-
-// Backend contract: rebrand fuels are reviewed from fuel-description, all others from fuel-details.
-function getReturnHref(fuel, fuelId) {
-  const section =
-    fuel.supplierType === 'Rebrand' ? 'fuel-description' : 'fuel-details'
-
-  return `/review-fuel/${encodeURIComponent(fuelId)}/${section}`
-}
 
 function renderPage(h, fuelId, returnHref, formValue, error) {
   return h.view('fuel-appearance/index', {
@@ -43,7 +36,7 @@ async function handleFuelAppearanceRequest(request, h) {
     return renderPage(
       h,
       fuelId,
-      getReturnHref(fuel, fuelId),
+      getFuelReviewHref(fuel, fuelId),
       fuel.fuelDescription?.appearance ?? '',
       null
     )
@@ -61,7 +54,7 @@ async function handleFuelAppearanceSaveRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelAppearance(fuelId)
-    const returnHref = getReturnHref(fuel, fuelId)
+    const returnHref = getFuelReviewHref(fuel, fuelId)
 
     if (!trimmed) {
       return renderPage(h, fuelId, returnHref, appearance, {
