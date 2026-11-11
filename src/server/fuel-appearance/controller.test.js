@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { statusCodes } from '../../common/constants/status-codes.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 import {
   handleFuelAppearanceRequest,
   handleFuelAppearanceSaveRequest
@@ -43,7 +43,7 @@ describe('#handleFuelAppearanceRequest', () => {
     await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     expect(h.view).toHaveBeenCalledWith(
-      'fuel-details/fuel-appearance/index',
+      'fuel-appearance/index',
       expect.objectContaining({
         formValue: 'Are firelogs that are approx. 220mm in length',
         pageTitle: 'What does the fuel look like?'
@@ -72,8 +72,23 @@ describe('#handleFuelAppearanceRequest', () => {
       '/review-fuel/fuel-uuid-1/fuel-details'
     )
     expect(viewModel.fuelAppearanceAction).toBe(
-      '/review-fuel/fuel-uuid-1/fuel-details/fuel-appearance'
+      '/review-fuel/fuel-uuid-1/fuel-appearance'
     )
+  })
+
+  test('returns to fuel-description for a rebrand fuel', async () => {
+    getFuelAppearanceMock.mockResolvedValue({
+      data: { supplierType: 'Rebrand', fuelDescription: null }
+    })
+    const h = toolkit()
+
+    await handleFuelAppearanceRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.fuelDetailsHref).toBe(
+      '/review-fuel/fuel-uuid-1/fuel-description'
+    )
+    expect(viewModel.formValue).toBe('')
   })
 
   test('renders error page when the GET fetch fails', async () => {
@@ -92,7 +107,27 @@ describe('#handleFuelAppearanceRequest', () => {
 describe('#handleFuelAppearanceSaveRequest', () => {
   beforeEach(() => {
     getFuelAppearanceMock.mockReset()
+    getFuelAppearanceMock.mockResolvedValue({
+      data: { supplierType: 'Manufacture' }
+    })
     saveFuelAppearanceMock.mockReset()
+  })
+
+  test('saves and redirects to fuel-description for a rebrand fuel', async () => {
+    getFuelAppearanceMock.mockResolvedValue({
+      data: { supplierType: 'Rebrand' }
+    })
+    saveFuelAppearanceMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelAppearanceSaveRequest(
+      { params: { fuelId: 'fuel-uuid-1' }, payload: { appearance: 'Logs' } },
+      h
+    )
+
+    expect(h.redirect).toHaveBeenCalledWith(
+      '/review-fuel/fuel-uuid-1/fuel-description'
+    )
   })
 
   test('saves and redirects to fuel-details on valid input', async () => {
@@ -147,7 +182,7 @@ describe('#handleFuelAppearanceSaveRequest', () => {
 
     expect(saveFuelAppearanceMock).not.toHaveBeenCalled()
     expect(h.view).toHaveBeenCalledWith(
-      'fuel-details/fuel-appearance/index',
+      'fuel-appearance/index',
       expect.objectContaining({
         pageTitle: 'Error: What does the fuel look like?',
         error: expect.objectContaining({

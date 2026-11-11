@@ -96,17 +96,14 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: fuel.fuelDescription?.appearance ?? content.notProvided
       },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/fuel-appearance`,
+        `/review-fuel/${encoded}/fuel-appearance`,
         'fuel appearance'
       )
     },
     {
       key: { text: labels.fuelWeight },
       value: { text: fuel.fuelDescription?.weight ?? content.notProvided },
-      ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/fuel-weight`,
-        'fuel weight'
-      )
+      ...changeAction(`/review-fuel/${encoded}/fuel-weight`, 'fuel weight')
     },
     {
       key: { text: labels.fuelComposition },
@@ -114,7 +111,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: fuel.fuelDescription?.composition ?? content.notProvided
       },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/fuel-composition`,
+        `/review-fuel/${encoded}/fuel-composition`,
         'fuel composition'
       )
     },
@@ -124,7 +121,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: fuel.fuelDescription.sulphurContent ?? content.notProvided
       },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/sulphur-content`,
+        `/review-fuel/${encoded}/sulphur-content`,
         'sulphur content'
       )
     },
@@ -132,7 +129,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.manufacturingProcess },
       value: { text: fuel.manufacturingProcess ?? content.notProvided },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/manufacturing-process`,
+        `/review-fuel/${encoded}/manufacturing-process`,
         'manufacturing process'
       )
     },

@@ -34,13 +34,12 @@ import { testReports } from './test-reports/index.js'
 import { testResults } from './test-results/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
-import { fuelAppearance } from './fuel-details/fuel-appearance/index.js'
+import { fuelAppearance } from './fuel-appearance/index.js'
 import { fuelDescription } from './fuel-description/index.js'
-import { fuelDescriptionFuelAppearance } from './fuel-description/fuel-appearance/index.js'
-import { fuelDescriptionFuelWeight } from './fuel-description/fuel-weight/index.js'
-import { fuelDescriptionFuelComposition } from './fuel-description/fuel-composition/index.js'
-import { fuelDescriptionSulphurContent } from './fuel-description/sulphur-content/index.js'
-import { fuelDescriptionManufacturingProcess } from './fuel-description/manufacturing-process/index.js'
+import { fuelWeight } from './fuel-weight/index.js'
+import { fuelComposition } from './fuel-composition/index.js'
+import { sulphurContent } from './sulphur-content/index.js'
+import { manufacturingProcess } from './manufacturing-process/index.js'
 import { rebrandName } from './rebrand-name/index.js'
 import { additionalRebrandNames } from './additional-rebrand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
@@ -93,11 +92,10 @@ export const router = {
         reviewFuelApplication,
         fuelDetails,
         fuelDescription,
-        fuelDescriptionFuelAppearance,
-        fuelDescriptionFuelWeight,
-        fuelDescriptionFuelComposition,
-        fuelDescriptionSulphurContent,
-        fuelDescriptionManufacturingProcess,
+        fuelWeight,
+        fuelComposition,
+        sulphurContent,
+        manufacturingProcess,
         rebrandName,
         additionalRebrandNames,
         originalManufacturer,

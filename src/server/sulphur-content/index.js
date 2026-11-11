@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { fuelDescriptionFuelCompositionController } from './controller.js'
+import { sulphurContentController } from './controller.js'
 
 const paramsSchema = Joi.object({
   fuelId: Joi.string()
@@ -10,15 +10,15 @@ const paramsSchema = Joi.object({
     .pattern(/^[A-Za-z0-9-]+$/)
 })
 
-export const fuelDescriptionFuelComposition = {
+export const sulphurContent = {
   plugin: {
-    name: 'fuelDescriptionFuelComposition',
+    name: 'sulphurContent',
     register(server) {
       server.route([
         {
           method: 'GET',
-          path: '/review-fuel/{fuelId}/fuel-description/fuel-composition',
-          ...fuelDescriptionFuelCompositionController,
+          path: '/review-fuel/{fuelId}/sulphur-content',
+          ...sulphurContentController,
           options: {
             validate: { params: paramsSchema }
           }

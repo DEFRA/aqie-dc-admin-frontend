@@ -342,7 +342,7 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
       '<p id="weight-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Add fuel weight</p>'
     )
     expect(weightRow.actions.items[0].href).toBe(
-      '/review-fuel/fuel-uuid-2/fuel-description/fuel-weight'
+      '/review-fuel/fuel-uuid-2/fuel-weight'
     )
   })
 

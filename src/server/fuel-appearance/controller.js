@@ -1,25 +1,37 @@
 import { fuelAppearanceContent } from './content.js'
-import { createLogger } from '../../common/helpers/logging/logger.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
 import {
   getFuelAppearance,
   saveFuelAppearance
 } from './fuel-appearance-data.js'
-import { statusCodes } from '../../common/constants/status-codes.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = fuelAppearanceContent.en
 
-function renderPage(h, fuelId, formValue, error) {
-  const encoded = encodeURIComponent(fuelId)
+// Backend contract: rebrand fuels are reviewed from fuel-description, all others from fuel-details.
+function getReturnHref(fuel, fuelId) {
+  const section =
+    fuel.supplierType === 'Rebrand' ? 'fuel-description' : 'fuel-details'
 
-  return h.view('fuel-details/fuel-appearance/index', {
+  return `/review-fuel/${encodeURIComponent(fuelId)}/${section}`
+}
+
+function renderPage(h, fuelId, returnHref, formValue, error) {
+  return h.view('fuel-appearance/index', {
     pageTitle: error ? `Error: ${content.heading}` : content.heading,
     content,
     formValue,
     error,
-    fuelDetailsHref: `/review-fuel/${encoded}/fuel-details`,
-    fuelAppearanceAction: `/review-fuel/${encoded}/fuel-details/fuel-appearance`
+    fuelDetailsHref: returnHref,
+    fuelAppearanceAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-appearance`
   })
+}
+
+function renderServiceError(h) {
+  return h
+    .view('error/index', { message: content.errors.generic })
+    .code(statusCodes.internalServerError)
 }
 
 async function handleFuelAppearanceRequest(request, h) {
@@ -28,25 +40,31 @@ async function handleFuelAppearanceRequest(request, h) {
   try {
     const { data: fuel } = await getFuelAppearance(fuelId)
 
-    return renderPage(h, fuelId, fuel.fuelDescription.appearance ?? '', null)
+    return renderPage(
+      h,
+      fuelId,
+      getReturnHref(fuel, fuelId),
+      fuel.fuelDescription?.appearance ?? '',
+      null
+    )
   } catch (error) {
     logger.error(`[fuelAppearance] failed to load ${fuelId}: ${error.message}`)
 
-    return h
-      .view('error/index', { message: content.errors.generic })
-      .code(statusCodes.internalServerError)
+    return renderServiceError(h)
   }
 }
 
 async function handleFuelAppearanceSaveRequest(request, h) {
   const { fuelId } = request.params
-  const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
   const appearance = request.payload.appearance ?? ''
   const trimmed = appearance.trim()
 
   try {
+    const { data: fuel } = await getFuelAppearance(fuelId)
+    const returnHref = getReturnHref(fuel, fuelId)
+
     if (!trimmed) {
-      return renderPage(h, fuelId, appearance, {
+      return renderPage(h, fuelId, returnHref, appearance, {
         field: 'appearance',
         message: content.errors.appearanceRequired,
         href: '#appearance'
@@ -55,13 +73,11 @@ async function handleFuelAppearanceSaveRequest(request, h) {
 
     await saveFuelAppearance(fuelId, trimmed)
 
-    return h.redirect(fuelDetailsHref)
+    return h.redirect(returnHref)
   } catch (error) {
     logger.error(`[fuelAppearance] failed to save ${fuelId}: ${error.message}`)
 
-    return h
-      .view('error/index', { message: content.errors.generic })
-      .code(statusCodes.internalServerError)
+    return renderServiceError(h)
   }
 }
 
