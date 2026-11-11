@@ -182,7 +182,7 @@ describe('#handleFuelDetailsRequest', () => {
     expect(viewModel.isAlreadyComplete).toBe(false)
   })
 
-  test('sets isAlreadyComplete to false always', async () => {
+  test('sets isAlreadyComplete to true when fuelDetails check is complete', async () => {
     getFuelDetailsMock.mockResolvedValue({
       data: {
         ...baseFuel,
@@ -194,7 +194,7 @@ describe('#handleFuelDetailsRequest', () => {
     await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(false)
+    expect(viewModel.isAlreadyComplete).toBe(true)
   })
 
   test('renders error page when API fetch fails', async () => {
@@ -419,7 +419,8 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     markFuelDetailsCompletedMock.mockReset()
   })
 
-  test('marks the check as complete and redirects', async () => {
+  test('marks fuelDetails complete and redirects for a manufacturer', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     markFuelDetailsCompletedMock.mockResolvedValue({})
     const h = toolkit()
 
@@ -432,7 +433,40 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
   })
 
-  test('renders error page when the mark complete fails', async () => {
+  test('marks fuelDetails complete and redirects for a rebrand', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
+    markFuelDetailsCompletedMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    expect(markFuelDetailsCompletedMock).toHaveBeenCalledWith('fuel-uuid-2')
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
+  })
+
+  test('redirects without saving when fuelDetails check is already complete', async () => {
+    getFuelDetailsMock.mockResolvedValue({
+      data: {
+        ...baseFuel,
+        technicalReview: { listingChecks: { fuelDetails: true } }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    expect(markFuelDetailsCompletedMock).not.toHaveBeenCalled()
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
+  })
+
+  test('renders error page when the save fails', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     markFuelDetailsCompletedMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 
@@ -441,6 +475,22 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
       h
     )
 
+    expect(h.view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
+  })
+
+  test('renders error page when the GET fetch fails before save', async () => {
+    getFuelDetailsMock.mockRejectedValue(new Error('not found'))
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    expect(markFuelDetailsCompletedMock).not.toHaveBeenCalled()
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
     })

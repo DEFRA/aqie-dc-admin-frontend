@@ -34,6 +34,8 @@ import { testReports } from './test-reports/index.js'
 import { testResults } from './test-results/index.js'
 import { reviewFuelApplication } from './review-fuel-application/index.js'
 import { fuelDetails } from './fuel-details/index.js'
+import { fuelAppearance } from './fuel-appearance/index.js'
+import { fuelDescription } from './fuel-description/index.js'
 import { rebrandName } from './rebrand-name/index.js'
 import { additionalRebrandNames } from './additional-rebrand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
@@ -85,11 +87,13 @@ export const router = {
         reviewFuel,
         reviewFuelApplication,
         fuelDetails,
+        fuelDescription,
         rebrandName,
         additionalRebrandNames,
         originalManufacturer,
         originalBrand,
-        manufacturerLetter
+        manufacturerLetter,
+        fuelAppearance
       ])
 
       // Static assets
