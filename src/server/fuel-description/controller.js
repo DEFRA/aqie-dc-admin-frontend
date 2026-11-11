@@ -2,7 +2,7 @@ import { fuelDescriptionContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
 import {
   getFuelDescription,
-  saveFuelDescriptionCheck
+  markFuelDescriptionComplete
 } from './fuel-description-data.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
@@ -183,16 +183,7 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
         .code(statusCodes.badRequest)
     }
 
-    const desc = getDescription(fuel)
-    await saveFuelDescriptionCheck(fuelId, {
-      fuelDescription: {
-        appearance: desc.appearance,
-        weight: desc.weight,
-        composition: desc.composition,
-        sulphurContent: desc.sulphurContent
-      },
-      manufacturingProcess: fuel.manufacturingProcess
-    })
+    await markFuelDescriptionComplete(fuelId)
 
     return h.redirect(returnHref)
   } catch (error) {

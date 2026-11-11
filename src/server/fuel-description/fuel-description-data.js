@@ -5,9 +5,11 @@ export async function getFuelDescription(fuelId) {
   return getFuelTechnicalReview(fuelId)
 }
 
-export async function saveFuelDescriptionCheck(fuelId, data) {
+const CHECK = 'fuelDescription'
+
+export async function markFuelDescriptionComplete(fuelId) {
   return patchJson(
     `/fuels/${encodeURIComponent(fuelId)}/technical-review/checks`,
-    { check: 'fuelDescription', result: true, data }
+    { check: CHECK, result: true }
   )
 }
