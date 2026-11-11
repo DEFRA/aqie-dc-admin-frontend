@@ -3,6 +3,8 @@ export const fuelDescriptionContent = {
     pageTitle: (name) => `Add fuel description for ${name}`,
     heading: (name) => `Add fuel description for ${name}`,
     originalFuelHeading: 'Details of original fuel',
+    completed: 'Completed',
+    returnToOverview: 'Return to fuel overview',
     labels: {
       originalManufacturer: 'Original manufacturer',
       originalBrandName: 'Original brand name',
@@ -18,6 +20,7 @@ export const fuelDescriptionContent = {
       cancel: 'Cancel'
     },
     errors: {
+      summaryTitle: 'There is a problem',
       fuelAppearance: 'Add fuel appearance',
       fuelWeight: 'Add fuel weight',
       fuelComposition: 'Add fuel composition',

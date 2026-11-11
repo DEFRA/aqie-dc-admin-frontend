@@ -8,6 +8,7 @@ import {
   FUEL_DESCRIPTION_FIELDS,
   getFuelDescriptionFieldHref
 } from '../common/helpers/fuel-description-fields.js'
+import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -118,7 +119,7 @@ async function handleFuelDescriptionRequest(request, h) {
   try {
     const { data: fuel } = await getFuelDescription(fuelId)
 
-    if (fuel.supplierType !== 'Rebrand') {
+    if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
       return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
     }
 
@@ -140,7 +141,7 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
     const { data: fuel } = await getFuelDescription(fuelId)
     const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
-    if (fuel.supplierType !== 'Rebrand') {
+    if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
       return h.redirect(returnHref)
     }
 
