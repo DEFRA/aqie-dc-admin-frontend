@@ -27,8 +27,9 @@ async function handleFuelDescriptionFuelAppearanceRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelAppearance(fuelId)
+    const desc = fuel.fuelDescription ?? {}
 
-    return renderPage(h, fuelId, fuel.fuelDescription.appearance ?? '', null)
+    return renderPage(h, fuelId, desc.appearance ?? '', null)
   } catch (error) {
     logger.error(
       `[fuelDescriptionFuelAppearance] failed to load ${fuelId}: ${error.message}`
