@@ -4,6 +4,10 @@ import {
   getFuelDescription,
   markFuelDescriptionComplete
 } from './fuel-description-data.js'
+import {
+  FUEL_DESCRIPTION_FIELDS,
+  getFuelDescriptionFieldHref
+} from '../common/helpers/fuel-description-fields.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -45,55 +49,16 @@ function buildDescriptionRow(key, label, value, href, errorMessage) {
   }
 }
 
-function buildFieldHrefs(encoded) {
-  return {
-    appearance: `/review-fuel/${encoded}/fuel-appearance`,
-    weight: `/review-fuel/${encoded}/fuel-weight`,
-    composition: `/review-fuel/${encoded}/fuel-composition`,
-    sulphurContent: `/review-fuel/${encoded}/sulphur-content`,
-    manufacturingProcess: `/review-fuel/${encoded}/manufacturing-process`
-  }
-}
-
-function buildDescriptionRows(fuel, hrefs, errors) {
-  const desc = getDescription(fuel)
-  return [
+function buildDescriptionRows(fuel, fuelId, errors) {
+  return FUEL_DESCRIPTION_FIELDS.map((field) =>
     buildDescriptionRow(
-      'appearance',
-      content.labels.fuelAppearance,
-      desc.appearance,
-      hrefs.appearance,
-      errors?.appearance
-    ),
-    buildDescriptionRow(
-      'weight',
-      content.labels.fuelWeight,
-      desc.weight,
-      hrefs.weight,
-      errors?.weight
-    ),
-    buildDescriptionRow(
-      'composition',
-      content.labels.fuelComposition,
-      desc.composition,
-      hrefs.composition,
-      errors?.composition
-    ),
-    buildDescriptionRow(
-      'sulphurContent',
-      content.labels.sulphurContent,
-      desc.sulphurContent,
-      hrefs.sulphurContent,
-      errors?.sulphurContent
-    ),
-    buildDescriptionRow(
-      'manufacturingProcess',
-      content.labels.manufacturingProcess,
-      fuel.manufacturingProcess,
-      hrefs.manufacturingProcess,
-      errors?.manufacturingProcess
+      field.key,
+      content.labels[field.labelKey],
+      field.getValue(fuel),
+      getFuelDescriptionFieldHref(field, fuelId),
+      errors?.[field.key]
     )
-  ]
+  )
 }
 
 function buildErrorSummaryItems(errors) {
@@ -116,7 +81,8 @@ function validateFields(fuel) {
   if (!desc.composition) {
     errors.composition = content.errors.fuelComposition
   }
-  if (desc.sulphurContent === undefined) {
+  // 0 is a valid sulphur content; null, undefined and '' are not
+  if (desc.sulphurContent == null || desc.sulphurContent === '') {
     errors.sulphurContent = content.errors.sulphurContent
   }
   if (!fuel.manufacturingProcess) {
@@ -129,7 +95,6 @@ function validateFields(fuel) {
 function buildViewModel(fuel, fuelId, errors) {
   const encoded = encodeURIComponent(fuelId)
   const returnHref = `/review-fuel/${encoded}`
-  const hrefs = buildFieldHrefs(encoded)
 
   return {
     pageTitle: errors
@@ -138,7 +103,7 @@ function buildViewModel(fuel, fuelId, errors) {
     heading: content.heading(fuel.name),
     content,
     originalFuelRows: buildOriginalFuelRows(fuel),
-    descriptionRows: buildDescriptionRows(fuel, hrefs, errors),
+    descriptionRows: buildDescriptionRows(fuel, fuelId, errors),
     errorSummaryItems: errors ? buildErrorSummaryItems(errors) : null,
     fuelDescriptionAction: `/review-fuel/${encoded}/fuel-description`,
     cancelHref: returnHref,

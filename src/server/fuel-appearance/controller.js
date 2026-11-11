@@ -4,7 +4,7 @@ import {
   getFuelAppearance,
   saveFuelAppearance
 } from './fuel-appearance-data.js'
-import { getFuelReviewHref } from '../common/helpers/fuel-description-field-return-href.js'
+import { getFuelDescriptionFieldReturnHref } from '../common/helpers/fuel-description-field-return-href.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -36,7 +36,7 @@ async function handleFuelAppearanceRequest(request, h) {
     return renderPage(
       h,
       fuelId,
-      getFuelReviewHref(fuel, fuelId),
+      getFuelDescriptionFieldReturnHref(fuel, fuelId),
       fuel.fuelDescription?.appearance ?? '',
       null
     )
@@ -54,7 +54,7 @@ async function handleFuelAppearanceSaveRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelAppearance(fuelId)
-    const returnHref = getFuelReviewHref(fuel, fuelId)
+    const returnHref = getFuelDescriptionFieldReturnHref(fuel, fuelId)
 
     if (!trimmed) {
       return renderPage(h, fuelId, returnHref, appearance, {

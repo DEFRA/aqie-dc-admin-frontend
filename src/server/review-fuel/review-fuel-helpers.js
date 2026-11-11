@@ -90,20 +90,8 @@ export function buildDocumentationTasks(fuel, fuelId) {
   ]
 }
 
-function buildFuelDetailsStatus(fuel) {
-  const listingChecks = (fuel.technicalReview || {}).listingChecks || {}
-
-  if (listingChecks.fuelDetails === true) {
-    return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
-  }
-
-  return { text: content.notCompleted }
-}
-
-function buildFuelDescriptionStatus(fuel) {
-  const listingChecks = (fuel.technicalReview || {}).listingChecks || {}
-
-  if (listingChecks.fuelDescription === true) {
+function buildListingStatus(fuel, key) {
+  if (fuel.technicalReview?.listingChecks?.[key] === true) {
     return { tag: { text: content.completed, classes: 'govuk-tag--green' } }
   }
 
@@ -116,7 +104,7 @@ export function buildListingTasks(fuel, fuelId) {
     {
       title: { text: content.checkFuelDetailsTitle },
       href: content.links.fuelDetails(fuelId),
-      status: buildFuelDetailsStatus(fuel)
+      status: buildListingStatus(fuel, 'fuelDetails')
     }
   ]
 
@@ -124,7 +112,7 @@ export function buildListingTasks(fuel, fuelId) {
     tasks.push({
       title: { text: content.addFuelDescriptionTitle },
       href: content.links.fuelDescription(fuelId),
-      status: buildFuelDescriptionStatus(fuel)
+      status: buildListingStatus(fuel, 'fuelDescription')
     })
   }
 

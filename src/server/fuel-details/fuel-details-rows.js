@@ -1,4 +1,8 @@
 import { fuelDetailsContent } from './content.js'
+import {
+  FUEL_DESCRIPTION_FIELDS,
+  getFuelDescriptionFieldHref
+} from '../common/helpers/fuel-description-fields.js'
 
 const content = fuelDetailsContent.en
 
@@ -87,49 +91,14 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
   }
 
   rows.push(
-    {
-      key: { text: labels.fuelAppearance },
-      value: {
-        text: fuel.fuelDescription?.appearance ?? content.notProvided
-      },
+    ...FUEL_DESCRIPTION_FIELDS.map((field) => ({
+      key: { text: labels[field.labelKey] },
+      value: { text: field.getValue(fuel) ?? content.notProvided },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-appearance`,
-        'fuel appearance'
+        getFuelDescriptionFieldHref(field, fuelId),
+        labels[field.labelKey].toLowerCase()
       )
-    },
-    {
-      key: { text: labels.fuelWeight },
-      value: { text: fuel.fuelDescription?.weight ?? content.notProvided },
-      ...changeAction(`/review-fuel/${encoded}/fuel-weight`, 'fuel weight')
-    },
-    {
-      key: { text: labels.fuelComposition },
-      value: {
-        text: fuel.fuelDescription?.composition ?? content.notProvided
-      },
-      ...changeAction(
-        `/review-fuel/${encoded}/fuel-composition`,
-        'fuel composition'
-      )
-    },
-    {
-      key: { text: labels.sulphurContent },
-      value: {
-        text: fuel.fuelDescription.sulphurContent ?? content.notProvided
-      },
-      ...changeAction(
-        `/review-fuel/${encoded}/sulphur-content`,
-        'sulphur content'
-      )
-    },
-    {
-      key: { text: labels.manufacturingProcess },
-      value: { text: fuel.manufacturingProcess ?? content.notProvided },
-      ...changeAction(
-        `/review-fuel/${encoded}/manufacturing-process`,
-        'manufacturing process'
-      )
-    },
+    })),
     {
       key: { text: labels.hasQualityControlSystem },
       value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },

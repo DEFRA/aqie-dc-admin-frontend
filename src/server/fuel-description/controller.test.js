@@ -378,6 +378,30 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
   })
 
+  test.each([null, ''])(
+    'rejects sulphurContent of %j as missing',
+    async (sulphurContent) => {
+      getFuelDescriptionMock.mockResolvedValue({
+        data: {
+          ...baseFuel,
+          fuelDescription: { ...baseFuel.fuelDescription, sulphurContent }
+        }
+      })
+      const h = toolkit()
+
+      await handleFuelDescriptionMarkCompleteRequest(
+        { params: { fuelId: 'fuel-uuid-2' } },
+        h
+      )
+
+      expect(markFuelDescriptionCompleteMock).not.toHaveBeenCalled()
+      const [, viewModel] = h.view.mock.calls[0]
+      expect(viewModel.errorSummaryItems).toEqual([
+        expect.objectContaining({ text: 'Add sulphur content' })
+      ])
+    }
+  )
+
   test('accepts sulphurContent of 0 as a valid value', async () => {
     getFuelDescriptionMock.mockResolvedValue({
       data: {
