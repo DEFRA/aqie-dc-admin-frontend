@@ -41,13 +41,6 @@ import { fuelDescriptionFuelWeight } from './fuel-description/fuel-weight/index.
 import { fuelDescriptionFuelComposition } from './fuel-description/fuel-composition/index.js'
 import { fuelDescriptionSulphurContent } from './fuel-description/sulphur-content/index.js'
 import { fuelDescriptionManufacturingProcess } from './fuel-description/manufacturing-process/index.js'
-import { brandName } from './fuel-details/brand-name/index.js'
-import { additionalBrandNames } from './fuel-details/additional-brand-names/index.js'
-import { fuelWeight } from './fuel-details/fuel-weight/index.js'
-import { fuelComposition } from './fuel-details/fuel-composition/index.js'
-import { sulphurContent } from './fuel-details/sulphur-content/index.js'
-import { manufacturingProcess } from './fuel-details/manufacturing-process/index.js'
-import { qualityControl } from './fuel-details/quality-control/index.js'
 import { rebrandName } from './rebrand-name/index.js'
 import { additionalRebrandNames } from './additional-rebrand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
@@ -99,25 +92,18 @@ export const router = {
         reviewFuel,
         reviewFuelApplication,
         fuelDetails,
-        fuelAppearance,
         fuelDescription,
         fuelDescriptionFuelAppearance,
         fuelDescriptionFuelWeight,
         fuelDescriptionFuelComposition,
         fuelDescriptionSulphurContent,
         fuelDescriptionManufacturingProcess,
-        brandName,
-        additionalBrandNames,
-        fuelWeight,
-        fuelComposition,
-        sulphurContent,
-        manufacturingProcess,
-        qualityControl,
         rebrandName,
         additionalRebrandNames,
         originalManufacturer,
         originalBrand,
-        manufacturerLetter
+        manufacturerLetter,
+        fuelAppearance
       ])
 
       // Static assets

@@ -27,9 +27,14 @@ async function handleFuelDescriptionFuelAppearanceRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelAppearance(fuelId)
-    const desc = fuel.fuelDescription ?? {}
 
-    return renderPage(h, fuelId, desc.appearance ?? '', null)
+    // Backend contract: only rebrand fuels have a fuel description to edit.
+    // Manufacturer fuels have originalFuel = null, so send them back to the review page.
+    if (fuel.supplierType !== 'Rebrand') {
+      return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
+    }
+
+    return renderPage(h, fuelId, fuel.fuelDescription?.appearance ?? '', null)
   } catch (error) {
     logger.error(
       `[fuelDescriptionFuelAppearance] failed to load ${fuelId}: ${error.message}`
@@ -44,7 +49,7 @@ async function handleFuelDescriptionFuelAppearanceRequest(request, h) {
 async function handleFuelDescriptionFuelAppearanceSaveRequest(request, h) {
   const { fuelId } = request.params
   const fuelDescriptionHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-description`
-  const appearance = request.payload.appearance ?? ''
+  const appearance = request.payload.appearance
   const trimmed = appearance.trim()
 
   try {

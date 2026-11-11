@@ -9,6 +9,9 @@ import { statusCodes } from '../common/constants/status-codes.js'
 const logger = createLogger()
 const content = fuelDescriptionContent.en
 
+// Backend contract: fuelDescription is null for a rebrand until the first field is added
+const getDescription = (fuel) => fuel.fuelDescription ?? {}
+
 function buildOriginalFuelRows(fuel) {
   return [
     {
@@ -50,7 +53,7 @@ function buildFieldHrefs(encoded) {
 }
 
 function buildDescriptionRows(fuel, hrefs, errors) {
-  const desc = fuel.fuelDescription ?? {}
+  const desc = getDescription(fuel)
   return [
     buildDescriptionRow(
       content.labels.fuelAppearance,
@@ -93,7 +96,7 @@ function buildErrorSummaryItems(errors, hrefs) {
 }
 
 function validateFields(fuel) {
-  const desc = fuel.fuelDescription ?? {}
+  const desc = getDescription(fuel)
   const errors = {}
 
   if (!desc.appearance) {
@@ -105,7 +108,7 @@ function validateFields(fuel) {
   if (!desc.composition) {
     errors.composition = content.errors.fuelComposition
   }
-  if (desc.sulphurContent === null || desc.sulphurContent === undefined) {
+  if (desc.sulphurContent === undefined) {
     errors.sulphurContent = content.errors.sulphurContent
   }
   if (!fuel.manufacturingProcess) {
@@ -118,14 +121,13 @@ function validateFields(fuel) {
 function buildViewModel(fuel, fuelId, errors) {
   const encoded = encodeURIComponent(fuelId)
   const returnHref = `/review-fuel/${encoded}`
-  const name = fuel.name ?? content.notProvided
   const hrefs = buildFieldHrefs(encoded)
 
   return {
     pageTitle: errors
-      ? `Error: ${content.pageTitle(name)}`
-      : content.pageTitle(name),
-    heading: content.heading(name),
+      ? `Error: ${content.pageTitle(fuel.name)}`
+      : content.pageTitle(fuel.name),
+    heading: content.heading(fuel.name),
     content,
     originalFuelRows: buildOriginalFuelRows(fuel),
     descriptionRows: buildDescriptionRows(fuel, hrefs, errors),
@@ -142,6 +144,11 @@ async function handleFuelDescriptionRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelDescription(fuelId)
+
+    if (fuel.supplierType !== 'Rebrand') {
+      return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
+    }
+
     return h.view('fuel-description/index', buildViewModel(fuel, fuelId, null))
   } catch (error) {
     const code =
@@ -160,6 +167,10 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
     const { data: fuel } = await getFuelDescription(fuelId)
     const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
+    if (fuel.supplierType !== 'Rebrand') {
+      return h.redirect(returnHref)
+    }
+
     if (fuel.technicalReview.listingChecks.fuelDescription === true) {
       return h.redirect(returnHref)
     }
@@ -172,7 +183,7 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
         .code(statusCodes.badRequest)
     }
 
-    const desc = fuel.fuelDescription ?? {}
+    const desc = getDescription(fuel)
     await saveFuelDescriptionCheck(fuelId, {
       fuelDescription: {
         appearance: desc.appearance,
