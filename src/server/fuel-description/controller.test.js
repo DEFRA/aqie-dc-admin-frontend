@@ -293,6 +293,59 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
     expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
 
+  test('error summary links to the in-page error message for each row', async () => {
+    getFuelDescriptionMock.mockResolvedValue({ data: newRebrandFuel })
+    const h = toolkit()
+
+    await handleFuelDescriptionMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    expect(viewModel.errorSummaryItems.map((item) => item.href)).toEqual([
+      '#appearance-error',
+      '#weight-error',
+      '#composition-error',
+      '#sulphurContent-error',
+      '#manufacturingProcess-error'
+    ])
+    for (const { href } of viewModel.errorSummaryItems) {
+      const id = href.slice(1)
+      expect(
+        viewModel.descriptionRows.some((row) =>
+          row.value.html?.includes(`id="${id}"`)
+        )
+      ).toBe(true)
+    }
+  })
+
+  test('error rows keep the Add link to the sub-page and prefix a hidden Error:', async () => {
+    getFuelDescriptionMock.mockResolvedValue({
+      data: {
+        ...baseFuel,
+        fuelDescription: { ...baseFuel.fuelDescription, weight: undefined }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDescriptionMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const weightRow = viewModel.descriptionRows.find(
+      (row) => row.key.text === 'Fuel weight'
+    )
+    expect(weightRow.value.html).toBe(
+      '<p id="weight-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Add fuel weight</p>'
+    )
+    expect(weightRow.actions.items[0].href).toBe(
+      '/review-fuel/fuel-uuid-2/fuel-description/fuel-weight'
+    )
+  })
+
   test('page title includes Error: prefix when validation fails', async () => {
     getFuelDescriptionMock.mockResolvedValue({
       data: {

@@ -25,12 +25,15 @@ function buildOriginalFuelRows(fuel) {
   ]
 }
 
-function buildDescriptionRow(label, value, href, errorMessage) {
+const errorMessageId = (key) => `${key}-error`
+
+function buildDescriptionRow(key, label, value, href, errorMessage) {
   if (errorMessage) {
     return {
       key: { text: label },
       value: {
-        html: `<p class="govuk-error-message">${errorMessage}</p>`
+        // Mirrors govukErrorMessage markup; errorMessage is static content.js text.
+        html: `<p id="${errorMessageId(key)}" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> ${errorMessage}</p>`
       },
       actions: { items: [{ href, text: content.actions.add }] }
     }
@@ -56,30 +59,35 @@ function buildDescriptionRows(fuel, hrefs, errors) {
   const desc = getDescription(fuel)
   return [
     buildDescriptionRow(
+      'appearance',
       content.labels.fuelAppearance,
       desc.appearance,
       hrefs.appearance,
       errors?.appearance
     ),
     buildDescriptionRow(
+      'weight',
       content.labels.fuelWeight,
       desc.weight,
       hrefs.weight,
       errors?.weight
     ),
     buildDescriptionRow(
+      'composition',
       content.labels.fuelComposition,
       desc.composition,
       hrefs.composition,
       errors?.composition
     ),
     buildDescriptionRow(
+      'sulphurContent',
       content.labels.sulphurContent,
       desc.sulphurContent,
       hrefs.sulphurContent,
       errors?.sulphurContent
     ),
     buildDescriptionRow(
+      'manufacturingProcess',
       content.labels.manufacturingProcess,
       fuel.manufacturingProcess,
       hrefs.manufacturingProcess,
@@ -88,10 +96,10 @@ function buildDescriptionRows(fuel, hrefs, errors) {
   ]
 }
 
-function buildErrorSummaryItems(errors, hrefs) {
+function buildErrorSummaryItems(errors) {
   return Object.entries(errors).map(([key, message]) => ({
     text: message,
-    href: hrefs[key]
+    href: `#${errorMessageId(key)}`
   }))
 }
 
@@ -131,7 +139,7 @@ function buildViewModel(fuel, fuelId, errors) {
     content,
     originalFuelRows: buildOriginalFuelRows(fuel),
     descriptionRows: buildDescriptionRows(fuel, hrefs, errors),
-    errorSummaryItems: errors ? buildErrorSummaryItems(errors, hrefs) : null,
+    errorSummaryItems: errors ? buildErrorSummaryItems(errors) : null,
     fuelDescriptionAction: `/review-fuel/${encoded}/fuel-description`,
     cancelHref: returnHref,
     isAlreadyComplete:
