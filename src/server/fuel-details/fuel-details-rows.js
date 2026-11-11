@@ -197,7 +197,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.isChangedOrMixed },
       value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) },
       ...changeAction(
-        `/changes-made-to-original-fuel/${encoded}`,
+        `/fuel-changes/${encoded}`,
         'changes made to original fuel'
       )
     }
@@ -207,7 +207,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
     rows.push({
       key: { text: labels.changes },
       value: { text: fuel.originalFuel?.changes ?? content.notProvided },
-      ...changeAction(`/detail-of-changes/${encoded}`, 'detail of changes')
+      ...changeAction(`/fuel-changes/${encoded}`, 'detail of changes')
     })
   }
 
