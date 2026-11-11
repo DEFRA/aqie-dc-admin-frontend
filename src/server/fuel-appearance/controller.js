@@ -4,7 +4,7 @@ import {
   getFuelAppearance,
   saveFuelAppearance
 } from './fuel-appearance-data.js'
-import { getFuelReviewHref } from '../common/helpers/fuel-review-href.js'
+import { getFuelReviewHref } from '../common/helpers/fuel-description-field-return-href.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
