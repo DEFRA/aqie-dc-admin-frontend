@@ -59,10 +59,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.brandName },
       value: { text: fuel.name ?? content.notProvided },
-      ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/brand-name`,
-        'brand name'
-      )
+      ...changeAction(`/review-fuel/${encoded}/brand-name`, 'brand name')
     },
     {
       key: { text: labels.additionalBrandNamesQuestion },
@@ -70,7 +67,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/additional-brand-names`,
+        `/review-fuel/${encoded}/additional-brand-names`,
         'will the fuel be sold under any additional brand names'
       )
     }
@@ -83,7 +80,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
         text: formatAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/additional-brand-names`,
+        `/review-fuel/${encoded}/additional-brand-names`,
         'additional brand names'
       )
     })
@@ -137,7 +134,7 @@ export function buildManufacturerFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.hasQualityControlSystem },
       value: { text: buildBooleanValue(fuel.hasQualityControlSystem) },
       ...changeAction(
-        `/review-fuel/${encoded}/fuel-details/quality-control`,
+        `/review-fuel/${encoded}/quality-control`,
         'monitored quality control system'
       )
     }
