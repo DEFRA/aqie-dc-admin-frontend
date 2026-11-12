@@ -25,7 +25,9 @@ function buildViewModel(fuel, fuelId) {
       ? buildRebranderFuelDetailsRows(fuel, fuelId)
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
     fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
-    cancelHref: returnHref
+    cancelHref: returnHref,
+    markAsCompletedText: content.actions.markAsCompleted,
+    cancelText: content.actions.cancel
   }
 }
 

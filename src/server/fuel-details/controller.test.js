@@ -158,6 +158,8 @@ describe('#handleFuelDetailsRequest', () => {
       '/review-fuel/fuel-uuid-1/fuel-details'
     )
     expect(viewModel.cancelHref).toBe('/review-fuel/fuel-uuid-1')
+    expect(viewModel.markAsCompletedText).toBe('Mark as completed')
+    expect(viewModel.cancelText).toBe('Cancel')
   })
 
   test('uses "Not provided" as the heading when name is absent', async () => {

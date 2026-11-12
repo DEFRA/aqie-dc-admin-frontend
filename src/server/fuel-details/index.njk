@@ -1,3 +1,4 @@
+{# filepath: c:\Users\2391613\Documents\aqie-dc-admin-frontend\src\server\fuel-details\index.njk #}
 {% extends "layouts/page.njk" %}
 
 {% block pageTitle %}
@@ -16,11 +17,11 @@
     }) }}
 
     <form method="post" action="{{ fuelDetailsAction }}" novalidate>
-      {{ govukButton({ text: "Mark as completed" }) }}
+      {{ govukButton({ text: markAsCompletedText }) }}
     </form>
 
     <p>
-      <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>
+      <a class="govuk-link" href="{{ cancelHref }}">{{ cancelText }}</a>
     </p>
 
   </div>
