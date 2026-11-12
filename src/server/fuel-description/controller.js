@@ -8,6 +8,7 @@ import {
   FUEL_DESCRIPTION_FIELDS,
   getFuelDescriptionFieldHref
 } from '../common/helpers/fuel-description-fields.js'
+import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
@@ -106,9 +107,7 @@ function buildViewModel(fuel, fuelId, errors) {
     descriptionRows: buildDescriptionRows(fuel, fuelId, errors),
     errorSummaryItems: errors ? buildErrorSummaryItems(errors) : null,
     fuelDescriptionAction: `/review-fuel/${encoded}/fuel-description`,
-    cancelHref: returnHref,
-    isAlreadyComplete:
-      fuel.technicalReview.listingChecks.fuelDescription === true
+    cancelHref: returnHref
   }
 }
 
@@ -118,7 +117,10 @@ async function handleFuelDescriptionRequest(request, h) {
   try {
     const { data: fuel } = await getFuelDescription(fuelId)
 
-    if (fuel.supplierType !== 'Rebrand') {
+    if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
+      logger.warn(
+        `[fuelDescription] attempted to load non-Rebrand fuel ${fuelId}: ${fuel.supplierType}`
+      )
       return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
     }
 
@@ -140,11 +142,7 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
     const { data: fuel } = await getFuelDescription(fuelId)
     const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
-    if (fuel.supplierType !== 'Rebrand') {
-      return h.redirect(returnHref)
-    }
-
-    if (fuel.technicalReview.listingChecks.fuelDescription === true) {
+    if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
       return h.redirect(returnHref)
     }
 

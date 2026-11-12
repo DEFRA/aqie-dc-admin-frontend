@@ -18,6 +18,7 @@ export const fuelDescriptionContent = {
       cancel: 'Cancel'
     },
     errors: {
+      summaryTitle: 'There is a problem',
       fuelAppearance: 'Add fuel appearance',
       fuelWeight: 'Add fuel weight',
       fuelComposition: 'Add fuel composition',

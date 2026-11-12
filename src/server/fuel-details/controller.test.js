@@ -29,8 +29,7 @@ const baseFuel = {
     sulphurContent: 0.1
   },
   manufacturingProcess: 'Was manufactured by heat treatment',
-  hasQualityControlSystem: true,
-  technicalReview: { listingChecks: { fuelDetails: false } }
+  hasQualityControlSystem: true
 }
 
 const baseRebranderFuel = {
@@ -52,8 +51,13 @@ const baseRebranderFuel = {
     composition: 'White quebracho wood',
     sulphurContent: 0.05
   },
-  manufacturingProcess: 'Traditional charcoal production',
-  technicalReview: { listingChecks: { fuelDetails: false } }
+  manufacturingProcess: 'Traditional charcoal production'
+}
+
+// A fuel whose fuelDetails check was already marked complete.
+const completedFuel = {
+  ...baseFuel,
+  technicalReview: { listingChecks: { fuelDetails: true } }
 }
 
 function toolkit() {
@@ -154,6 +158,8 @@ describe('#handleFuelDetailsRequest', () => {
       '/review-fuel/fuel-uuid-1/fuel-details'
     )
     expect(viewModel.cancelHref).toBe('/review-fuel/fuel-uuid-1')
+    expect(viewModel.markAsCompletedText).toBe('Mark as completed')
+    expect(viewModel.cancelText).toBe('Cancel')
   })
 
   test('uses "Not provided" as the heading when name is absent', async () => {
@@ -172,29 +178,19 @@ describe('#handleFuelDetailsRequest', () => {
     )
   })
 
-  test('sets isAlreadyComplete to false when fuelDetails check is not set', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
+  test('renders the page as normal when the check is already complete', async () => {
+    getFuelDetailsMock.mockResolvedValue({ data: completedFuel })
     const h = toolkit()
 
     await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
 
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(false)
-  })
-
-  test('sets isAlreadyComplete to true when fuelDetails check is complete', async () => {
-    getFuelDetailsMock.mockResolvedValue({
-      data: {
-        ...baseFuel,
-        technicalReview: { listingChecks: { fuelDetails: true } }
-      }
-    })
-    const h = toolkit()
-
-    await handleFuelDetailsRequest({ params: { fuelId: 'fuel-uuid-1' } }, h)
-
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(true)
+    expect(h.redirect).not.toHaveBeenCalled()
+    const [template, viewModel] = h.view.mock.calls[0]
+    expect(template).toBe('fuel-details/index')
+    expect(viewModel).not.toHaveProperty('isAlreadyComplete')
+    expect(viewModel.fuelDetailsAction).toBe(
+      '/review-fuel/fuel-uuid-1/fuel-details'
+    )
   })
 
   test('renders error page when API fetch fails', async () => {
@@ -420,7 +416,6 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
   })
 
   test('marks fuelDetails complete and redirects for a manufacturer', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     markFuelDetailsCompletedMock.mockResolvedValue({})
     const h = toolkit()
 
@@ -434,7 +429,6 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
   })
 
   test('marks fuelDetails complete and redirects for a rebrand', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseRebranderFuel })
     markFuelDetailsCompletedMock.mockResolvedValue({})
     const h = toolkit()
 
@@ -447,13 +441,26 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
   })
 
-  test('redirects without saving when fuelDetails check is already complete', async () => {
-    getFuelDetailsMock.mockResolvedValue({
-      data: {
-        ...baseFuel,
-        technicalReview: { listingChecks: { fuelDetails: true } }
-      }
-    })
+  test('always persists, even when the check is already complete', async () => {
+    markFuelDetailsCompletedMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-1' } },
+      h
+    )
+
+    expect(markFuelDetailsCompletedMock).toHaveBeenCalledTimes(2)
+    expect(h.redirect).toHaveBeenNthCalledWith(1, '/review-fuel/fuel-uuid-1')
+    expect(h.redirect).toHaveBeenNthCalledWith(2, '/review-fuel/fuel-uuid-1')
+  })
+
+  test('does not fetch the fuel before saving', async () => {
+    markFuelDetailsCompletedMock.mockResolvedValue({})
     const h = toolkit()
 
     await handleFuelDetailsMarkCompleteRequest(
@@ -461,12 +468,22 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
       h
     )
 
-    expect(markFuelDetailsCompletedMock).not.toHaveBeenCalled()
-    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-1')
+    expect(getFuelDetailsMock).not.toHaveBeenCalled()
+  })
+
+  test('encodes the fuel ID in the redirect URL', async () => {
+    markFuelDetailsCompletedMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDetailsMarkCompleteRequest(
+      { params: { fuelId: 'fuel id/1' } },
+      h
+    )
+
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel%20id%2F1')
   })
 
   test('renders error page when the save fails', async () => {
-    getFuelDetailsMock.mockResolvedValue({ data: baseFuel })
     markFuelDetailsCompletedMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 
@@ -475,22 +492,7 @@ describe('#handleFuelDetailsMarkCompleteRequest', () => {
       h
     )
 
-    expect(h.view).toHaveBeenCalledWith('error/index', {
-      message: 'Sorry, there is a problem with the service'
-    })
-    expect(h.code).toHaveBeenCalledWith(statusCodes.internalServerError)
-  })
-
-  test('renders error page when the GET fetch fails before save', async () => {
-    getFuelDetailsMock.mockRejectedValue(new Error('not found'))
-    const h = toolkit()
-
-    await handleFuelDetailsMarkCompleteRequest(
-      { params: { fuelId: 'fuel-uuid-1' } },
-      h
-    )
-
-    expect(markFuelDetailsCompletedMock).not.toHaveBeenCalled()
+    expect(h.redirect).not.toHaveBeenCalled()
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
     })

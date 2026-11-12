@@ -35,8 +35,7 @@ const baseFuel = {
     composition: 'White quebracho wood',
     sulphurContent: 0.05
   },
-  manufacturingProcess: 'Traditional charcoal production',
-  technicalReview: { listingChecks: { fuelDescription: false } }
+  manufacturingProcess: 'Traditional charcoal production'
 }
 
 // Backend contract: on first visit a rebrand has no description yet.
@@ -45,6 +44,12 @@ const newRebrandFuel = {
   ...baseFuel,
   fuelDescription: null,
   manufacturingProcess: null
+}
+
+// A fuel whose fuelDescription check was already marked complete.
+const completedFuel = {
+  ...baseFuel,
+  technicalReview: { listingChecks: { fuelDescription: true } }
 }
 
 function toolkit() {
@@ -146,29 +151,19 @@ describe('#handleFuelDescriptionRequest', () => {
     expect(viewModel.cancelHref).toBe('/review-fuel/fuel-uuid-2')
   })
 
-  test('sets isAlreadyComplete to false when fuelDescription check is not set', async () => {
-    getFuelDescriptionMock.mockResolvedValue({ data: baseFuel })
+  test('renders the page as normal when the check is already complete', async () => {
+    getFuelDescriptionMock.mockResolvedValue({ data: completedFuel })
     const h = toolkit()
 
     await handleFuelDescriptionRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
 
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(false)
-  })
-
-  test('sets isAlreadyComplete to true when fuelDescription check is complete', async () => {
-    getFuelDescriptionMock.mockResolvedValue({
-      data: {
-        ...baseFuel,
-        technicalReview: { listingChecks: { fuelDescription: true } }
-      }
-    })
-    const h = toolkit()
-
-    await handleFuelDescriptionRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
-
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.isAlreadyComplete).toBe(true)
+    expect(h.redirect).not.toHaveBeenCalled()
+    const [template, viewModel] = h.view.mock.calls[0]
+    expect(template).toBe('fuel-description/index')
+    expect(viewModel).not.toHaveProperty('isAlreadyComplete')
+    expect(viewModel.fuelDescriptionAction).toBe(
+      '/review-fuel/fuel-uuid-2/fuel-description'
+    )
   })
 
   test('redirects to the review-fuel page for a manufacturer fuel', async () => {
@@ -216,12 +211,23 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
     markFuelDescriptionCompleteMock.mockReset()
   })
 
-  test('redirects without saving when fuelDescription check is already complete', async () => {
+  test('validates and marks complete again when the check is already complete', async () => {
+    getFuelDescriptionMock.mockResolvedValue({ data: completedFuel })
+    markFuelDescriptionCompleteMock.mockResolvedValue({})
+    const h = toolkit()
+
+    await handleFuelDescriptionMarkCompleteRequest(
+      { params: { fuelId: 'fuel-uuid-2' } },
+      h
+    )
+
+    expect(markFuelDescriptionCompleteMock).toHaveBeenCalledWith('fuel-uuid-2')
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
+  })
+
+  test('still returns 400 when the check is already complete but a field is missing', async () => {
     getFuelDescriptionMock.mockResolvedValue({
-      data: {
-        ...baseFuel,
-        technicalReview: { listingChecks: { fuelDescription: true } }
-      }
+      data: { ...completedFuel, fuelDescription: null }
     })
     const h = toolkit()
 
@@ -231,7 +237,7 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
     )
 
     expect(markFuelDescriptionCompleteMock).not.toHaveBeenCalled()
-    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/fuel-uuid-2')
+    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
   })
 
   test('redirects without saving for a manufacturer fuel', async () => {
