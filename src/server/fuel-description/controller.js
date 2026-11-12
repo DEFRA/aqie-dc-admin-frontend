@@ -107,9 +107,7 @@ function buildViewModel(fuel, fuelId, errors) {
     descriptionRows: buildDescriptionRows(fuel, fuelId, errors),
     errorSummaryItems: errors ? buildErrorSummaryItems(errors) : null,
     fuelDescriptionAction: `/review-fuel/${encoded}/fuel-description`,
-    cancelHref: returnHref,
-    isAlreadyComplete:
-      fuel.technicalReview.listingChecks.fuelDescription === true
+    cancelHref: returnHref
   }
 }
 
@@ -142,10 +140,6 @@ async function handleFuelDescriptionMarkCompleteRequest(request, h) {
     const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
     if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
-      return h.redirect(returnHref)
-    }
-
-    if (fuel.technicalReview.listingChecks.fuelDescription === true) {
       return h.redirect(returnHref)
     }
 

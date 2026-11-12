@@ -28,21 +28,13 @@
       rows: descriptionRows
     }) }}
 
-    {% if isAlreadyComplete %}
-      <strong class="govuk-tag govuk-tag--green">{{ content.completed }}</strong>
+    <form method="post" action="{{ fuelDescriptionAction }}" novalidate>
+      {{ govukButton({ text: content.actions.markAsCompleted }) }}
+    </form>
 
-      <p class="govuk-!-margin-top-4">
-        <a class="govuk-link" href="{{ cancelHref }}">{{ content.returnToOverview }}</a>
-      </p>
-    {% else %}
-      <form method="post" action="{{ fuelDescriptionAction }}" novalidate>
-        {{ govukButton({ text: content.actions.markAsCompleted }) }}
-      </form>
-
-      <p>
-        <a class="govuk-link" href="{{ cancelHref }}">{{ content.actions.cancel }}</a>
-      </p>
-    {% endif %}
+    <p>
+      <a class="govuk-link" href="{{ cancelHref }}">{{ content.actions.cancel }}</a>
+    </p>
 
   </div>
 </div>
