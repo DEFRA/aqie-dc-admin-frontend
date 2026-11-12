@@ -1,11 +1,11 @@
 /**
  * Controller logic for the rebrand-name form.
  *
- * GET loads the current fuel and pre-populates the form with existing brandName.
- * POST validates the user input, trims whitespace, and either:
- *   - Returns a validation error if empty
- *   - Saves to backend and redirects to fuel details on success
- *   - Returns error page if backend save fails
+ * Imports the core form handler from brand-name and wraps it with rebrand-specific
+ * content and naming. Both routes update the same `brandName` database field,
+ * but with different wording and contexts:
+ * - rebrand-name: for "Rebrand" supplierType (titled "rebranded name")
+ * - brand-name: for "Manufacturer" supplierType (titled "brand name")
  */
 import { rebrandNameContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'

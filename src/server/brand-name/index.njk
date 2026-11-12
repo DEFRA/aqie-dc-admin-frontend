@@ -1,0 +1,66 @@
+{#
+  Brand-name screen for supplier type "Manufacturer".
+
+  This page renders the GOV.UK form used to capture a brand fuel name.
+  It includes inline validation for empty submissions and a cancel link back to
+  the fuel details screen.
+#}
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    {% set brandNameError = null %}
+    {% set inputClasses = '' %}
+    {% if error and error.field == 'brandName' %}
+      {% set brandNameError = { text: error.message } %}
+      {% set inputClasses = 'govuk-input--error' %}
+    {% endif %}
+
+    <form method="post"
+          action="{{ brandNameAction }}"
+          novalidate>
+      {{ govukInput({
+        id: "brand-name",
+        name: "brandName",
+        value: formValue,
+        label: {
+          text: content.label,
+          classes: "govuk-label--xl",
+          isPageHeading: true
+        },
+        errorMessage: brandNameError,
+        classes: inputClasses
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+
+        <a class="govuk-link" href="{{ fuelDetailsHref }}">{{ content.cancel }}</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
