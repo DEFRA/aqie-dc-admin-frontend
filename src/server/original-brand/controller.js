@@ -12,7 +12,7 @@ const content = originalBrandContent.en
 function renderOriginalBrandPage(h, fuelId, fuel, formValue, error) {
   const heading = content.heading
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const originalBrandAction = `/original-brand/${encodeURIComponent(fuelId)}`
+  const originalBrandAction = `/review-fuel/${encodeURIComponent(fuelId)}/original-brand`
 
   return h.view('original-brand/index', {
     pageTitle: error ? `Error: ${heading}` : heading,

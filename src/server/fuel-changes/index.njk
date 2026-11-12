@@ -1,0 +1,83 @@
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [
+          {
+            text: error.message,
+            href: error.href
+          }
+        ]
+      }) }}
+    {% endif %}
+
+    <form method="post" action="{{ action }}" novalidate>
+      {% set changesError = null %}
+      {% if error and error.field == 'changes' %}
+        {% set changesError = { text: error.message } %}
+      {% endif %}
+
+      <div class="govuk-form-group">
+        {{ govukRadios({
+          idPrefix: "isChangedOrMixed",
+          name: "isChangedOrMixed",
+          fieldset: {
+            legend: {
+              text: content.heading,
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--xl"
+            }
+          },
+          items: [
+            {
+              value: "Yes",
+              text: content.yes,
+              checked: hasFuelChanges === true,
+              conditional: {
+                html: govukCharacterCount({
+                  id: "changes",
+                  name: "changes",
+                  label: {
+                    text: content.changesLabel,
+                    classes: "govuk-label--m"
+                  },
+                  hint: {
+                    text: content.changesHint
+                  },
+                  rows: "5",
+                  value: changesValue,
+                  errorMessage: changesError,
+                  classes: "govuk-textarea"
+                })
+              }
+            },
+            {
+              value: "No",
+              text: content.no,
+              checked: hasFuelChanges === false
+            }
+          ]
+        }) }}
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
+          text: content.saveButton
+        }) }}
+      </div>
+
+      <p><a class="govuk-link" href="{{ fuelDetailsHref }}">{{ content.cancel }}</a></p>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
