@@ -3,11 +3,17 @@ import { fuelChangesContent } from './content.js'
 const content = fuelChangesContent.en
 
 export function getFuelChangesValues(fuel = {}) {
-  const originalFuel = fuel.originalFuel ?? {}
+  const originalFuel = fuel.originalFuel ?? null
+  const isChangedOrMixed = originalFuel?.isChangedOrMixed ?? null
 
   return {
-    hasFuelChanges: Boolean(originalFuel.isChangedOrMixed),
-    changes: originalFuel.changes ?? ''
+    hasFuelChanges:
+      isChangedOrMixed === true
+        ? true
+        : isChangedOrMixed === false
+          ? false
+          : null,
+    changes: originalFuel?.changes ?? ''
   }
 }
 
@@ -27,7 +33,7 @@ export function validateFuelChanges(payload = {}) {
     return {
       values: {
         hasFuelChanges: true,
-        changes: changesValue
+        changes: ''
       },
       errors: {
         changes: error.message
@@ -39,8 +45,13 @@ export function validateFuelChanges(payload = {}) {
 
   return {
     values: {
-      hasFuelChanges,
-      changes: changesValue
+      hasFuelChanges:
+        isChangedOrMixed === 'Yes'
+          ? true
+          : isChangedOrMixed === 'No'
+            ? false
+            : null,
+      changes: trimmed
     },
     errors: {},
     errorList: [],

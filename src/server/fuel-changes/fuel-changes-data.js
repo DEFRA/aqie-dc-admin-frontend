@@ -13,13 +13,10 @@ export async function getFuelForFuelChanges(fuelId) {
 }
 
 export async function saveFuelChanges(fuelId, isChangedOrMixed, changes) {
-  const trimmedValue = changes?.trim() ?? null
-  const payloadValue = trimmedValue === '' ? null : trimmedValue
-
   return patchJson(`/fuels/${encodeURIComponent(fuelId)}`, {
     originalFuel: {
       isChangedOrMixed,
-      changes: isChangedOrMixed ? payloadValue : null
+      changes: isChangedOrMixed ? (changes ?? null) : null
     }
   })
 }

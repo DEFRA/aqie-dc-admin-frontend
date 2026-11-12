@@ -27,47 +27,46 @@
       {% endif %}
 
       <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              {{ content.heading }}
-            </h1>
-          </legend>
-
-          {{ govukRadios({
-            idPrefix: "isChangedOrMixed",
-            name: "isChangedOrMixed",
-            items: [
-              {
-                value: "Yes",
-                text: content.yes,
-                checked: hasFuelChanges,
-                conditional: {
-                  html: govukCharacterCount({
-                    id: "changes",
-                    name: "changes",
-                    label: {
-                      text: content.changesLabel,
-                      classes: "govuk-label--m"
-                    },
-                    hint: {
-                      text: content.changesHint
-                    },
-                    rows: "5",
-                    value: changesValue,
-                    errorMessage: changesError,
-                    classes: "govuk-textarea"
-                  })
-                }
-              },
-              {
-                value: "No",
-                text: content.no,
-                checked: not hasFuelChanges
+        {{ govukRadios({
+          idPrefix: "isChangedOrMixed",
+          name: "isChangedOrMixed",
+          fieldset: {
+            legend: {
+              text: content.heading,
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--xl"
+            }
+          },
+          items: [
+            {
+              value: "Yes",
+              text: content.yes,
+              checked: hasFuelChanges === true,
+              conditional: {
+                html: govukCharacterCount({
+                  id: "changes",
+                  name: "changes",
+                  label: {
+                    text: content.changesLabel,
+                    classes: "govuk-label--m"
+                  },
+                  hint: {
+                    text: content.changesHint
+                  },
+                  rows: "5",
+                  value: changesValue,
+                  errorMessage: changesError,
+                  classes: "govuk-textarea"
+                })
               }
-            ]
-          }) }}
-        </fieldset>
+            },
+            {
+              value: "No",
+              text: content.no,
+              checked: hasFuelChanges === false
+            }
+          ]
+        }) }}
       </div>
 
       <div class="govuk-button-group govuk-!-margin-top-7">

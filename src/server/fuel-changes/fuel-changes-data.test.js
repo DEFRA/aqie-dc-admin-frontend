@@ -45,7 +45,7 @@ describe('#saveFuelChanges', () => {
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL-1', {
       originalFuel: {
         isChangedOrMixed: true,
-        changes: 'Mixed with another fuel'
+        changes: '  Mixed with another fuel  '
       }
     })
   })
@@ -63,20 +63,7 @@ describe('#saveFuelChanges', () => {
     })
   })
 
-  test('clears the change details when the value is whitespace', async () => {
-    patchJsonMock.mockResolvedValue({ success: true })
-
-    await saveFuelChanges('FUEL-1', true, '   ')
-
-    expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL-1', {
-      originalFuel: {
-        isChangedOrMixed: true,
-        changes: null
-      }
-    })
-  })
-
-  test('clears the change details when the value is null', async () => {
+  test('sends the supplied value through unchanged when the value is null', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
     await saveFuelChanges('FUEL-1', true, null)

@@ -179,11 +179,11 @@ describe('originalBrand plugin', () => {
       expect.arrayContaining([
         expect.objectContaining({
           method: 'GET',
-          path: '/original-brand/{fuelId}'
+          path: '/review-fuel/{fuelId}/original-brand'
         }),
         expect.objectContaining({
           method: 'POST',
-          path: '/original-brand/{fuelId}'
+          path: '/review-fuel/{fuelId}/original-brand'
         })
       ])
     )

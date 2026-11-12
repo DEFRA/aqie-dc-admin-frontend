@@ -125,7 +125,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
     {
       key: { text: labels.brandName },
       value: { text: fuel.name ?? content.notProvided },
-      ...changeAction(`/rebrand-name/${encoded}`, 'brand name')
+      ...changeAction(`/review-fuel/${encoded}/rebrand-name`, 'brand name')
     },
     {
       key: { text: labels.additionalBrandNamesQuestion },
@@ -133,7 +133,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
         text: buildAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/additional-rebrand-names/${encoded}`,
+        `/review-fuel/${encoded}/additional-rebrand-names`,
         'will the fuel be sold under any additional rebrand names'
       )
     }
@@ -146,7 +146,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
         text: formatAdditionalBrandNamesValue(fuel.additionalBrandNames)
       },
       ...changeAction(
-        `/additional-rebrand-names/${encoded}`,
+        `/review-fuel/${encoded}/additional-rebrand-names`,
         'additional rebrand names'
       )
     })
@@ -159,7 +159,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
         text: fuel.originalFuel?.manufacturer ?? content.notProvided
       },
       ...changeAction(
-        `/original-manufacturer/${encoded}`,
+        `/review-fuel/${encoded}/original-manufacturer`,
         'original fuel manufacturer'
       )
     },
@@ -167,7 +167,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.originalFuelName },
       value: { text: fuel.originalFuel?.name ?? content.notProvided },
       ...changeAction(
-        `/original-brand/${encoded}`,
+        `/review-fuel/${encoded}/original-brand`,
         'original fuel name or brand'
       )
     },
@@ -175,7 +175,7 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
       key: { text: labels.isChangedOrMixed },
       value: { text: buildBooleanValue(fuel.originalFuel?.isChangedOrMixed) },
       ...changeAction(
-        `/fuel-changes/${encoded}`,
+        `/review-fuel/${encoded}/fuel-changes`,
         'changes made to original fuel'
       )
     }
@@ -185,7 +185,10 @@ export function buildRebranderFuelDetailsRows(fuel, fuelId) {
     rows.push({
       key: { text: labels.changes },
       value: { text: fuel.originalFuel?.changes ?? content.notProvided },
-      ...changeAction(`/fuel-changes/${encoded}`, 'detail of changes')
+      ...changeAction(
+        `/review-fuel/${encoded}/fuel-changes`,
+        'detail of changes'
+      )
     })
   }
 

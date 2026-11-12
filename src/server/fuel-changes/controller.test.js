@@ -18,6 +18,7 @@ vi.mock('./fuel-changes-data.js', () => ({
 
 const fuel = {
   id: 'FUEL-1',
+  supplierType: 'Rebrand',
   originalFuel: {
     isChangedOrMixed: true,
     changes: 'Mixed with another fuel'
@@ -76,6 +77,21 @@ describe('#handleFuelChangesRequest', () => {
     )
   })
 
+  test('redirects non-Rebrand fuels back to the fuel details page', async () => {
+    getFuelForFuelChangesMock.mockResolvedValue({
+      data: {
+        id: 'FUEL-1',
+        supplierType: 'Manufacture',
+        originalFuel: null
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelChangesRequest({ params: { fuelId: 'FUEL-1' } }, h)
+
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1/fuel-details')
+  })
+
   test('renders error page when backend fetch fails', async () => {
     getFuelForFuelChangesMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
@@ -96,6 +112,7 @@ describe('#handleFuelChangesDecisionRequest', () => {
   })
 
   test('saves the change details and redirects to the fuel details page', async () => {
+    getFuelForFuelChangesMock.mockResolvedValue({ data: fuel })
     saveFuelChangesMock.mockResolvedValue({ success: true })
     const h = toolkit()
 
@@ -115,6 +132,31 @@ describe('#handleFuelChangesDecisionRequest', () => {
       true,
       'Adjusted and mixed with another fuel'
     )
+    expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1/fuel-details')
+  })
+
+  test('redirects non-Rebrand fuels back to the fuel details page before saving', async () => {
+    getFuelForFuelChangesMock.mockResolvedValue({
+      data: {
+        id: 'FUEL-1',
+        supplierType: 'Manufacture',
+        originalFuel: null
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelChangesDecisionRequest(
+      {
+        params: { fuelId: 'FUEL-1' },
+        payload: {
+          isChangedOrMixed: 'Yes',
+          changes: 'Any changes'
+        }
+      },
+      h
+    )
+
+    expect(saveFuelChangesMock).not.toHaveBeenCalled()
     expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1/fuel-details')
   })
 
@@ -139,7 +181,7 @@ describe('#handleFuelChangesDecisionRequest', () => {
       expect.objectContaining({
         pageTitle: 'Error: Changes made to original fuel?',
         hasFuelChanges: true,
-        changesValue: '   ',
+        changesValue: '',
         error: {
           field: 'changes',
           message:
@@ -152,6 +194,7 @@ describe('#handleFuelChangesDecisionRequest', () => {
   })
 
   test('renders error page when save fails', async () => {
+    getFuelForFuelChangesMock.mockResolvedValue({ data: fuel })
     saveFuelChangesMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 
@@ -188,11 +231,11 @@ describe('fuelChanges plugin', () => {
       expect.arrayContaining([
         expect.objectContaining({
           method: 'GET',
-          path: '/fuel-changes/{fuelId}'
+          path: '/review-fuel/{fuelId}/fuel-changes'
         }),
         expect.objectContaining({
           method: 'POST',
-          path: '/fuel-changes/{fuelId}'
+          path: '/review-fuel/{fuelId}/fuel-changes'
         })
       ])
     )

@@ -17,9 +17,13 @@ describe('getFuelChangesValues', () => {
     })
   })
 
-  test('returns empty values when the saved fuel data is nullish', () => {
+  test('returns an unanswered tri-state when the saved fuel data is nullish', () => {
     expect(getFuelChangesValues({ originalFuel: null })).toEqual({
-      hasFuelChanges: false,
+      hasFuelChanges: null,
+      changes: ''
+    })
+    expect(getFuelChangesValues({})).toEqual({
+      hasFuelChanges: null,
       changes: ''
     })
   })
@@ -37,7 +41,7 @@ describe('validateFuelChanges', () => {
     expect(result.errorList).toEqual([])
     expect(result.values).toEqual({
       hasFuelChanges: true,
-      changes: '  Mixed with another fuel  '
+      changes: 'Mixed with another fuel'
     })
   })
 
@@ -72,7 +76,7 @@ describe('validateFuelChanges', () => {
     expect(result.errors).toEqual({})
     expect(result.values).toEqual({
       hasFuelChanges: false,
-      changes: '   '
+      changes: ''
     })
   })
 })

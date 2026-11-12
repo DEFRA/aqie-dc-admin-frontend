@@ -7,12 +7,15 @@ import { getFuelChangesValues, validateFuelChanges } from './validation.js'
 const logger = createLogger()
 const content = fuelChangesContent.en
 
-function renderFuelChangesPage(h, fuelId, fuel, formData, error) {
-  const heading = content.heading
-  const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const action = `/fuel-changes/${encodeURIComponent(fuelId)}`
+function buildFuelDetailsHref(fuelId) {
+  return `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
+}
 
-  const formValues = formData ?? getFuelChangesValues(fuel)
+function renderFuelChangesPage(h, fuelId, fuel, formValues, error) {
+  const heading = content.heading
+  const fuelDetailsHref = buildFuelDetailsHref(fuelId)
+  const action = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-changes`
+
   const changesValue = formValues.changes
   const hasFuelChanges = formValues.hasFuelChanges
 
@@ -34,6 +37,13 @@ async function handleFuelChangesRequest(request, h) {
   try {
     const { data: fuel } = await getFuelForFuelChanges(fuelId)
 
+    if (fuel.supplierType !== 'Rebrand') {
+      logger.warn(
+        `[fuelChanges] attempted to load non-Rebrand fuel ${fuelId}: ${fuel.supplierType}`
+      )
+      return h.redirect(buildFuelDetailsHref(fuelId))
+    }
+
     return renderFuelChangesPage(
       h,
       fuelId,
@@ -52,14 +62,21 @@ async function handleFuelChangesRequest(request, h) {
 
 async function handleFuelChangesDecisionRequest(request, h) {
   const { fuelId } = request.params
-  const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
+  const fuelDetailsHref = buildFuelDetailsHref(fuelId)
   const payload = request.payload ?? {}
   const validation = validateFuelChanges(payload)
 
   try {
-    if (!validation.isValid) {
-      const { data: fuel } = await getFuelForFuelChanges(fuelId)
+    const { data: fuel } = await getFuelForFuelChanges(fuelId)
 
+    if (fuel.supplierType !== 'Rebrand') {
+      logger.warn(
+        `[fuelChanges] attempted to save non-Rebrand fuel ${fuelId}: ${fuel.supplierType}`
+      )
+      return h.redirect(fuelDetailsHref)
+    }
+
+    if (!validation.isValid) {
       return renderFuelChangesPage(
         h,
         fuelId,
@@ -72,7 +89,7 @@ async function handleFuelChangesDecisionRequest(request, h) {
     await saveFuelChanges(
       fuelId,
       validation.values.hasFuelChanges,
-      validation.values.hasFuelChanges ? validation.values.changes.trim() : null
+      validation.values.changes
     )
 
     return h.redirect(fuelDetailsHref)
