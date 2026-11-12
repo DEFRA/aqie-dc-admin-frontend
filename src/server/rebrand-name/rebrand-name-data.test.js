@@ -29,6 +29,21 @@ describe('#getFuelForRebrandName', () => {
 
     expect(getFuelTechnicalReviewMock).toHaveBeenCalledWith('FUEL-1')
   })
+
+  test('passes through the technical review response', async () => {
+    const expectedResponse = {
+      data: {
+        id: 'FUEL-1',
+        brandName: 'Test Fuel',
+        technicalReview: { status: 'in_review' }
+      }
+    }
+    getFuelTechnicalReviewMock.mockResolvedValue(expectedResponse)
+
+    const result = await getFuelForRebrandName('FUEL-1')
+
+    expect(result).toEqual(expectedResponse)
+  })
 })
 
 describe('#saveRebrandName', () => {
@@ -37,7 +52,7 @@ describe('#saveRebrandName', () => {
     patchJsonMock.mockReset()
   })
 
-  test('updates the fuel rebranded name', async () => {
+  test('updates the fuel rebranded name via direct fuel endpoint', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
     await saveRebrandName('FUEL-1', 'Grillaedin White Quebracho Pro')
@@ -54,6 +69,16 @@ describe('#saveRebrandName', () => {
 
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL%2F1', {
       brandName: 'Variant'
+    })
+  })
+
+  test('handles special characters in fuel id', async () => {
+    patchJsonMock.mockResolvedValue({ success: true })
+
+    await saveRebrandName('FUEL?id=1&test', 'Test Brand')
+
+    expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL%3Fid%3D1%26test', {
+      brandName: 'Test Brand'
     })
   })
 })

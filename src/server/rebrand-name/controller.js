@@ -1,10 +1,11 @@
 /**
  * Controller logic for the rebrand-name form.
  *
- * GET loads the current fuel and pre-populates the form. POST trims the value,
- * validates that a rebranded name has been entered, and either saves it or
- * returns a bad-request error summary. On success, the user is returned to the
- * fuel details screen.
+ * GET loads the current fuel and pre-populates the form with existing brandName.
+ * POST validates the user input, trims whitespace, and either:
+ *   - Returns a validation error if empty
+ *   - Saves to backend and redirects to fuel details on success
+ *   - Returns error page if backend save fails
  */
 import { rebrandNameContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
@@ -30,6 +31,14 @@ function renderRebrandNamePage(h, fuelId, fuel, formValue, error) {
   })
 }
 
+/**
+ * GET handler: Display the rebrand-name form with current value pre-populated.
+ * Falls back to fuel.name if brandName is not yet set.
+ *
+ * @param {object} request - Hapi request
+ * @param {object} h - Hapi response toolkit
+ * @returns {Promise} Rendered page or error page
+ */
 async function handleRebrandNameRequest(request, h) {
   const { fuelId } = request.params
 
@@ -52,6 +61,17 @@ async function handleRebrandNameRequest(request, h) {
   }
 }
 
+/**
+ * POST handler: Validate and save the rebranded name.
+ * - Trims whitespace from input
+ * - Returns validation error if input is empty
+ * - Saves to backend if valid
+ * - Returns error page on backend failure
+ *
+ * @param {object} request - Hapi request with fuelId and payload
+ * @param {object} h - Hapi response toolkit
+ * @returns {Promise} Redirect or re-rendered form with error
+ */
 async function handleRebrandNameDecisionRequest(request, h) {
   const { fuelId } = request.params
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
