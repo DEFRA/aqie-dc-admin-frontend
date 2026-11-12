@@ -20,13 +20,13 @@ export const originalBrand = {
       server.route([
         {
           method: 'GET',
-          path: '/original-brand/{fuelId}',
+          path: '/review-fuel/{fuelId}/original-brand',
           ...originalBrandController,
           options: { validate: { params: paramsSchema } }
         },
         {
           method: 'POST',
-          path: '/original-brand/{fuelId}',
+          path: '/review-fuel/{fuelId}/original-brand',
           ...originalBrandDecisionController,
           options: {
             validate: {

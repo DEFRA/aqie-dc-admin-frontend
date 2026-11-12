@@ -17,7 +17,7 @@ const content = rebrandNameContent.en
 function renderRebrandNamePage(h, fuelId, fuel, formValue, error) {
   const heading = content.heading
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const rebrandNameAction = `/rebrand-name/${encodeURIComponent(fuelId)}`
+  const rebrandNameAction = `/review-fuel/${encodeURIComponent(fuelId)}/rebrand-name`
 
   return h.view('rebrand-name/index', {
     pageTitle: error ? `Error: ${heading}` : heading,

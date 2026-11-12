@@ -28,13 +28,13 @@ export const rebrandName = {
       server.route([
         {
           method: 'GET',
-          path: '/rebrand-name/{fuelId}',
+          path: '/review-fuel/{fuelId}/rebrand-name',
           ...rebrandNameController,
           options: { validate: { params: paramsSchema } }
         },
         {
           method: 'POST',
-          path: '/rebrand-name/{fuelId}',
+          path: '/review-fuel/{fuelId}/rebrand-name',
           ...rebrandNameDecisionController,
           options: {
             validate: {

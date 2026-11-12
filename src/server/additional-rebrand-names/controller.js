@@ -16,7 +16,7 @@ const content = additionalRebrandNamesContent.en
 function renderAdditionalRebrandNamesPage(h, fuelId, fuel, formData, error) {
   const heading = content.heading
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const action = `/additional-rebrand-names/${encodeURIComponent(fuelId)}`
+  const action = `/review-fuel/${encodeURIComponent(fuelId)}/additional-rebrand-names`
 
   const formValues = formData ?? getAdditionalRebrandNamesValues(fuel)
   const additionalBrandNamesValue = formValues.additionalBrandNames

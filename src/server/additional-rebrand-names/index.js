@@ -20,13 +20,13 @@ export const additionalRebrandNames = {
       server.route([
         {
           method: 'GET',
-          path: '/additional-rebrand-names/{fuelId}',
+          path: '/review-fuel/{fuelId}/additional-rebrand-names',
           ...additionalRebrandNamesController,
           options: { validate: { params: paramsSchema } }
         },
         {
           method: 'POST',
-          path: '/additional-rebrand-names/{fuelId}',
+          path: '/review-fuel/{fuelId}/additional-rebrand-names',
           ...additionalRebrandNamesDecisionController,
           options: {
             validate: {

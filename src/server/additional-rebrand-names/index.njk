@@ -27,47 +27,46 @@
       {% endif %}
 
       <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-            <h1 class="govuk-fieldset__heading">
-              {{ content.heading }}
-            </h1>
-          </legend>
-
-          {{ govukRadios({
-            idPrefix: "addBrands",
-            name: "addBrands",
-            items: [
-              {
-                value: "Yes",
-                text: content.yes,
-                checked: hasAdditionalBrandNames,
-                conditional: {
-                  html: govukCharacterCount({
-                    id: "additional-brands",
-                    name: "additionalBrands",
-                    label: {
-                      text: content.additionalBrandsLabel,
-                      classes: "govuk-label--m"
-                    },
-                    hint: {
-                      text: content.additionalBrandsHint
-                    },
-                    rows: "5",
-                    value: additionalBrandNamesValue,
-                    errorMessage: additionalBrandsError,
-                    classes: "govuk-textarea"
-                  })
-                }
-              },
-              {
-                value: "No",
-                text: content.no,
-                checked: not hasAdditionalBrandNames
+        {{ govukRadios({
+          idPrefix: "addBrands",
+          name: "addBrands",
+          fieldset: {
+            legend: {
+              text: content.heading,
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--xl"
+            }
+          },
+          items: [
+            {
+              value: "Yes",
+              text: content.yes,
+              checked: hasAdditionalBrandNames,
+              conditional: {
+                html: govukCharacterCount({
+                  id: "additional-brands",
+                  name: "additionalBrands",
+                  label: {
+                    text: content.additionalBrandsLabel,
+                    classes: "govuk-label--m"
+                  },
+                  hint: {
+                    text: content.additionalBrandsHint
+                  },
+                  rows: "5",
+                  value: additionalBrandNamesValue,
+                  errorMessage: additionalBrandsError,
+                  classes: "govuk-textarea"
+                })
               }
-            ]
-          }) }}
-        </fieldset>
+            },
+            {
+              value: "No",
+              text: content.no,
+              checked: not hasAdditionalBrandNames
+            }
+          ]
+        }) }}
       </div>
 
       <div class="govuk-button-group govuk-!-margin-top-7">
