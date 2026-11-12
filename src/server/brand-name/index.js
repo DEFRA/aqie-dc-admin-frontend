@@ -1,12 +1,12 @@
 /**
  * Hapi plugin registration for the brand-name feature.
  *
- * This route lets a user view and update the brand name for a fuel in the
- * supplier type "Manufacturer" journey. The GET route renders the form and the POST
- * route validates the value before saving and redirecting back to the fuel
- * details page.
+ * Registers two routes that use the same controller:
+ * - GET/POST /review-fuel/{fuelId}/brand-name (Manufacturer supplierType)
+ * - GET/POST /review-fuel/{fuelId}/rebrand-name (Rebrand supplierType)
  *
- * Uses the same brandName database field as rebrand-name, but targets Manufacturer supplierType.
+ * The controller determines which content/styling to use based on the route path.
+ * Both routes update the same `brandName` database field.
  */
 import Joi from 'joi'
 import {
@@ -21,6 +21,11 @@ const paramsSchema = Joi.object({
     .min(1)
     .max(64)
     .pattern(/^[A-Za-z0-9-]+$/)
+})
+
+const payloadSchema = Joi.object({
+  brandName: Joi.string().allow(''),
+  rebrandName: Joi.string().allow('')
 })
 
 export const brandName = {
@@ -41,9 +46,24 @@ export const brandName = {
           options: {
             validate: {
               params: paramsSchema,
-              payload: Joi.object({
-                brandName: Joi.string().allow('').required()
-              })
+              payload: payloadSchema
+            }
+          }
+        },
+        {
+          method: 'GET',
+          path: '/review-fuel/{fuelId}/rebrand-name',
+          ...brandNameController,
+          options: { validate: { params: paramsSchema } }
+        },
+        {
+          method: 'POST',
+          path: '/review-fuel/{fuelId}/rebrand-name',
+          ...brandNameDecisionController,
+          options: {
+            validate: {
+              params: paramsSchema,
+              payload: payloadSchema
             }
           }
         }

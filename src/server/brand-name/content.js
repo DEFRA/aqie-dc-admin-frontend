@@ -1,22 +1,27 @@
 /**
  * Static content for the brand-name journey.
  *
- * This file holds the heading, field label, button text, and validation
- * messaging shown on the dedicated brand-name screen for supplier type
- * "Manufacturer" fuels.
- *
- * Uses "brand" wording (vs "rebrand" in rebrand-name route).
+ * Serves both:
+ * - Manufacturer supplierType: "What is the brand name?"
+ * - Rebrand supplierType: "What is the rebranded name?"
  */
 export const brandNameContent = {
   en: {
-    heading: 'What is the brand name?',
-    label: 'What is the brand name?',
-    saveButton: 'Save changes',
-    cancel: 'Cancel',
-    errors: {
-      summaryTitle: 'There is a problem',
-      brandNameRequired: 'Enter the brand name',
-      generic: 'Sorry, there is a problem with the service'
+    manufacturer: {
+      heading: 'What is the brand name?',
+      label: 'What is the brand name?',
+      error: 'Enter the brand name'
+    },
+    rebrand: {
+      heading: 'What is the rebranded name?',
+      label: 'What is the rebranded name?',
+      error: 'Enter the rebranded name'
+    },
+    common: {
+      saveButton: 'Save changes',
+      cancel: 'Cancel',
+      errorSummaryTitle: 'There is a problem',
+      genericError: 'Sorry, there is a problem with the service'
     }
   }
 }

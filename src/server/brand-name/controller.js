@@ -1,28 +1,53 @@
 /**
- * Controller logic for the brand-name form.
+ * Unified controller for brand-name form.
  *
- * GET loads the current fuel and pre-populates the form with existing brandName.
- * POST validates the user input, trims whitespace, and either:
- *   - Returns a validation error if empty
- *   - Saves to backend and redirects to fuel details on success
- *   - Returns error page if backend save fails
+ * Handles both:
+ * - GET/POST /review-fuel/{fuelId}/brand-name (Manufacturer supplierType)
+ * - GET/POST /review-fuel/{fuelId}/rebrand-name (Rebrand supplierType)
+ *
+ * Uses the route path to determine which content/styling to show.
+ * Both routes update the same `brandName` database field.
  */
 import { brandNameContent } from './content.js'
 import { createLogger } from '../common/helpers/logging/logger.js'
-import { getFuelForBrandName, saveBrandName } from './brand-name-data.js'
+import { getFuel, saveBrandName } from './brand-name-data.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = brandNameContent.en
 
-function renderBrandNamePage(h, fuelId, fuel, formValue, error) {
-  const heading = content.heading
+/**
+ * Determines which content variant to use based on the route path.
+ * @param {string} routePath - e.g., 'brand-name' or 'rebrand-name'
+ * @returns {object} Content object with heading, label, error messages
+ */
+function getContentVariant(routePath) {
+  return routePath === 'rebrand-name'
+    ? {
+        heading: content.rebrand.heading,
+        label: content.rebrand.label,
+        errorMessage: content.rebrand.error,
+        fieldName: 'rebrandName',
+        fieldId: 'rebrand-name'
+      }
+    : {
+        heading: content.manufacturer.heading,
+        label: content.manufacturer.label,
+        errorMessage: content.manufacturer.error,
+        fieldName: 'brandName',
+        fieldId: 'brand-name'
+      }
+}
+
+function renderBrandNamePage(h, fuelId, fuel, formValue, routePath, error) {
+  const variant = getContentVariant(routePath)
+  const heading = variant.heading
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const brandNameAction = `/review-fuel/${encodeURIComponent(fuelId)}/brand-name`
+  const brandNameAction = `/review-fuel/${encodeURIComponent(fuelId)}/${routePath}`
 
   return h.view('brand-name/index', {
     pageTitle: error ? `Error: ${heading}` : heading,
-    content,
+    content: variant,
     fuel,
     formValue,
     error,
@@ -41,22 +66,24 @@ function renderBrandNamePage(h, fuelId, fuel, formValue, error) {
  */
 async function handleBrandNameRequest(request, h) {
   const { fuelId } = request.params
+  const routePath = request.route.path.split('/').pop() // 'brand-name' or 'rebrand-name'
 
   try {
-    const { data: fuel } = await getFuelForBrandName(fuelId)
+    const { data: fuel } = await getFuel(fuelId)
 
     return renderBrandNamePage(
       h,
       fuelId,
       fuel,
       fuel.brandName ?? fuel.name ?? '',
+      routePath,
       null
     )
   } catch (error) {
     logger.error(`[brandName] failed to load ${fuelId}: ${error.message}`)
 
     return h
-      .view('error/index', { message: content.errors.generic })
+      .view('error/index', { message: content.common.genericError })
       .code(statusCodes.internalServerError)
   }
 }
@@ -74,18 +101,20 @@ async function handleBrandNameRequest(request, h) {
  */
 async function handleBrandNameDecisionRequest(request, h) {
   const { fuelId } = request.params
+  const routePath = request.route.path.split('/').pop() // 'brand-name' or 'rebrand-name'
+  const variant = getContentVariant(routePath)
   const fuelDetailsHref = `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`
-  const brandNameValue = request.payload.brandName ?? ''
+  const brandNameValue = request.payload[variant.fieldName] ?? ''
   const trimmed = brandNameValue.trim()
 
   try {
     if (!trimmed) {
-      const { data: fuel } = await getFuelForBrandName(fuelId)
+      const { data: fuel } = await getFuel(fuelId)
 
-      return renderBrandNamePage(h, fuelId, fuel, brandNameValue, {
-        field: 'brandName',
-        message: content.errors.brandNameRequired,
-        href: '#brandName'
+      return renderBrandNamePage(h, fuelId, fuel, brandNameValue, routePath, {
+        field: variant.fieldName,
+        message: variant.errorMessage,
+        href: `#${variant.fieldId}`
       }).code(statusCodes.badRequest)
     }
 
@@ -96,7 +125,7 @@ async function handleBrandNameDecisionRequest(request, h) {
     logger.error(`[brandName] failed to save ${fuelId}: ${error.message}`)
 
     return h
-      .view('error/index', { message: content.errors.generic })
+      .view('error/index', { message: content.common.genericError })
       .code(statusCodes.internalServerError)
   }
 }
