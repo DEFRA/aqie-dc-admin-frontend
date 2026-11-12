@@ -8,13 +8,14 @@ import {
   buildManufacturerFuelDetailsRows,
   buildRebranderFuelDetailsRows
 } from './fuel-details-rows.js'
+import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = fuelDetailsContent.en
 
 function buildViewModel(fuel, fuelId) {
-  const isRebrander = fuel.supplierType === 'Rebrand'
+  const isRebrander = fuel.supplierType === SUPPLIER_TYPE.REBRAND
   const displayName = fuel.name ?? content.notProvided
   const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 

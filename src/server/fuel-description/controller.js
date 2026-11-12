@@ -118,6 +118,9 @@ async function handleFuelDescriptionRequest(request, h) {
     const { data: fuel } = await getFuelDescription(fuelId)
 
     if (fuel.supplierType !== SUPPLIER_TYPE.REBRAND) {
+      logger.warn(
+        `[fuelDescription] attempted to load non-Rebrand fuel ${fuelId}: ${fuel.supplierType}`
+      )
       return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
     }
 
