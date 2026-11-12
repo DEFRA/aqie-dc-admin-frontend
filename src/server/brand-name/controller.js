@@ -47,7 +47,10 @@ function renderBrandNamePage(h, fuelId, fuel, formValue, routePath, error) {
 
   return h.view('brand-name/index', {
     pageTitle: error ? `Error: ${heading}` : heading,
-    content: variant,
+    content: {
+      ...variant,
+      ...content.common
+    },
     fuel,
     formValue,
     error,
