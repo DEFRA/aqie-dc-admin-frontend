@@ -22,7 +22,7 @@
 
     <form method="post" action="{{ action }}" novalidate>
       {% set additionalBrandsError = null %}
-      {% if error and error.field == 'additionalBrands' %}
+      {% if error and error.field == content.fieldName %}
         {% set additionalBrandsError = { text: error.message } %}
       {% endif %}
 
@@ -44,14 +44,14 @@
               checked: hasAdditionalBrandNames,
               conditional: {
                 html: govukCharacterCount({
-                  id: "additional-brands",
-                  name: "additionalBrands",
+                  id: content.fieldId,
+                  name: content.fieldName,
                   label: {
-                    text: content.additionalBrandsLabel,
+                    text: content.brandsLabel,
                     classes: "govuk-label--m"
                   },
                   hint: {
-                    text: content.additionalBrandsHint
+                    text: content.brandsHint
                   },
                   rows: "5",
                   value: additionalBrandNamesValue,

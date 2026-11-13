@@ -13,10 +13,10 @@ vi.mock('../common/services/common-fuel-service.js', () => ({
   getFuelTechnicalReview: getFuelTechnicalReviewMock
 }))
 
-const { getFuelForAdditionalRebrandNames, saveAdditionalRebrandNames } =
-  await import('./additional-rebrand-names-data.js')
+const { getFuelForAdditionalBrandNames, saveAdditionalBrandNames } =
+  await import('./additional-brand-names-data.js')
 
-describe('#getFuelForAdditionalRebrandNames', () => {
+describe('#getFuelForAdditionalBrandNames', () => {
   beforeEach(() => {
     getFuelTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
@@ -25,42 +25,42 @@ describe('#getFuelForAdditionalRebrandNames', () => {
   test('fetches the fuel from the technical review endpoint', async () => {
     getFuelTechnicalReviewMock.mockResolvedValue({ success: true })
 
-    await getFuelForAdditionalRebrandNames('FUEL-1')
+    await getFuelForAdditionalBrandNames('FUEL-1')
 
     expect(getFuelTechnicalReviewMock).toHaveBeenCalledWith('FUEL-1')
   })
 })
 
-describe('#saveAdditionalRebrandNames', () => {
+describe('#saveAdditionalBrandNames', () => {
   beforeEach(() => {
     getFuelTechnicalReviewMock.mockReset()
     patchJsonMock.mockReset()
   })
 
-  test('updates the fuel with additional rebrand names when a value is provided', async () => {
+  test('updates the fuel with additional brand names when a value is provided', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveAdditionalRebrandNames('FUEL-1', '  Rebrand 1, Rebrand 2  ')
+    await saveAdditionalBrandNames('FUEL-1', '  Brand 1, Brand 2  ')
 
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL-1', {
-      additionalBrandNames: 'Rebrand 1, Rebrand 2'
+      additionalBrandNames: 'Brand 1, Brand 2'
     })
   })
 
-  test('clears the additional rebrand names field when the value is empty', async () => {
+  test('clears the additional brand names field when the value is empty', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveAdditionalRebrandNames('FUEL-1', '   ')
+    await saveAdditionalBrandNames('FUEL-1', '   ')
 
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL-1', {
       additionalBrandNames: null
     })
   })
 
-  test('clears the additional rebrand names field when the value is null', async () => {
+  test('clears the additional brand names field when the value is null', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveAdditionalRebrandNames('FUEL-1', null)
+    await saveAdditionalBrandNames('FUEL-1', null)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL-1', {
       additionalBrandNames: null
@@ -70,10 +70,10 @@ describe('#saveAdditionalRebrandNames', () => {
   test('encodes the fuel id in the patch request', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
-    await saveAdditionalRebrandNames('FUEL/1', 'Rebrand 1')
+    await saveAdditionalBrandNames('FUEL/1', 'Brand 1')
 
     expect(patchJsonMock).toHaveBeenCalledWith('/fuels/FUEL%2F1', {
-      additionalBrandNames: 'Rebrand 1'
+      additionalBrandNames: 'Brand 1'
     })
   })
 })

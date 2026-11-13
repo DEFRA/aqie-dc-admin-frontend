@@ -1,8 +1,8 @@
-import { additionalRebrandNamesContent } from './content.js'
+import { additionalBrandNamesContent } from './content.js'
 
-const content = additionalRebrandNamesContent.en
+const content = additionalBrandNamesContent.en
 
-export function getAdditionalRebrandNamesValues(fuel = {}) {
+export function getAdditionalBrandNamesValues(fuel = {}) {
   const additionalBrandNamesValue = fuel.additionalBrandNames ?? ''
 
   return {
@@ -13,17 +13,25 @@ export function getAdditionalRebrandNamesValues(fuel = {}) {
   }
 }
 
-export function validateAdditionalRebrandNames(payload = {}) {
+export function validateAdditionalBrandNames(payload = {}) {
   const addBrands = payload.addBrands
-  const additionalBrandsValue = payload.additionalBrands ?? ''
+  // Accept both field names since both routes use the same payload schema
+  const additionalBrandsValue =
+    payload.additionalBrands ?? payload.additionalRebrandBrands ?? ''
   const trimmed = additionalBrandsValue.trim()
   const isAdditionalBrandNamesSelected = addBrands === 'Yes'
 
+  // Determine which field was used so we can return correct error href
+  const fieldName =
+    typeof payload.additionalRebrandBrands === 'string'
+      ? 'additionalRebrandBrands'
+      : 'additionalBrands'
+
   if (isAdditionalBrandNamesSelected && !trimmed) {
     const error = {
-      field: 'additionalBrands',
-      message: content.errors.additionalBrandsRequired,
-      href: '#additional-brands'
+      field: fieldName,
+      message: content.rebrand.brandsRequired,
+      href: `#${fieldName === 'additionalRebrandBrands' ? 'additional-rebrand-brands' : 'additional-brands'}`
     }
 
     return {
@@ -32,7 +40,7 @@ export function validateAdditionalRebrandNames(payload = {}) {
         additionalBrandNames: additionalBrandsValue
       },
       errors: {
-        additionalBrands: error.message
+        [fieldName]: error.message
       },
       errorList: [error],
       isValid: false
