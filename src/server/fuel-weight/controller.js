@@ -36,7 +36,7 @@ async function handleFuelWeightRequest(request, h) {
       h,
       fuelId,
       getFuelDescriptionFieldReturnHref(fuel, fuelId),
-      weight || '',
+      weight ?? '',
       null
     )
   } catch (error) {
@@ -48,7 +48,7 @@ async function handleFuelWeightRequest(request, h) {
 
 async function handleFuelWeightSaveRequest(request, h) {
   const { fuelId } = request.params
-  const weight = request.payload.weight || ''
+  const weight = request.payload.weight ?? ''
   const trimmed = weight.trim()
 
   try {
