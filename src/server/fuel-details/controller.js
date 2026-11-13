@@ -8,13 +8,14 @@ import {
   buildManufacturerFuelDetailsRows,
   buildRebranderFuelDetailsRows
 } from './fuel-details-rows.js'
+import { SUPPLIER_TYPE } from '../common/constants/supplier-type.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 
 const logger = createLogger()
 const content = fuelDetailsContent.en
 
 function buildViewModel(fuel, fuelId) {
-  const isRebrander = fuel.supplierType === 'Rebrand'
+  const isRebrander = fuel.supplierType === SUPPLIER_TYPE.REBRAND
   const displayName = fuel.name ?? content.notProvided
   const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
 
@@ -26,7 +27,8 @@ function buildViewModel(fuel, fuelId) {
       : buildManufacturerFuelDetailsRows(fuel, fuelId),
     fuelDetailsAction: `/review-fuel/${encodeURIComponent(fuelId)}/fuel-details`,
     cancelHref: returnHref,
-    isAlreadyComplete: fuel.technicalReview.listingChecks.fuelDetails === true
+    markAsCompletedText: content.actions.markAsCompleted,
+    cancelText: content.actions.cancel
   }
 }
 
@@ -49,16 +51,11 @@ async function handleFuelDetailsMarkCompleteRequest(request, h) {
   const { fuelId } = request.params
 
   try {
-    const { data: fuel } = await getFuelDetails(fuelId)
-    const returnHref = `/review-fuel/${encodeURIComponent(fuelId)}`
-
-    if (fuel.technicalReview.listingChecks.fuelDetails === true) {
-      return h.redirect(returnHref)
-    }
-
+    // Backend contract: marking complete is repeatable, so the button
+    // always posts and always returns the user to the review page.
     await markFuelDetailsCompleted(fuelId)
 
-    return h.redirect(returnHref)
+    return h.redirect(`/review-fuel/${encodeURIComponent(fuelId)}`)
   } catch (error) {
     logger.error(
       `[fuelDetails] failed to mark complete ${fuelId}: ${error.message}`

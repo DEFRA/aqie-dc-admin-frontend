@@ -11,7 +11,7 @@
 
     {% if errorSummaryItems %}
       {{ govukErrorSummary({
-        titleText: "There is a problem",
+        titleText: content.errors.summaryTitle,
         errorList: errorSummaryItems
       }) }}
     {% endif %}
@@ -28,21 +28,13 @@
       rows: descriptionRows
     }) }}
 
-    {% if isAlreadyComplete %}
-      <strong class="govuk-tag govuk-tag--green">Completed</strong>
+    <form method="post" action="{{ fuelDescriptionAction }}" novalidate>
+      {{ govukButton({ text: content.actions.markAsCompleted }) }}
+    </form>
 
-      <p class="govuk-!-margin-top-4">
-        <a class="govuk-link" href="{{ cancelHref }}">Return to fuel overview</a>
-      </p>
-    {% else %}
-      <form method="post" action="{{ fuelDescriptionAction }}" novalidate>
-        {{ govukButton({ text: "Mark as completed" }) }}
-      </form>
-
-      <p>
-        <a class="govuk-link" href="{{ cancelHref }}">Cancel</a>
-      </p>
-    {% endif %}
+    <p>
+      <a class="govuk-link" href="{{ cancelHref }}">{{ content.actions.cancel }}</a>
+    </p>
 
   </div>
 </div>
