@@ -99,7 +99,9 @@ describe('Brand-Name Route: /brand-name (Manufacturer)', () => {
       )
 
       expect(saveBrandNameMock).toHaveBeenCalledWith('FUEL-1', 'New Brand')
-      expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1/fuel-details')
+      expect(h.redirect).toHaveBeenCalledWith(
+        '/review-fuel/FUEL-1/fuel-details'
+      )
     })
 
     test('rejects empty brand name with manufacturer error message', async () => {
@@ -183,7 +185,9 @@ describe('Rebrand-Name Route: /rebrand-name (Rebrand)', () => {
       )
 
       expect(saveBrandNameMock).toHaveBeenCalledWith('FUEL-1', 'New Rebrand')
-      expect(h.redirect).toHaveBeenCalledWith('/review-fuel/FUEL-1/fuel-details')
+      expect(h.redirect).toHaveBeenCalledWith(
+        '/review-fuel/FUEL-1/fuel-details'
+      )
     })
 
     test('rejects empty rebrand name with rebrand error message', async () => {
