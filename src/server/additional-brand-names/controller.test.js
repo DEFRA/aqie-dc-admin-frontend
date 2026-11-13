@@ -68,7 +68,9 @@ describe('Additional Brand Names: Manufacturer Route', () => {
   })
 
   test('GET /additional-brand-names renders page with manufacturer wording', async () => {
-    getFuelForAdditionalBrandNamesMock.mockResolvedValue({ data: manufacturerFuel })
+    getFuelForAdditionalBrandNamesMock.mockResolvedValue({
+      data: manufacturerFuel
+    })
     getAdditionalBrandNamesValuesMock.mockReturnValue({
       hasAdditionalBrandNames: true,
       additionalBrandNames: 'Brand 1, Brand 2'
@@ -272,7 +274,9 @@ describe('Additional Brand Names: Shared Behavior', () => {
   })
 
   test('renders with validation error when Yes is selected but names are blank', async () => {
-    getFuelForAdditionalBrandNamesMock.mockResolvedValue({ data: manufacturerFuel })
+    getFuelForAdditionalBrandNamesMock.mockResolvedValue({
+      data: manufacturerFuel
+    })
     validateAdditionalBrandNamesMock.mockReturnValue({
       isValid: false,
       values: {
@@ -375,7 +379,9 @@ describe('Additional Brand Names: Shared Behavior', () => {
   })
 
   test('sets cancel link back to fuel details page', async () => {
-    getFuelForAdditionalBrandNamesMock.mockResolvedValue({ data: manufacturerFuel })
+    getFuelForAdditionalBrandNamesMock.mockResolvedValue({
+      data: manufacturerFuel
+    })
     getAdditionalBrandNamesValuesMock.mockReturnValue({
       hasAdditionalBrandNames: true,
       additionalBrandNames: 'Brand 1, Brand 2'
