@@ -1,9 +1,9 @@
 {#
-  Rebrand-name screen for supplier type "Rebrand".
+  Unified brand-name form for both:
+  - Manufacturer: "What is the brand name?"
+  - Rebrand: "What is the rebranded name?"
 
-  This page renders the GOV.UK form used to capture a rebranded fuel name.
-  It includes inline validation for empty submissions and a cancel link back to
-  the fuel details screen.
+  Uses content.fieldName and content.fieldId to determine form field structure.
 #}
 {% extends "layouts/page.njk" %}
 
@@ -18,7 +18,7 @@
 
     {% if error %}
       {{ govukErrorSummary({
-        titleText: content.errors.summaryTitle,
+        titleText: content.errorSummaryTitle,
         errorList: [
           {
             text: error.message,
@@ -28,26 +28,26 @@
       }) }}
     {% endif %}
 
-    {% set rebrandNameError = null %}
+    {% set brandNameError = null %}
     {% set inputClasses = '' %}
-    {% if error and error.field == 'rebrandName' %}
-      {% set rebrandNameError = { text: error.message } %}
+    {% if error and error.field == content.fieldName %}
+      {% set brandNameError = { text: error.message } %}
       {% set inputClasses = 'govuk-input--error' %}
     {% endif %}
 
     <form method="post"
-          action="{{ rebrandNameAction }}"
+          action="{{ brandNameAction }}"
           novalidate>
       {{ govukInput({
-        id: "rebrand-name",
-        name: "rebrandName",
+        id: content.fieldId,
+        name: content.fieldName,
         value: formValue,
         label: {
           text: content.label,
           classes: "govuk-label--xl",
           isPageHeading: true
         },
-        errorMessage: rebrandNameError,
+        errorMessage: brandNameError,
         classes: inputClasses
       }) }}
 
