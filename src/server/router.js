@@ -37,7 +37,7 @@ import { fuelDetails } from './fuel-details/index.js'
 import { fuelAppearance } from './fuel-appearance/index.js'
 import { fuelDescription } from './fuel-description/index.js'
 import { brandName } from './brand-name/index.js'
-import { additionalRebrandNames } from './additional-rebrand-names/index.js'
+import { additionalBrandNames } from './additional-brand-names/index.js'
 import { originalManufacturer } from './original-manufacturer/index.js'
 import { originalBrand } from './original-brand/index.js'
 import { fuelChanges } from './fuel-changes/index.js'
@@ -91,7 +91,7 @@ export const router = {
         fuelDetails,
         fuelDescription,
         brandName,
-        additionalRebrandNames,
+        additionalBrandNames,
         originalManufacturer,
         originalBrand,
         fuelChanges,
