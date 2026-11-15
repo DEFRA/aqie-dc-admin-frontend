@@ -44,6 +44,7 @@ import { fuelChanges } from './fuel-changes/index.js'
 import { reviewFuel } from './review-fuel/index.js'
 import { manufacturerLetter } from './manufacturer-letter/index.js'
 import { fuelWeight } from './fuel-weight/index.js'
+import { fuelComposition } from './fuel-composition/index.js'
 
 export const router = {
   plugin: {
@@ -97,7 +98,8 @@ export const router = {
         fuelChanges,
         manufacturerLetter,
         fuelAppearance,
-        fuelWeight
+        fuelWeight,
+        fuelComposition
       ])
 
       // Static assets
