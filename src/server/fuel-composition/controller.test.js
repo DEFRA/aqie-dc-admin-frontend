@@ -34,7 +34,9 @@ const postRequest = (payload) => ({
 })
 
 describe('#handleFuelCompositionRequest', () => {
-  beforeEach(() => getMock.mockReset())
+  beforeEach(() => {
+    getMock.mockReset()
+  })
 
   test('renders an empty form when fuelDescription is missing', async () => {
     getMock.mockResolvedValue({ data: baseFuel })
