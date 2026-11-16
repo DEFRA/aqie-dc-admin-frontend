@@ -54,13 +54,12 @@ async function handleSulphurContentRequest(request, h) {
 
   try {
     const { data: fuel } = await getSulphurContent(fuelId)
-    const { sulphurContent } = fuel.fuelDescription || {}
 
     return renderPage(
       h,
       fuelId,
       getFuelDescriptionFieldReturnHref(fuel, fuelId),
-      sulphurContent ?? '',
+      fuel.fuelDescription?.sulphurContent ?? '',
       null
     )
   } catch (error) {

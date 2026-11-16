@@ -27,7 +27,7 @@ export const manufacturingProcess = {
             validate: {
               params: paramsSchema,
               payload: Joi.object({
-                manufacturingProcess: Joi.string().allow('').optional()
+                manufacturingProcess: Joi.string().allow('').required()
               })
             }
           }
