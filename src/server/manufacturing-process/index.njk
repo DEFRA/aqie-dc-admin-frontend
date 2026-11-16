@@ -1,0 +1,44 @@
+{# filepath: c:\Users\2391613\Documents\aqie-dc-admin-frontend\src\server\manufacturing-process\index.njk #}
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errors.summaryTitle,
+        errorList: [{ text: error.message, href: error.href }]
+      }) }}
+    {% endif %}
+
+    <form method="post" action="{{ manufacturingProcessAction }}" novalidate>
+      {{ govukTextarea({
+        name: "manufacturingProcess",
+        id: "manufacturingProcess",
+        value: value,
+        rows: 5,
+        label: {
+          text: content.label,
+          isPageHeading: true,
+          classes: "govuk-label--l"
+        },
+        errorMessage: { text: error.message } if error else undefined
+      }) }}
+
+      {{ govukButton({ text: content.saveButton }) }}
+    </form>
+
+    <p>
+      <a class="govuk-link" href="{{ returnHref }}">{{ content.cancel }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
