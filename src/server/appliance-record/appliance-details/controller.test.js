@@ -16,7 +16,7 @@ const baseAppliance = {
   applianceType: 'heat',
   isVariant: false,
   nominalOutput: 10,
-  multifuelAppliance: false,
+  isMultifuelAppliance: false,
   permittedFuels: 'Wood logs',
   additionalConditions: 'Some conditions',
   isLegacyRecord: false
@@ -205,7 +205,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
       data: {
         ...baseAppliance,
         isLegacyRecord: true,
-        multifuelAppliance: false,
+        isMultifuelAppliance: false,
         permittedToBurnWood: true
       }
     })

@@ -37,23 +37,23 @@ describe('#saveMultifuelAppliance', () => {
     patchJsonMock.mockReset()
   })
 
-  test('patches /appliances/{id} with multifuelAppliance as true', async () => {
+  test('patches /appliances/{id} with isMultifuelAppliance as true', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
     await saveMultifuelAppliance('APP-1', true)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1', {
-      multifuelAppliance: true
+      isMultifuelAppliance: true
     })
   })
 
-  test('patches /appliances/{id} with multifuelAppliance as false', async () => {
+  test('patches /appliances/{id} with isMultifuelAppliance as false', async () => {
     patchJsonMock.mockResolvedValue({ success: true })
 
     await saveMultifuelAppliance('APP-1', false)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP-1', {
-      multifuelAppliance: false
+      isMultifuelAppliance: false
     })
   })
 
@@ -63,7 +63,7 @@ describe('#saveMultifuelAppliance', () => {
     await saveMultifuelAppliance('APP/1', true)
 
     expect(patchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1', {
-      multifuelAppliance: true
+      isMultifuelAppliance: true
     })
   })
 })

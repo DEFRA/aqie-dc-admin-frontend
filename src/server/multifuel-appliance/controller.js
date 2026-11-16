@@ -50,7 +50,7 @@ async function handleGet(request, h) {
       appliance,
       formAction,
       applianceDetailsHref,
-      toYesNo(appliance.multifuelAppliance),
+      toYesNo(appliance.isMultifuelAppliance),
       null
     )
   } catch (error) {

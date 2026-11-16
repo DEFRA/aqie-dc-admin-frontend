@@ -23,7 +23,7 @@ const appliance = {
   applianceType: 'boiler',
   isVariant: false,
   nominalOutput: 2,
-  multifuelAppliance: true,
+  isMultifuelAppliance: true,
   technicalReview: {
     status: 'in_review',
     listingChecks: { applianceDetails: null }

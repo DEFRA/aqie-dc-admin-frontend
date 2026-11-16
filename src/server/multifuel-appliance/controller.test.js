@@ -17,7 +17,7 @@ vi.mock('./multifuel-appliance-data.js', () => ({
 const appliance = {
   id: 'APP-1',
   modelName: 'Twin Heat M20i',
-  multifuelAppliance: true
+  isMultifuelAppliance: true
 }
 
 function toolkit() {
@@ -36,7 +36,7 @@ describe('#handleGet', () => {
     saveMultifuelApplianceMock.mockReset()
   })
 
-  test('renders the page with Yes pre-selected when multifuelAppliance is true', async () => {
+  test('renders the page with Yes pre-selected when isMultifuelAppliance is true', async () => {
     getApplianceForMultifuelMock.mockResolvedValue({ data: appliance })
     const h = toolkit()
 
@@ -51,9 +51,9 @@ describe('#handleGet', () => {
     )
   })
 
-  test('renders the page with No pre-selected when multifuelAppliance is false', async () => {
+  test('renders the page with No pre-selected when isMultifuelAppliance is false', async () => {
     getApplianceForMultifuelMock.mockResolvedValue({
-      data: { ...appliance, multifuelAppliance: false }
+      data: { ...appliance, isMultifuelAppliance: false }
     })
     const h = toolkit()
 
@@ -65,9 +65,9 @@ describe('#handleGet', () => {
     )
   })
 
-  test('renders the page with no selection when multifuelAppliance is not set', async () => {
+  test('renders the page with no selection when isMultifuelAppliance is not set', async () => {
     getApplianceForMultifuelMock.mockResolvedValue({
-      data: { ...appliance, multifuelAppliance: undefined }
+      data: { ...appliance, isMultifuelAppliance: undefined }
     })
     const h = toolkit()
 

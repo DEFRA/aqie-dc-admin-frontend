@@ -5,8 +5,8 @@ export function getApplianceForMultifuel(applianceId) {
   return getApplianceTechnicalReview(applianceId)
 }
 
-export function saveMultifuelAppliance(applianceId, multifuelAppliance) {
+export function saveMultifuelAppliance(applianceId, isMultifuelAppliance) {
   return patchJson(`/appliances/${encodeURIComponent(applianceId)}`, {
-    multifuelAppliance
+    isMultifuelAppliance
   })
 }

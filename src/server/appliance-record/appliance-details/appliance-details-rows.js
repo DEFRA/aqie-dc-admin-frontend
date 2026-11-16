@@ -112,7 +112,7 @@ export function buildLegacyRows(appliance) {
     },
     {
       key: { text: content.labels.multifuelAppliance },
-      value: { text: formatBoolean(appliance.multifuelAppliance) }
+      value: { text: formatBoolean(appliance.isMultifuelAppliance) }
     },
     {
       key: { text: content.labels.permittedFuels },

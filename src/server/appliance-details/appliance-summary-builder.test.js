@@ -94,7 +94,7 @@ describe('#buildSummaryItems', () => {
     isVariant: false,
     existingAuthorisedAppliance: null,
     nominalOutput: 2,
-    multifuelAppliance: false
+    isMultifuelAppliance: false
   }
 
   test('builds 6 base items for standard appliance', () => {

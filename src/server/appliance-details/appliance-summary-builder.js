@@ -165,7 +165,7 @@ export function buildSummaryItems(appliance) {
     },
     {
       key: { text: content.labels.multifuelAppliance },
-      value: { text: formatBoolean(appliance.multifuelAppliance) },
+      value: { text: formatBoolean(appliance.isMultifuelAppliance) },
       actions: {
         items: [
           {
