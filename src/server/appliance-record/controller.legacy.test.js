@@ -233,7 +233,9 @@ describe('applianceRecord controller - Legacy Records', () => {
       const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
 
       // Should include Manuals link when instructionManual is present
-      expect(detailLabels).toContain(applianceRecordContent.en.legacyDetailsItems.manuals)
+      expect(detailLabels).toContain(
+        applianceRecordContent.en.legacyDetailsItems.manuals
+      )
       expect(detailLabels).toEqual([
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,
         applianceRecordContent.en.legacyDetailsItems.manuals,
@@ -268,7 +270,9 @@ describe('applianceRecord controller - Legacy Records', () => {
       const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
 
       // Should include Legacy comments link when comments are present
-      expect(detailLabels).toContain(applianceRecordContent.en.legacyDetailsItems.legacyComments)
+      expect(detailLabels).toContain(
+        applianceRecordContent.en.legacyDetailsItems.legacyComments
+      )
       expect(detailLabels).toEqual([
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,
         applianceRecordContent.en.legacyDetailsItems.legacyComments,
