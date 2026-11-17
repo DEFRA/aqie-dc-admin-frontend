@@ -1,0 +1,45 @@
+{# filepath: c:\Users\2391613\Documents\aqie-dc-admin-frontend\src\server\fuel-weight\index.njk #}
+{% extends "layouts/page.njk" %}
+
+{% block pageTitle %}
+  {{ pageTitle }} - GOV.UK
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if error %}
+      {{ govukErrorSummary({
+        titleText: content.errorSummaryTitle,
+        errorList: [{ text: error.message, href: error.href }]
+      }) }}
+    {% endif %}
+
+    <form method="post" action="{{ fuelWeightAction }}" novalidate>
+      {{ govukTextarea({
+        name: "weight",
+        id: "weight",
+        rows: 3,
+        value: formValue,
+        label: {
+          text: content.label,
+          classes: "govuk-label--l",
+          isPageHeading: true
+        },
+        hint: { text: content.hint },
+        errorMessage: { text: error.message } if error else undefined
+      }) }}
+
+      {{ govukButton({ text: content.saveChanges }) }}
+    </form>
+
+    <p>
+      <a class="govuk-link" href="{{ fuelDetailsHref }}">{{ content.cancel }}</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}
