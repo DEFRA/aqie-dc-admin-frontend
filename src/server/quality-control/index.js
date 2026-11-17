@@ -5,7 +5,12 @@ import {
 } from './controller.js'
 
 const paramsSchema = Joi.object({
-  fuelId: Joi.string().required().trim().min(1).max(64)
+  fuelId: Joi.string()
+    .required()
+    .trim()
+    .min(1)
+    .max(64)
+    .pattern(/^[A-Za-z0-9-]+$/)
 })
 
 export const qualityControl = {
@@ -28,7 +33,7 @@ export const qualityControl = {
               params: paramsSchema,
               // Nothing selected means the field is absent from the payload
               payload: Joi.object({
-                qualityControl: Joi.string().valid('yes', 'no').optional()
+                qualityControl: Joi.string().valid('yes', 'no').required()
               })
             }
           }

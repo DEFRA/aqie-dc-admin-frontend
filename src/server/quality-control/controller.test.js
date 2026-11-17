@@ -92,21 +92,6 @@ describe('#handleQualityControlSaveRequest', () => {
     expect(h.view).not.toHaveBeenCalled()
   })
 
-  test('shows an error without saving when nothing is selected', async () => {
-    const h = toolkit()
-
-    await handleQualityControlSaveRequest(postRequest({}), h)
-
-    expect(saveMock).not.toHaveBeenCalled()
-    expect(h.redirect).not.toHaveBeenCalled()
-    expect(h.view.mock.calls[0][1].error).toEqual({
-      field: 'qualityControl',
-      message: expect.any(String),
-      href: '#qualityControl'
-    })
-    expect(h.code).toHaveBeenCalledWith(statusCodes.badRequest)
-  })
-
   test('renders the error page when the save fails', async () => {
     saveMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()

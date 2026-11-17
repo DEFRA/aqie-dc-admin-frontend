@@ -64,14 +64,6 @@ async function handleQualityControlSaveRequest(request, h) {
   const { fuelId } = request.params
   const { qualityControl } = request.payload
 
-  if (qualityControl !== 'yes' && qualityControl !== 'no') {
-    return renderPage(h, fuelId, '', {
-      field: 'qualityControl',
-      message: content.errors.qualityControlRequired,
-      href: '#qualityControl'
-    }).code(statusCodes.badRequest)
-  }
-
   try {
     await saveQualityControl(fuelId, qualityControl === 'yes')
 
