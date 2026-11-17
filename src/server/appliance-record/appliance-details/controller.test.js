@@ -181,7 +181,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
         ...baseAppliance,
         isLegacyRecord: true,
         legacy: { applianceId: 'LEGACY-APP-1' },
-        permittedToBurnWood: true
+        isPermittedToBurnWood: true
       }
     })
     const h = toolkit()
@@ -205,8 +205,8 @@ describe('#handleApplianceRecordDetailRequest', () => {
       data: {
         ...baseAppliance,
         isLegacyRecord: true,
-        multifuelAppliance: false,
-        permittedToBurnWood: true
+        isMultifuelAppliance: false,
+        isPermittedToBurnWood: true
       }
     })
     const h = toolkit()
@@ -233,7 +233,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
       data: {
         ...baseAppliance,
         isLegacyRecord: true,
-        permittedToBurnWood: true
+        isPermittedToBurnWood: true
       }
     })
     const h = toolkit()
@@ -257,7 +257,7 @@ describe('#handleApplianceRecordDetailRequest', () => {
         ...baseAppliance,
         isLegacyRecord: true,
         permittedFuels: ['Wood logs', 'Wood pellets'],
-        permittedToBurnWood: true
+        isPermittedToBurnWood: true
       }
     })
     const h = toolkit()
