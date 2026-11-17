@@ -43,7 +43,10 @@ describe('#handleLegacyCommentsRequest', () => {
 
   test('renders with correct heading including model name', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
+    getLegacyCommentsMock.mockResolvedValue({
+      success: true,
+      data: { id: 'APP-1', legacy: { comments: baseComments } }
+    })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -61,7 +64,10 @@ describe('#handleLegacyCommentsRequest', () => {
 
   test('passes all comments to the view model', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
+    getLegacyCommentsMock.mockResolvedValue({
+      success: true,
+      data: { id: 'APP-1', legacy: { comments: baseComments } }
+    })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -72,7 +78,10 @@ describe('#handleLegacyCommentsRequest', () => {
 
   test('passes string comments through unchanged', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
+    getLegacyCommentsMock.mockResolvedValue({
+      success: true,
+      data: { id: 'APP-1', legacy: { comments: baseComments } }
+    })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -86,15 +95,21 @@ describe('#handleLegacyCommentsRequest', () => {
   test('normalizes structured comment objects into formatted strings', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
     getLegacyCommentsMock.mockResolvedValue({
-      data: [
-        {
-          date: '05/04/2016 12:16',
-          user: 'Data Entry User',
-          role: 'Data Entry',
-          email: 'Legacy.user@example.com',
-          text: 'The Jetmaster 50i comment.'
+      success: true,
+      data: {
+        id: 'APP-1',
+        legacy: {
+          comments: [
+            {
+              date: '05/04/2016 12:16',
+              user: 'Data Entry User',
+              role: 'Data Entry',
+              email: 'Legacy.user@example.com',
+              text: 'The Jetmaster 50i comment.'
+            }
+          ]
         }
-      ]
+      }
     })
     const h = toolkit()
 
@@ -108,7 +123,10 @@ describe('#handleLegacyCommentsRequest', () => {
 
   test('comments is empty array when response data is empty', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getLegacyCommentsMock.mockResolvedValue({ data: [] })
+    getLegacyCommentsMock.mockResolvedValue({
+      success: true,
+      data: { id: 'APP-1' }
+    })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)
@@ -119,7 +137,10 @@ describe('#handleLegacyCommentsRequest', () => {
 
   test('sets correct back link, return href, and breadcrumbs', async () => {
     getApplianceTechnicalReviewMock.mockResolvedValue({ data: baseAppliance })
-    getLegacyCommentsMock.mockResolvedValue({ data: baseComments })
+    getLegacyCommentsMock.mockResolvedValue({
+      success: true,
+      data: { id: 'APP-1', legacy: { comments: baseComments } }
+    })
     const h = toolkit()
 
     await handleLegacyCommentsRequest({ params: { applianceId: 'APP-1' } }, h)

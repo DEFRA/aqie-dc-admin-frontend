@@ -14,12 +14,12 @@ const { getApplianceForInstructionManual } =
 describe('#getApplianceForInstructionManual', () => {
   beforeEach(() => fetchJsonMock.mockReset())
 
-  test('fetches from /appliances/{applianceId}', async () => {
+  test('fetches from /admin/appliances/{applianceId}', async () => {
     fetchJsonMock.mockResolvedValue({ id: 'APP-1' })
 
     const result = await getApplianceForInstructionManual('APP-1')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP-1')
+    expect(fetchJsonMock).toHaveBeenCalledWith('/admin/appliances/APP-1')
     expect(result.id).toBe('APP-1')
   })
 
@@ -28,6 +28,6 @@ describe('#getApplianceForInstructionManual', () => {
 
     await getApplianceForInstructionManual('APP/1')
 
-    expect(fetchJsonMock).toHaveBeenCalledWith('/appliances/APP%2F1')
+    expect(fetchJsonMock).toHaveBeenCalledWith('/admin/appliances/APP%2F1')
   })
 })

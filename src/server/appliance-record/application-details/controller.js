@@ -17,8 +17,11 @@ const content = applianceApplicationDetailsContent.en
 
 function buildViewModel(appliance, application, applianceId) {
   const returnHref = `/appliance-record/${encodeURIComponent(applianceId)}`
-  const title = application.id
-    ? `Application ${formatApplicationId(application.id)} details`
+  const displayId = appliance.isLegacyRecord
+    ? appliance.legacy?.applicationId
+    : application.id
+  const title = displayId
+    ? `Application ${formatApplicationId(displayId)} details`
     : 'Application details'
   const { breadcrumbs, returnToRecord } = buildSubPageBreadcrumbs(
     appliance.modelName,
@@ -29,7 +32,7 @@ function buildViewModel(appliance, application, applianceId) {
     pageTitle: title,
     heading: title,
     summaryRows: appliance.isLegacyRecord
-      ? buildLegacySummaryRows(appliance, application)
+      ? buildLegacySummaryRows(appliance)
       : buildSummaryRows(appliance, application),
     backLink: { href: returnHref },
     returnHref,
@@ -45,8 +48,11 @@ async function handleApplianceApplicationDetailsRequest(request, h) {
     // Backend contract: /appliances/{ID} supplies company and contact details;
     // /applications/{id} supplies submittedAt and linkedItems only.
     const { data: appliance } = await getApplianceDetail(applianceId)
+    // Legacy records have no document in /applications: legacy.applicationId
+    // is a legacy reference (e.g. CAA-EA-00001720), so everything shown comes
+    // from the appliance record itself.
     const applicationId = appliance.isLegacyRecord
-      ? appliance.legacy?.applicationId
+      ? undefined
       : appliance.applicationId
     const application = applicationId
       ? (await getApplicationDetails(applicationId)).data
