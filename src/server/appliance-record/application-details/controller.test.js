@@ -474,15 +474,14 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     expect(getApplicationDetailsMock).toHaveBeenCalledWith('app-uuid-123')
   })
 
-  test('uses legacy.applicationId for legacy appliances instead of applicationId', async () => {
+  test('does not fetch an application for legacy appliances and titles the page with legacy.applicationId', async () => {
     const legacyAppliance = {
       ...baseAppliance,
       isLegacyRecord: true,
       applicationId: null,
-      legacy: { applicationId: 'legacy-app-uuid-456' }
+      legacy: { applicationId: 'CAA-EA-00001720', linkedApplicationIds: [] }
     }
     getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-    getApplicationDetailsMock.mockResolvedValue({ data: baseApplication })
     const h = toolkit()
 
     await handleApplianceApplicationDetailsRequest(
@@ -490,8 +489,12 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       h
     )
 
-    expect(getApplicationDetailsMock).toHaveBeenCalledWith(
-      'legacy-app-uuid-456'
+    expect(getApplicationDetailsMock).not.toHaveBeenCalled()
+    expect(h.view).toHaveBeenCalledWith(
+      'appliance-record/application-details/index',
+      expect.objectContaining({
+        heading: 'Application CAA-EA-00001720 details'
+      })
     )
   })
 
@@ -525,7 +528,10 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     const legacyAppliance = {
       ...baseAppliance,
       isLegacyRecord: true,
-      legacy: { applicationId: 'app-uuid-123' },
+      legacy: {
+        applicationId: 'CAA-EA-00001720',
+        linkedApplicationIds: ['CAA-EA-00000850']
+      },
       companyName: 'Jetmaster Fires Limited',
       fullAddress: [
         'Unit 2',
@@ -536,16 +542,8 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
       ]
     }
 
-    const legacyApplication = {
-      id: 'app-uuid-123',
-      legacy: {
-        linkedApplicationIds: ['CAA-EA-00000850']
-      }
-    }
-
     test('renders 3 summary rows for a legacy record with address present', async () => {
       getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(
@@ -559,7 +557,6 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
 
     test('renders linked legacy applications as plain text for a single ID', async () => {
       getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(
@@ -576,10 +573,9 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     })
 
     test('renders linked legacy applications as comma-separated with "and" for multiple IDs', async () => {
-      getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({
+      getApplianceDetailMock.mockResolvedValue({
         data: {
-          ...legacyApplication,
+          ...legacyAppliance,
           legacy: {
             linkedApplicationIds: ['CAA-EA-00000850', 'CAA-EA-00000851']
           }
@@ -601,10 +597,9 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     })
 
     test('renders linked legacy applications with commas for three or more IDs', async () => {
-      getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({
+      getApplianceDetailMock.mockResolvedValue({
         data: {
-          ...legacyApplication,
+          ...legacyAppliance,
           legacy: {
             linkedApplicationIds: [
               'CAA-EA-00000850',
@@ -631,9 +626,11 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
     })
 
     test('omits the linked legacy applications row when linkedApplicationIds is absent', async () => {
-      getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({
-        data: { ...legacyApplication, legacy: undefined }
+      getApplianceDetailMock.mockResolvedValue({
+        data: {
+          ...legacyAppliance,
+          legacy: { applicationId: 'CAA-EA-00001720', linkedApplicationIds: [] }
+        }
       })
       const h = toolkit()
 
@@ -652,7 +649,6 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
 
     test('renders separate Company name and Company address rows when address is present', async () => {
       getApplianceDetailMock.mockResolvedValue({ data: legacyAppliance })
-      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(
@@ -680,7 +676,6 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
           fullAddress: undefined
         }
       })
-      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(
@@ -708,7 +703,6 @@ describe('#handleApplianceApplicationDetailsRequest', () => {
           fullAddress: []
         }
       })
-      getApplicationDetailsMock.mockResolvedValue({ data: legacyApplication })
       const h = toolkit()
 
       await handleApplianceApplicationDetailsRequest(

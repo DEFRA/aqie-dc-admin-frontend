@@ -205,6 +205,122 @@ describe('applianceRecord controller - Legacy Records', () => {
       ])
     })
 
+    test('shows Manuals link when legacy record has instructionManual data', async () => {
+      fetchJsonMock.mockResolvedValue({
+        success: true,
+        data: {
+          ...mockBackendResponse.data,
+          id: 'APP-LEGACY-WITH-MANUAL',
+          isLegacyRecord: true,
+          modelName: 'Legacy Record with Manual',
+          status: 'live',
+          legacy: { applicationId: '0042' },
+          instructionManual: {
+            title: 'Assembly and Instructions manual',
+            version: 'GB 90068500',
+            publicationDate: '2016-05-10T00:00:00.000Z'
+          }
+        }
+      })
+
+      const h = toolkit()
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-LEGACY-WITH-MANUAL' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
+
+      // Should include Manuals link when instructionManual is present
+      expect(detailLabels).toContain(
+        applianceRecordContent.en.legacyDetailsItems.manuals
+      )
+      expect(detailLabels).toEqual([
+        applianceRecordContent.en.legacyDetailsItems.applianceDetails,
+        applianceRecordContent.en.legacyDetailsItems.manuals,
+        'Application 0042 details',
+        applianceRecordContent.en.legacyDetailsItems.actionHistory
+      ])
+    })
+
+    test('shows Legacy comments link when legacy record has comments', async () => {
+      fetchJsonMock.mockResolvedValue({
+        success: true,
+        data: {
+          ...mockBackendResponse.data,
+          id: 'APP-LEGACY-WITH-COMMENTS',
+          isLegacyRecord: true,
+          modelName: 'Legacy Record with Comments',
+          status: 'live',
+          legacy: {
+            applicationId: '0042',
+            comments: ['[2016-05-12] Some legacy comment']
+          }
+        }
+      })
+
+      const h = toolkit()
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-LEGACY-WITH-COMMENTS' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
+
+      // Should include Legacy comments link when comments are present
+      expect(detailLabels).toContain(
+        applianceRecordContent.en.legacyDetailsItems.legacyComments
+      )
+      expect(detailLabels).toEqual([
+        applianceRecordContent.en.legacyDetailsItems.applianceDetails,
+        applianceRecordContent.en.legacyDetailsItems.legacyComments,
+        'Application 0042 details',
+        applianceRecordContent.en.legacyDetailsItems.actionHistory
+      ])
+    })
+
+    test('shows both Manuals and Legacy comments links when both are present', async () => {
+      fetchJsonMock.mockResolvedValue({
+        success: true,
+        data: {
+          ...mockBackendResponse.data,
+          id: 'APP-LEGACY-FULL',
+          isLegacyRecord: true,
+          modelName: 'Legacy Record with Both',
+          status: 'live',
+          legacy: {
+            applicationId: '0042',
+            comments: ['[2016-05-12] Some legacy comment']
+          },
+          instructionManual: {
+            title: 'Assembly and Instructions manual',
+            version: 'GB 90068500',
+            publicationDate: '2016-05-10T00:00:00.000Z'
+          }
+        }
+      })
+
+      const h = toolkit()
+      await handleGetApplianceRecordPage(
+        { params: { applianceId: 'APP-LEGACY-FULL' } },
+        h
+      )
+
+      const callArgs = h.view.mock.calls[0][1]
+      const detailLabels = callArgs.detailsRows.map((row) => row.key.text)
+
+      // Should include both Manuals and Legacy comments links
+      expect(detailLabels).toEqual([
+        applianceRecordContent.en.legacyDetailsItems.applianceDetails,
+        applianceRecordContent.en.legacyDetailsItems.manuals,
+        applianceRecordContent.en.legacyDetailsItems.legacyComments,
+        'Application 0042 details',
+        applianceRecordContent.en.legacyDetailsItems.actionHistory
+      ])
+    })
+
     test('REFERENCE: legacy content should define 5 expected detail labels', () => {
       const expectedLegacyDetails = [
         applianceRecordContent.en.legacyDetailsItems.applianceDetails,

@@ -53,7 +53,8 @@ async function handleLegacyCommentsRequest(request, h) {
 
   try {
     const { data: appliance } = await getApplianceTechnicalReview(applianceId)
-    const { data: comments } = await getLegacyComments(applianceId)
+    const applianceData = await getLegacyComments(applianceId)
+    const comments = applianceData.data?.legacy?.comments || []
 
     return h.view(
       'appliance-record/legacy-comments/index',

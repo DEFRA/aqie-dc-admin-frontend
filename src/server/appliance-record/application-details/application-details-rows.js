@@ -50,15 +50,14 @@ function buildAddressHtml(addressLines) {
   return (addressLines ?? []).map(escapeHtml).join('<br>')
 }
 
-export function buildLegacySummaryRows(appliance, application) {
+export function buildLegacySummaryRows(appliance) {
   const rows = []
 
-  if (application.legacy?.linkedApplicationIds?.length) {
+  const linkedApplicationIds = appliance.legacy?.linkedApplicationIds
+  if (linkedApplicationIds?.length) {
     rows.push({
       key: { text: content.labels.linkedLegacyApplications },
-      value: buildLinkedApplicationsValue(
-        application.legacy.linkedApplicationIds
-      )
+      value: buildLinkedApplicationsValue(linkedApplicationIds)
     })
   }
 
