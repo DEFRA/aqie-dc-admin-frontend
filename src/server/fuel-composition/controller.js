@@ -32,14 +32,12 @@ async function handleFuelCompositionRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelComposition(fuelId)
-    // fuelDescription can be missing or have no composition on first entry
-    const { composition } = fuel.fuelDescription || {}
 
     return renderPage(
       h,
       fuelId,
       getFuelDescriptionFieldReturnHref(fuel, fuelId),
-      composition ?? '',
+      fuel.fuelDescription?.composition ?? '',
       null
     )
   } catch (error) {

@@ -29,14 +29,12 @@ async function handleFuelWeightRequest(request, h) {
 
   try {
     const { data: fuel } = await getFuelWeight(fuelId)
-    // fuelDescription can be missing or have no weight on first entry
-    const { weight } = fuel.fuelDescription || {}
 
     return renderPage(
       h,
       fuelId,
       getFuelDescriptionFieldReturnHref(fuel, fuelId),
-      weight ?? '',
+      fuel.fuelDescription?.weight ?? '',
       null
     )
   } catch (error) {
