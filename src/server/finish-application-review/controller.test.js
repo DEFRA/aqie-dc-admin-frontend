@@ -5,7 +5,13 @@ import {
   handleFinishApplicationReviewRequest,
   handleFinishApplicationReviewSubmitRequest
 } from './controller.js'
-import { finishApplicationReviewContent } from './content.js'
+import {
+  finishApplicationReviewContent,
+  getFinishApplicationReviewPageContent
+} from './content.js'
+
+const applianceContent = getFinishApplicationReviewPageContent('appliance')
+const fuelContent = getFinishApplicationReviewPageContent('fuel')
 
 const { getApplicationWithTechStatusMock, completeApplicationMock } =
   vi.hoisted(() => ({
@@ -20,6 +26,7 @@ vi.mock('./application-data.js', () => ({
 
 const baseApplication = {
   id: 'app-1',
+  type: 'appliance',
   applicationReviewComplete: true,
   linkedItems: {
     accepted: [],
@@ -54,7 +61,7 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('Finish Application Review')
+    expect(result).toContain('Finish application review')
   })
 
   test('redirects to the incomplete page when there are pending reviews', async () => {
@@ -93,7 +100,7 @@ describe('#Complete application appliances Controller', () => {
         ...baseApplication,
         linkedItems: {
           accepted: [],
-          rejected: [{ modelName: 'Rejected Stove' }]
+          rejected: [{ name: 'Rejected Stove' }]
         }
       }
     })
@@ -104,20 +111,12 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).not.toContain(
-      finishApplicationReviewContent.en.unsuitableAppliancesHeading
-    )
-    expect(result).toContain(finishApplicationReviewContent.en.unsuitableIntro)
+    expect(result).not.toContain(applianceContent.unsuitableItemsHeading)
+    expect(result).toContain(applianceContent.unsuitableIntro)
     expect(result).toContain('Rejected Stove')
-    expect(result).toContain(
-      finishApplicationReviewContent.en.contactApplicantText
-    )
-    expect(result).toContain(
-      finishApplicationReviewContent.en.finishReviewButton
-    )
-    expect(result).not.toContain(
-      finishApplicationReviewContent.en.suitableIntro
-    )
+    expect(result).toContain(applianceContent.contactApplicantText)
+    expect(result).toContain(applianceContent.finishReviewButton)
+    expect(result).not.toContain(applianceContent.suitableIntro)
   })
 
   test('renders the suitable appliance section without its heading when only accepted appliances exist', async () => {
@@ -125,7 +124,7 @@ describe('#Complete application appliances Controller', () => {
       data: {
         ...baseApplication,
         linkedItems: {
-          accepted: [{ modelName: 'Accepted Stove' }],
+          accepted: [{ name: 'Accepted Stove' }],
           rejected: []
         }
       }
@@ -137,18 +136,12 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).not.toContain(
-      finishApplicationReviewContent.en.suitableAppliancesHeading
-    )
-    expect(result).toContain(finishApplicationReviewContent.en.suitableIntro)
+    expect(result).not.toContain(applianceContent.suitableItemsHeading)
+    expect(result).toContain(applianceContent.suitableIntro)
     expect(result).toContain('Accepted Stove')
-    expect(result).toContain(finishApplicationReviewContent.en.approvalIntro)
-    expect(result).toContain(
-      finishApplicationReviewContent.en.submitForApprovalButton
-    )
-    expect(result).not.toContain(
-      finishApplicationReviewContent.en.unsuitableIntro
-    )
+    expect(result).toContain(applianceContent.approvalIntro)
+    expect(result).toContain(applianceContent.submitForApprovalButton)
+    expect(result).not.toContain(applianceContent.unsuitableIntro)
   })
 
   test('renders both sections with headings and only the submit for approval button when both accepted and rejected appliances exist', async () => {
@@ -156,8 +149,8 @@ describe('#Complete application appliances Controller', () => {
       data: {
         ...baseApplication,
         linkedItems: {
-          accepted: [{ modelName: 'Accepted Stove' }],
-          rejected: [{ modelName: 'Rejected Stove' }]
+          accepted: [{ name: 'Accepted Stove' }],
+          rejected: [{ name: 'Rejected Stove' }]
         }
       }
     })
@@ -168,20 +161,36 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain(
-      finishApplicationReviewContent.en.unsuitableAppliancesHeading
-    )
-    expect(result).toContain(
-      finishApplicationReviewContent.en.suitableAppliancesHeading
-    )
+    expect(result).toContain(applianceContent.unsuitableItemsHeading)
+    expect(result).toContain(applianceContent.suitableItemsHeading)
     expect(result).toContain('Rejected Stove')
     expect(result).toContain('Accepted Stove')
-    expect(result).toContain(
-      finishApplicationReviewContent.en.submitForApprovalButton
-    )
-    expect(result).not.toContain(
-      finishApplicationReviewContent.en.finishReviewButton
-    )
+    expect(result).toContain(applianceContent.submitForApprovalButton)
+    expect(result).not.toContain(applianceContent.finishReviewButton)
+  })
+
+  test('renders fuel content and return link when application type is fuel', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        type: 'fuel',
+        linkedItems: {
+          accepted: [{ name: 'Kings Starterlog' }],
+          rejected: []
+        }
+      }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/finish-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain(fuelContent.suitableIntro)
+    expect(result).toContain(fuelContent.approvalIntro)
+    expect(result).toContain('Kings Starterlog')
+    expect(result).toContain('href="/review-fuel-application/app-1"')
   })
 })
 
@@ -279,8 +288,8 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
       'finish-application-review/index',
       expect.objectContaining({
         content: expect.objectContaining({
-          unsuitableAppliancesHeading: 'Unsuitable appliances',
-          finishReviewButton: 'Finish Review',
+          unsuitableItemsHeading: 'Unsuitable appliances',
+          finishReviewButton: 'Finish review',
           submitForApprovalButton: 'Submit for approval'
         })
       })

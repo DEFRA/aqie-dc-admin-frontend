@@ -1,4 +1,7 @@
-import { finishApplicationReviewContent } from './content.js'
+import {
+  finishApplicationReviewContent,
+  getFinishApplicationReviewPageContent
+} from './content.js'
 import {
   completeApplication,
   getApplicationWithTechStatus
@@ -15,24 +18,32 @@ async function handleFinishApplicationReviewRequest(request, h) {
   try {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
+    const pageContent = getFinishApplicationReviewPageContent(application.type)
+    const linkedItems = application.linkedItems || {}
+    const acceptedItems = linkedItems.accepted || []
+    const rejectedItems = linkedItems.rejected || []
 
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
       return h.redirect(`/incomplete-application-review/${applicationId}`)
     }
-    //screen to display both accepted and rejected
-    const containsBoth =
-      application.linkedItems?.rejected?.length > 0 &&
-      application.linkedItems?.accepted?.length > 0
+
+    const containsBoth = rejectedItems.length > 0 && acceptedItems.length > 0
 
     return h.view('finish-application-review/index', {
-      pageTitle: content.pageTitle,
-      heading: content.heading,
+      pageTitle: pageContent.pageTitle,
+      heading: pageContent.heading,
       applicationId,
-      application,
+      application: {
+        ...application,
+        linkedItems: {
+          accepted: acceptedItems,
+          rejected: rejectedItems
+        }
+      },
       containsBoth,
-      content,
-      returnLink: content.returnLink(applicationId)
+      content: pageContent,
+      returnLink: pageContent.returnLink(applicationId)
     })
   } catch (error) {
     logger.error(
@@ -53,17 +64,18 @@ const finishApplicationReviewController = {
 
 async function handleFinishApplicationReviewSubmitRequest(request, h) {
   const { applicationId } = request.params
-  const user = request.auth?.credentials?.user
+  const credentials = request.auth && request.auth.credentials
+  const user = credentials && credentials.user
 
-  if (!user?.name || !user?.email) {
+  if (!user || !user.name || !user.email) {
     logger.warn(
       `[finish-application-review.POST] missing reviewer name/email in auth credentials for ${applicationId}, falling back to unknown reviewer`
     )
   }
 
   const reviewedBy = {
-    name: user?.name ?? 'Unknown reviewer',
-    email: user?.email ?? 'unknown-reviewer@unknown.gov.uk'
+    name: user && user.name ? user.name : 'Unknown reviewer',
+    email: user && user.email ? user.email : 'unknown-reviewer@unknown.gov.uk'
   }
 
   try {
