@@ -110,9 +110,21 @@ export function buildFuelRows(linkedItems) {
   })
 }
 
+function isFuelApplicationReviewComplete(linkedItems) {
+  if (!linkedItems || linkedItems.length === 0) {
+    return false
+  }
+
+  return linkedItems.every((item) => {
+    const status = item.technicalReview && item.technicalReview.status
+    return status === 'accepted' || status === 'rejected'
+  })
+}
+
 export function buildFuelApplicationViewModel(application) {
   const linkedItems = application.linkedItems
   const applicationId = encodeURIComponent(application.id)
+  const reviewComplete = isFuelApplicationReviewComplete(linkedItems)
   const formattedApplicationId = formatApplicationId(application.id)
   const heading = content.heading(formattedApplicationId)
 
@@ -136,6 +148,8 @@ export function buildFuelApplicationViewModel(application) {
       text: content.navigation.back
     },
     returnHref: '/fuel-applications',
-    continueReviewHref: `/finish-application-review/${applicationId}`
+    continueReviewHref: reviewComplete
+      ? `/finish-application-review/${applicationId}`
+      : `/incomplete-application-review/${applicationId}`
   }
 }

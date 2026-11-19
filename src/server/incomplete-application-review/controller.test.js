@@ -3,6 +3,14 @@ import { createServer } from '../server.js'
 import { statusCodes } from '../common/constants/status-codes.js'
 import { handleIncompleteApplicationReviewRequest } from './controller.js'
 
+const { getApplicationWithTechStatusMock } = vi.hoisted(() => ({
+  getApplicationWithTechStatusMock: vi.fn()
+}))
+
+vi.mock('../finish-application-review/application-data.js', () => ({
+  getApplicationWithTechStatus: getApplicationWithTechStatusMock
+}))
+
 describe('#Incomplete application review Controller', () => {
   let server
 
@@ -15,28 +23,63 @@ describe('#Incomplete application review Controller', () => {
     await server.stop({ timeout: 0 })
   })
 
-  test('renders the incomplete application page', async () => {
+  beforeEach(() => {
+    getApplicationWithTechStatusMock.mockReset()
+  })
+
+  test('renders the incomplete appliance application page', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: { id: 'app-1', type: 'appliance' }
+    })
+
     const { result, statusCode } = await server.inject({
       method: 'GET',
       url: '/incomplete-application-review/app-1'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('is not complete')
+    expect(result).toContain('Review is not complete')
     expect(result).toContain(
-      'You must make a final decision on each appliance before completing this application review.'
+      'You must make a final decision on the appliance before completing your review.'
     )
     expect(result).toContain('href="/review-appliance-application/app-1"')
-    expect(result).toContain('Return to application and complete reviews')
+    expect(result).toContain('Return to application review')
+  })
+
+  test('renders the incomplete fuel application page', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: { id: 'app-1', type: 'fuel' }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/incomplete-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain('Review is not complete')
+    expect(result).toContain(
+      'You must make a final decision on the fuel before completing your review.'
+    )
+    expect(result).toContain('href="/review-fuel-application/app-1"')
+    expect(result).toContain('Return to fuel review')
   })
 })
 
 describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
-  test('renders the incomplete view', () => {
+  beforeEach(() => {
+    getApplicationWithTechStatusMock.mockReset()
+  })
+
+  test('renders the incomplete appliance view', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: { id: 'app-1', type: 'appliance' }
+    })
+
     const view = vi.fn().mockReturnValue('rendered')
     const h = { view }
 
-    handleIncompleteApplicationReviewRequest(
+    await handleIncompleteApplicationReviewRequest(
       { params: { applicationId: 'app-1' } },
       h
     )
@@ -45,13 +88,33 @@ describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
       'incomplete-application-review/index',
       expect.objectContaining({
         applicationId: 'app-1',
-        heading: 'Your review of application app-1 is not complete',
-        pageTitle: 'Your review of application app-1 is not complete',
+        heading: 'Review is not complete',
+        pageTitle: 'Review is not complete',
         introText:
-          'You must make a final decision on each appliance before completing this application review.',
+          'You must make a final decision on the appliance before completing your review.',
         returnLink: '/review-appliance-application/app-1',
-        returnLinkText: 'Return to application and complete reviews'
+        returnLinkText: 'Return to application review'
       })
     )
+  })
+
+  test('renders the generic error page when application type lookup fails', async () => {
+    getApplicationWithTechStatusMock.mockRejectedValue(
+      new Error('backend down')
+    )
+
+    const code = vi.fn().mockReturnValue('rendered')
+    const view = vi.fn().mockReturnValue({ code })
+    const h = { view }
+
+    await handleIncompleteApplicationReviewRequest(
+      { params: { applicationId: 'app-1' } },
+      h
+    )
+
+    expect(view).toHaveBeenCalledWith('error/index', {
+      message: 'Sorry, there is a problem with the service'
+    })
+    expect(code).toHaveBeenCalledWith(statusCodes.internalServerError)
   })
 })

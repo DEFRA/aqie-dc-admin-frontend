@@ -60,6 +60,63 @@ describe('#reviewApplicationAppliancesController', () => {
     expect(result).toContain('Review appliance application')
   })
 
+  test('routes Continue to incomplete page when there are pending appliance reviews', async () => {
+    getApplianceApplicationMock.mockResolvedValue({
+      data: { ...baseApplication, fullAddress: ['Line 1', 'Line 2'] }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/review-appliance-application/app-1',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain('href="/incomplete-application-review/app-1"')
+  })
+
+  test('routes Continue to finish page when all appliances are in final statuses', async () => {
+    getApplianceApplicationMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        fullAddress: ['Line 1', 'Line 2'],
+        linkedItems: [
+          {
+            id: 'appliance-1',
+            modelName: 'Boiler 1',
+            technicalReview: { status: 'accepted' }
+          },
+          {
+            id: 'appliance-2',
+            modelName: 'Boiler 2',
+            technicalReview: { status: 'rejected' }
+          }
+        ]
+      }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/review-appliance-application/app-1',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain('href="/finish-application-review/app-1"')
+  })
+
   test('renders error view when getApplianceApplication throws error', async () => {
     getApplianceApplicationMock.mockRejectedValue(new Error('backend down'))
 
