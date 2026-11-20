@@ -26,7 +26,13 @@ export const content = {
 }
 
 export function getIncompleteApplicationReviewPageContent(applicationType) {
-  const journeyContent = journeys[applicationType] ?? journeys.appliance
+  const journeyContent = journeys[applicationType]
+
+  if (!journeyContent) {
+    throw new Error(
+      `Unsupported application type for incomplete review page: ${applicationType}`
+    )
+  }
 
   return {
     ...content.en,

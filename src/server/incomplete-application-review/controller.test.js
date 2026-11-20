@@ -72,6 +72,19 @@ describe('#Incomplete application review Controller', () => {
     expect(statusCode).toBe(statusCodes.ok)
     expect(getApplicationWithTechStatusMock).toHaveBeenCalledWith('app-1')
   })
+
+  test('renders generic error page when backend returns unsupported application type', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: { id: 'app-1', type: 'unsupported' }
+    })
+
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      url: '/incomplete-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.internalServerError)
+  })
 })
 
 describe('#handleIncompleteApplicationReviewRequest (unit)', () => {

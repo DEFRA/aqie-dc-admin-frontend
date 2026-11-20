@@ -96,6 +96,22 @@ describe('#Complete application appliances Controller', () => {
     expect(statusCode).toBe(statusCodes.internalServerError)
   })
 
+  test('renders error view when backend returns unsupported application type', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: {
+        ...baseApplication,
+        type: 'unsupported'
+      }
+    })
+
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      url: '/finish-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.internalServerError)
+  })
+
   test('renders the unsuitable appliance section without its heading when only rejected appliances exist', async () => {
     getApplicationWithTechStatusMock.mockResolvedValue({
       data: {

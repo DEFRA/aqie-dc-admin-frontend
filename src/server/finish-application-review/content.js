@@ -46,7 +46,13 @@ export const finishApplicationReviewContent = {
 
 export function getFinishApplicationReviewPageContent(applicationType) {
   const baseContent = finishApplicationReviewContent.en
-  const journeyContent = journeys[applicationType] ?? journeys.appliance
+  const journeyContent = journeys[applicationType]
+
+  if (!journeyContent) {
+    throw new Error(
+      `Unsupported application type for finish review page: ${applicationType}`
+    )
+  }
 
   return {
     ...baseContent,
