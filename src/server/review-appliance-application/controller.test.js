@@ -78,7 +78,9 @@ describe('#reviewApplicationAppliancesController', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('href="/incomplete-application-review/app-1"')
+    expect(result).toContain(
+      'href="/incomplete-application-review/app-1?type=appliance"'
+    )
   })
 
   test('routes Continue to finish page when all appliances are in final statuses', async () => {

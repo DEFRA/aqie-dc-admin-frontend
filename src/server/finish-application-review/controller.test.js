@@ -78,7 +78,9 @@ describe('#Complete application appliances Controller', () => {
     })
 
     expect(statusCode).toBe(302)
-    expect(headers.location).toBe('/incomplete-application-review/app-1')
+    expect(headers.location).toBe(
+      '/incomplete-application-review/app-1?type=appliance'
+    )
   })
 
   test('renders error view when getApplicationWithTechStatus throws error', async () => {
@@ -216,7 +218,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     )
 
     expect(redirect).toHaveBeenCalledWith(
-      '/incomplete-application-review/app-1'
+      '/incomplete-application-review/app-1?type=appliance'
     )
     expect(h.view).not.toHaveBeenCalled()
     expect(result).toBe('redirected')

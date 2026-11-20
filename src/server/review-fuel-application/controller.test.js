@@ -170,7 +170,7 @@ describe('#handleReviewFuelApplicationRequest', () => {
       actionHref: '/review-fuel/FUEL-123'
     })
     expect(viewModel.continueReviewHref).toBe(
-      '/incomplete-application-review/7756-0001'
+      '/incomplete-application-review/7756-0001?type=fuel'
     )
   })
 

@@ -54,7 +54,7 @@ function buildViewModel(application, applicationId) {
     companyAddress: application.fullAddress,
     finishReviewLink: reviewComplete
       ? content.finishReviewLink(applicationId)
-      : `/incomplete-application-review/${applicationId}`,
+      : `/incomplete-application-review/${applicationId}?type=appliance`,
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },
       {

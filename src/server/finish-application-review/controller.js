@@ -19,13 +19,15 @@ async function handleFinishApplicationReviewRequest(request, h) {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
     const pageContent = getFinishApplicationReviewPageContent(application.type)
-    const linkedItems = application.linkedItems || {}
-    const acceptedItems = linkedItems.accepted || []
-    const rejectedItems = linkedItems.rejected || []
+    const linkedItems = application.linkedItems
+    const acceptedItems = linkedItems.accepted
+    const rejectedItems = linkedItems.rejected
 
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
-      return h.redirect(`/incomplete-application-review/${applicationId}`)
+      return h.redirect(
+        `/incomplete-application-review/${applicationId}?type=${application.type}`
+      )
     }
 
     const containsBoth = rejectedItems.length > 0 && acceptedItems.length > 0

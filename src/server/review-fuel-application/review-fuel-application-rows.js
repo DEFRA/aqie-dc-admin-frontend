@@ -150,6 +150,6 @@ export function buildFuelApplicationViewModel(application) {
     returnHref: '/fuel-applications',
     continueReviewHref: reviewComplete
       ? `/finish-application-review/${applicationId}`
-      : `/incomplete-application-review/${applicationId}`
+      : `/incomplete-application-review/${applicationId}?type=fuel`
   }
 }

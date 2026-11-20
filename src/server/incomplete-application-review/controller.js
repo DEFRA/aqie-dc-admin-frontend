@@ -10,13 +10,19 @@ const logger = createLogger()
 
 async function handleIncompleteApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
+  const applicationTypeFromQuery = request.query && request.query.type
 
   try {
-    const response = await getApplicationWithTechStatus(applicationId)
-    const application = response.data
-    const pageContent = getIncompleteApplicationReviewPageContent(
-      application.type
-    )
+    let applicationType = applicationTypeFromQuery
+
+    if (!applicationType) {
+      const response = await getApplicationWithTechStatus(applicationId)
+      const application = response.data
+      applicationType = application.type
+    }
+
+    const pageContent =
+      getIncompleteApplicationReviewPageContent(applicationType)
 
     return h.view('incomplete-application-review/index', {
       pageTitle: pageContent.pageTitle,

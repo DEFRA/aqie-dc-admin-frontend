@@ -28,13 +28,9 @@ describe('#Incomplete application review Controller', () => {
   })
 
   test('renders the incomplete appliance application page', async () => {
-    getApplicationWithTechStatusMock.mockResolvedValue({
-      data: { id: 'app-1', type: 'appliance' }
-    })
-
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1'
+      url: '/incomplete-application-review/app-1?type=appliance'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -44,16 +40,13 @@ describe('#Incomplete application review Controller', () => {
     )
     expect(result).toContain('href="/review-appliance-application/app-1"')
     expect(result).toContain('Return to application review')
+    expect(getApplicationWithTechStatusMock).not.toHaveBeenCalled()
   })
 
   test('renders the incomplete fuel application page', async () => {
-    getApplicationWithTechStatusMock.mockResolvedValue({
-      data: { id: 'app-1', type: 'fuel' }
-    })
-
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1'
+      url: '/incomplete-application-review/app-1?type=fuel'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -63,6 +56,21 @@ describe('#Incomplete application review Controller', () => {
     )
     expect(result).toContain('href="/review-fuel-application/app-1"')
     expect(result).toContain('Return to fuel review')
+    expect(getApplicationWithTechStatusMock).not.toHaveBeenCalled()
+  })
+
+  test('falls back to backend lookup when type query is not provided', async () => {
+    getApplicationWithTechStatusMock.mockResolvedValue({
+      data: { id: 'app-1', type: 'fuel' }
+    })
+
+    const { statusCode } = await server.inject({
+      method: 'GET',
+      url: '/incomplete-application-review/app-1'
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(getApplicationWithTechStatusMock).toHaveBeenCalledWith('app-1')
   })
 })
 
@@ -71,16 +79,12 @@ describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
     getApplicationWithTechStatusMock.mockReset()
   })
 
-  test('renders the incomplete appliance view', async () => {
-    getApplicationWithTechStatusMock.mockResolvedValue({
-      data: { id: 'app-1', type: 'appliance' }
-    })
-
+  test('renders the incomplete appliance view using the query type', async () => {
     const view = vi.fn().mockReturnValue('rendered')
     const h = { view }
 
     await handleIncompleteApplicationReviewRequest(
-      { params: { applicationId: 'app-1' } },
+      { params: { applicationId: 'app-1' }, query: { type: 'appliance' } },
       h
     )
 
@@ -96,6 +100,8 @@ describe('#handleIncompleteApplicationReviewRequest (unit)', () => {
         returnLinkText: 'Return to application review'
       })
     )
+
+    expect(getApplicationWithTechStatusMock).not.toHaveBeenCalled()
   })
 
   test('renders the generic error page when application type lookup fails', async () => {
