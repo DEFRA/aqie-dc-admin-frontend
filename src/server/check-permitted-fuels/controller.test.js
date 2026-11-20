@@ -188,7 +188,7 @@ describe('#handleCheckPermittedFuelsDecisionRequest', () => {
         pageTitle: 'Error: Permitted fuels for Twin Heat CS200i',
         error: {
           field: 'burnsWood',
-          message: 'Select if the appliance is cerified to burn wood',
+          message: 'Select if the appliance is certified to burn wood',
           href: '#burnsWood'
         },
         formValues: {

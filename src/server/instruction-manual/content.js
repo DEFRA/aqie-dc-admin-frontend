@@ -11,7 +11,7 @@ export const instructionManualContent = {
       'Enter details of the most relevant manual so that a member of the public or industry professional can find it themselves.',
 
     publicationDescription:
-      'These details will be published to the public listing.',
+      'These details will be published to the public listing',
 
     fields: {
       title: {
