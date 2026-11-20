@@ -60,7 +60,7 @@ describe('#reviewApplicationAppliancesController', () => {
     expect(result).toContain('Review appliance application')
   })
 
-  test('routes Continue to incomplete page when there are pending appliance reviews', async () => {
+  test('routes Continue to finish page when there are pending appliance reviews', async () => {
     getApplianceApplicationMock.mockResolvedValue({
       data: { ...baseApplication, fullAddress: ['Line 1', 'Line 2'] }
     })
@@ -78,9 +78,7 @@ describe('#reviewApplicationAppliancesController', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain(
-      'href="/incomplete-application-review/app-1?type=appliance"'
-    )
+    expect(result).toContain('href="/finish-application-review/app-1"')
   })
 
   test('routes Continue to finish page when all appliances are in final statuses', async () => {

@@ -29,22 +29,7 @@ function buildApplianceRows(linkedItems) {
   })
 }
 
-function isApplianceApplicationReviewComplete(linkedItems) {
-  if (!linkedItems || linkedItems.length === 0) {
-    return false
-  }
-
-  return linkedItems.every((item) => {
-    const status = item.technicalReview && item.technicalReview.status
-    return status === 'accepted' || status === 'rejected'
-  })
-}
-
 function buildViewModel(application, applicationId) {
-  const reviewComplete = isApplianceApplicationReviewComplete(
-    application.linkedItems
-  )
-
   return {
     pageTitle: content.heading,
     heading: content.heading,
@@ -52,9 +37,7 @@ function buildViewModel(application, applicationId) {
     application,
     appliances: buildApplianceRows(application.linkedItems),
     companyAddress: application.fullAddress,
-    finishReviewLink: reviewComplete
-      ? content.finishReviewLink(applicationId)
-      : `/incomplete-application-review/${applicationId}?type=appliance`,
+    finishReviewLink: content.finishReviewLink(applicationId),
     breadcrumbs: [
       { text: 'Home', href: '/manage-certification' },
       {
