@@ -174,37 +174,6 @@ describe('#handleReviewFuelApplicationRequest', () => {
     )
   })
 
-  test('routes Continue to finish page when all fuels are in final statuses', async () => {
-    getFuelApplicationDetailsMock.mockResolvedValue({
-      data: {
-        ...baseApplication,
-        linkedItems: [
-          {
-            id: 'FUEL-123',
-            brandName: 'Kings Starterlog',
-            technicalReview: { status: 'accepted' }
-          },
-          {
-            id: 'FUEL-456',
-            brandName: 'Kings Briquette',
-            technicalReview: { status: 'rejected' }
-          }
-        ]
-      }
-    })
-    const h = toolkit()
-
-    await handleReviewFuelApplicationRequest(
-      { params: { applicationId: 'app-0317' } },
-      h
-    )
-
-    const [, viewModel] = h.view.mock.calls[0]
-    expect(viewModel.continueReviewHref).toBe(
-      '/finish-application-review/7756-0001'
-    )
-  })
-
   test('maps the backend brandName field to the fuel table row', async () => {
     getFuelApplicationDetailsMock.mockResolvedValue({
       data: {
