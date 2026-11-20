@@ -26,7 +26,7 @@ async function handleFinishApplicationReviewRequest(request, h) {
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
       return h.redirect(
-        `/incomplete-application-review/${applicationId}?type=${application.type}`
+        `/incomplete-application-review/${applicationId}?type=${encodeURIComponent(application.type)}`
       )
     }
 
