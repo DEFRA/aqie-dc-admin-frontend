@@ -23,6 +23,9 @@ export const incompleteApplicationReview = {
                   .min(1)
                   .max(64)
                   .pattern(/^[A-Za-z0-9-]+$/)
+              }),
+              query: Joi.object({
+                type: Joi.string().valid('appliance', 'fuel').optional()
               })
             }
           },

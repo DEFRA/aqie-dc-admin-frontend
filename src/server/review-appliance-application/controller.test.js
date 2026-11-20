@@ -60,6 +60,27 @@ describe('#reviewApplicationAppliancesController', () => {
     expect(result).toContain('Review appliance application')
   })
 
+  test('always routes Continue to the finish page', async () => {
+    getApplianceApplicationMock.mockResolvedValue({
+      data: { ...baseApplication, fullAddress: ['Line 1', 'Line 2'] }
+    })
+
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/review-appliance-application/app-1',
+      auth: {
+        strategy: 'session',
+        credentials: {
+          isAuthenticated: true,
+          user: { id: 'test', email: 'test@yopmail.com', name: 'John doe' }
+        }
+      }
+    })
+
+    expect(statusCode).toBe(statusCodes.ok)
+    expect(result).toContain('href="/finish-application-review/app-1"')
+  })
+
   test('renders error view when getApplianceApplication throws error', async () => {
     getApplianceApplicationMock.mockRejectedValue(new Error('backend down'))
 
