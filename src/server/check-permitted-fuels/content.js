@@ -20,7 +20,7 @@ export const checkPermittedFuelsContent = {
       prefix: 'Error:',
       permittedFuelsRequired:
         'Enter which fuels the appliance is permitted to burn',
-      woodSelectionRequired: 'Select if the appliance is cerified to burn wood'
+      woodSelectionRequired: 'Select if the appliance is certified to burn wood'
     }
   }
 }
