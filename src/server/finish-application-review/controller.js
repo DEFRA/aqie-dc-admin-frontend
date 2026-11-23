@@ -1,4 +1,7 @@
-import { finishApplicationReviewContent } from './content.js'
+import {
+  finishApplicationReviewContent,
+  getFinishApplicationReviewPageContent
+} from './content.js'
 import {
   completeApplication,
   getApplicationWithTechStatus
@@ -15,24 +18,34 @@ async function handleFinishApplicationReviewRequest(request, h) {
   try {
     const response = await getApplicationWithTechStatus(applicationId)
     const application = response.data
+    const pageContent = getFinishApplicationReviewPageContent(application.type)
+    const linkedItems = application.linkedItems
+    const acceptedItems = linkedItems.accepted
+    const rejectedItems = linkedItems.rejected
 
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
-      return h.redirect(`/incomplete-application-review/${applicationId}`)
+      return h.redirect(
+        `/incomplete-application-review/${applicationId}?type=${encodeURIComponent(application.type)}`
+      )
     }
-    //screen to display both accepted and rejected
-    const containsBoth =
-      application.linkedItems?.rejected?.length > 0 &&
-      application.linkedItems?.accepted?.length > 0
+
+    const containsBoth = rejectedItems.length > 0 && acceptedItems.length > 0
 
     return h.view('finish-application-review/index', {
-      pageTitle: content.pageTitle,
-      heading: content.heading,
+      pageTitle: pageContent.pageTitle,
+      heading: pageContent.heading,
       applicationId,
-      application,
+      application: {
+        ...application,
+        linkedItems: {
+          accepted: acceptedItems,
+          rejected: rejectedItems
+        }
+      },
       containsBoth,
-      content,
-      returnLink: content.returnLink(applicationId)
+      content: pageContent,
+      returnLink: pageContent.returnLink(applicationId)
     })
   } catch (error) {
     logger.error(

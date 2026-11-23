@@ -112,6 +112,7 @@ export function buildFuelRows(linkedItems) {
 
 export function buildFuelApplicationViewModel(application) {
   const linkedItems = application.linkedItems
+  const applicationId = encodeURIComponent(application.id)
   const formattedApplicationId = formatApplicationId(application.id)
   const heading = content.heading(formattedApplicationId)
 
@@ -135,6 +136,6 @@ export function buildFuelApplicationViewModel(application) {
       text: content.navigation.back
     },
     returnHref: '/fuel-applications',
-    continueReviewHref: '/incomplete-application-review'
+    continueReviewHref: `/finish-application-review/${applicationId}`
   }
 }

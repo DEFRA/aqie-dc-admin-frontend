@@ -1,7 +1,7 @@
 {% extends "layouts/page.njk" %}
 
 {% block pageTitle %}
-  {{ pageTitle }} - GOV.UK
+{{ pageTitle }} - GOV.UK
 {% endblock %}
 
 {% block content %}
@@ -12,64 +12,66 @@
 
     {# if rejected #}
     {% if application.linkedItems.rejected.length > 0 %}
-      {% if containsBoth %}
-      <h2 class="govuk-heading-l">{{ content.unsuitableAppliancesHeading }}</h2>
-      {% endif %}
+    {% if containsBoth %}
+    <h2 class="govuk-heading-l">{{ content.unsuitableItemsHeading }}</h2>
+    {% endif %}
 
-      <p class="govuk-body">
-        {{ content.unsuitableIntro }}
-      </p>
+    <p class="govuk-body">
+      {{ content.unsuitableIntro }}
+    </p>
 
-      <ul class="govuk-list govuk-list--bullet">
-        {% for appliance in application.linkedItems.rejected %}
-          <li>{{ appliance.modelName }}</li>
-        {% endfor %}
-      </ul>
+    <ul class="govuk-list govuk-list--bullet">
+      {% for appliance in application.linkedItems.rejected %}
+      <li>{{ appliance.name }}</li>
+      {% endfor %}
+    </ul>
 
-      <p class="govuk-body">
-        {{ content.contactApplicantText }}
-      </p>
-      
-      {% if not containsBoth %}
-        <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
-          <div class="govuk-button-group govuk-!-margin-top-7">
-          {{ govukButton({
+    <p class="govuk-body">
+      {{ content.contactApplicantText }}
+    </p>
+
+    {% if not containsBoth %}
+    <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate
+      class="govuk-!-margin-bottom-0">
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
               text: content.finishReviewButton
             }) }}
-          </div>
-        </form>
-      {% endif %}
+      </div>
+    </form>
+    {% endif %}
 
     {% endif %}
 
     {# if accepted #}
     {% if application.linkedItems.accepted.length > 0 %}
-     {# if both add this heading #}
-      {% if containsBoth %} 
-        <h2 class="govuk-heading-l">{{ content.suitableAppliancesHeading }}</h2>
-      {% endif %}
+    {# if both add this heading #}
+    {% if containsBoth %}
+    <h2 class="govuk-heading-l">{{ content.suitableItemsHeading }}</h2>
+    {% endif %}
 
-      <p class="govuk-body">
-        {{ content.suitableIntro }}
-      </p>
+    <p class="govuk-body">
+      {{ content.suitableIntro }}
+    </p>
 
-      <ul class="govuk-list govuk-list--bullet">
-        {% for appliance in application.linkedItems.accepted %}
-          <li>{{ appliance.modelName }}</li>
-        {% endfor %}
-      </ul>
+    <ul class="govuk-list govuk-list--bullet">
+      {% for appliance in application.linkedItems.accepted %}
+      <li>{{ appliance.name }}</li>
+      {% endfor %}
+    </ul>
 
-      <p class="govuk-body">
-        {{ content.approvalIntro }}
-      </p>
+    <p class="govuk-body">
+      {{ content.approvalIntro }}
+    </p>
 
-      <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate class="govuk-!-margin-bottom-0">
-        <div class="govuk-button-group govuk-!-margin-top-7">
-          {{ govukButton({
+    <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate
+      class="govuk-!-margin-bottom-0">
+      <div class="govuk-button-group govuk-!-margin-top-7">
+        {{ govukButton({
               text: content.submitForApprovalButton
             }) }}
-        </div>
-      </form>
+      </div>
+    </form>
     {% endif %}
 
     <p>

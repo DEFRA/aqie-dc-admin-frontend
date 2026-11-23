@@ -1,20 +1,49 @@
-import { content } from './content.js'
+import {
+  content,
+  getIncompleteApplicationReviewPageContent
+} from './content.js'
+import { getApplicationWithTechStatus } from '../finish-application-review/application-data.js'
+import { createLogger } from '../common/helpers/logging/logger.js'
+import { statusCodes } from '../common/constants/status-codes.js'
 
-function handleIncompleteApplicationReviewRequest(request, h) {
+const logger = createLogger()
+
+async function handleIncompleteApplicationReviewRequest(request, h) {
   const { applicationId } = request.params
+  const applicationTypeFromQuery = request.query && request.query.type
 
-  const pageContent = content.en
-  const heading = pageContent.getHeading(applicationId)
-  const pageTitle = pageContent.getPageTitle(applicationId)
+  try {
+    let applicationType = applicationTypeFromQuery
 
-  return h.view('incomplete-application-review/index', {
-    pageTitle,
-    heading,
-    applicationId,
-    introText: pageContent.introText,
-    returnLinkText: pageContent.returnLinkText,
-    returnLink: pageContent.getReturnLink(applicationId)
-  })
+    if (!applicationType) {
+      const response = await getApplicationWithTechStatus(applicationId)
+      const application = response.data
+      applicationType = application.type
+    }
+
+    const pageContent =
+      getIncompleteApplicationReviewPageContent(applicationType)
+
+    return h.view('incomplete-application-review/index', {
+      pageTitle: pageContent.pageTitle,
+      heading: pageContent.heading,
+      applicationId,
+      introText: pageContent.introText,
+      returnLinkText: pageContent.returnLinkText,
+      returnLink: pageContent.getReturnLink(applicationId)
+    })
+  } catch (error) {
+    logger.error(
+      `[incomplete-application-review.GET] failed for ${applicationId}: ${error.message}`,
+      error
+    )
+
+    return h
+      .view('error/index', {
+        message: content.en.errors.generic
+      })
+      .code(statusCodes.internalServerError)
+  }
 }
 
 const incompleteApplicationReviewController = {
