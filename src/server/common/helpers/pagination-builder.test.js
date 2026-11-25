@@ -160,7 +160,7 @@ describe('pagination-builder', () => {
       })
     })
 
-    it('creates correct pagination items for all pages', () => {
+    it('creates correct pagination items for all pages when totalPages <= 5', () => {
       const result = buildPaginationConfig({
         paginationData: {
           page: 2,
@@ -181,6 +181,48 @@ describe('pagination-builder', () => {
       ])
     })
 
+    it('truncates with trailing ellipsis when totalPages > 5 and near start', () => {
+      const result = buildPaginationConfig({
+        paginationData: {
+          page: 1,
+          limit: 10,
+          total: 100,
+          totalPages: 10
+        },
+        buildPageUrl: mockBuildPageUrl
+      })
+
+      expect(result.items).toEqual([
+        { number: 1, href: '/items?page=1', current: true },
+        { number: 2, href: '/items?page=2', current: false },
+        { number: 3, href: '/items?page=3', current: false },
+        { number: 4, href: '/items?page=4', current: false },
+        { ellipsis: true },
+        { number: 10, href: '/items?page=10', current: false }
+      ])
+    })
+
+    it('truncates with leading ellipsis when totalPages > 5 and near end', () => {
+      const result = buildPaginationConfig({
+        paginationData: {
+          page: 9,
+          limit: 10,
+          total: 100,
+          totalPages: 10
+        },
+        buildPageUrl: mockBuildPageUrl
+      })
+
+      expect(result.items).toEqual([
+        { number: 1, href: '/items?page=1', current: false },
+        { ellipsis: true },
+        { number: 7, href: '/items?page=7', current: false },
+        { number: 8, href: '/items?page=8', current: false },
+        { number: 9, href: '/items?page=9', current: true },
+        { number: 10, href: '/items?page=10', current: false }
+      ])
+    })
+
     it('supports custom currentPage override', () => {
       const result = buildPaginationConfig({
         paginationData: {
@@ -196,11 +238,15 @@ describe('pagination-builder', () => {
       expect(result.currentPage).toBe(5)
       expect(result.start).toBe(41)
       expect(result.end).toBe(50)
-      expect(result.items[4]).toEqual({
-        number: 5,
-        href: '/items?page=5',
-        current: true
-      })
+      expect(result.items).toEqual([
+        { number: 1, href: '/items?page=1', current: false },
+        { ellipsis: true },
+        { number: 4, href: '/items?page=4', current: false },
+        { number: 5, href: '/items?page=5', current: true },
+        { number: 6, href: '/items?page=6', current: false },
+        { ellipsis: true },
+        { number: 10, href: '/items?page=10', current: false }
+      ])
     })
 
     it('handles pagination with filters and keywords via buildPageUrl', () => {
