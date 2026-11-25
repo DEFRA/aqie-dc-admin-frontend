@@ -11,11 +11,19 @@ export const buildRecordHref = (fuelId) =>
 const toCountrySlug = (countryKey) =>
   countryKey.replaceAll(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
 
-// Backend guarantees all 4 countries with status + firstCertifiedAt.
+// Guards rendering against values outside the backend contract, as appliance-record does:
+// unknown fuel status -> pending, unknown certification status -> uncertified tag.
+export const normalizeFuelStatus = (status) =>
+  content.fuelStatus[status] ? status : content.statusValues.pending
+
+export const getCertificationStatusDisplay = (status) =>
+  content.certificationStatus[status] ?? content.certificationStatus.uncertified
+
+// Backend contract guarantees all 4 countries with status + firstCertifiedAt.
 export const buildCertificationTableRows = (fuelId, certifications) =>
   Object.entries(content.countries).map(([countryKey, country]) => {
     const { status, firstCertifiedAt } = certifications[countryKey]
-    const tag = content.certificationStatus[status]
+    const tag = getCertificationStatusDisplay(status)
     const changeUrl = `${buildRecordHref(fuelId)}/approval-status-${toCountrySlug(countryKey)}`
 
     return [
@@ -105,18 +113,26 @@ export const buildActions = (fuel) => {
   return { buttons: [{ ...button, href }] }
 }
 
-export const buildBreadcrumbs = (fuel) => [
-  { text: content.nav.home, href: content.nav.homeHref },
-  { text: content.nav.fuelRecords, href: content.nav.fuelRecordsHref },
-  { text: fuel.name, href: buildRecordHref(fuel.id) }
-]
+// Same shape as appliance-record's buildSubPageBreadcrumbs so fuel sub-pages can reuse it.
+export const buildSubPageBreadcrumbs = (name, returnHref) => ({
+  breadcrumbs: [
+    { text: content.nav.home, href: content.nav.homeHref },
+    { text: content.nav.fuelRecords, href: content.nav.fuelRecordsHref },
+    { text: name, href: returnHref }
+  ],
+  returnToRecord: content.nav.returnToRecord
+})
 
-export const buildFuelRecordViewModel = (fuelId, data) => {
+export const buildFuelRecordViewModel = (data) => {
   const fuel = {
     ...data,
-    id: data.id || fuelId,
-    name: data.name || content.defaultName
+    name: data.name || content.defaultName,
+    status: normalizeFuelStatus(data.status)
   }
+  const { breadcrumbs } = buildSubPageBreadcrumbs(
+    fuel.name,
+    buildRecordHref(fuel.id)
+  )
 
   return {
     pageTitle: content.pageTitle(fuel.name),
@@ -133,7 +149,7 @@ export const buildFuelRecordViewModel = (fuelId, data) => {
     publicListing: buildPublicListing(fuel),
     detailsRows: buildDetailsRows(fuel),
     actions: buildActions(fuel),
-    breadcrumbs: buildBreadcrumbs(fuel),
+    breadcrumbs,
     backLink: { text: content.backLinkText, href: content.nav.fuelRecordsHref },
     returnLinkUrl: content.nav.fuelRecordsHref,
     returnLinkText: content.returnLink

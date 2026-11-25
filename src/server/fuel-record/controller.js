@@ -13,37 +13,51 @@ import { statusCodes } from '../common/constants/status-codes.js'
 const logger = createLogger()
 const content = fuelRecordContent.en
 
-const renderError = (h, status) => {
-  const notFound = status === statusCodes.notFound
-  return h
-    .view('error/index', {
-      message: notFound ? content.errors.notFound : content.errors.generic
-    })
-    .code(notFound ? statusCodes.notFound : statusCodes.internalServerError)
-}
+const renderNotFound = (h) =>
+  h
+    .view('error/index', { message: content.errors.notFound })
+    .code(statusCodes.notFound)
 
+const renderServiceError = (h) =>
+  h
+    .view('error/index', { message: content.errors.generic })
+    .code(statusCodes.internalServerError)
+
+/**
+ * Backend contract (see fuel-record-data.js): fetchJson throws on non-2xx with
+ * `error.status`, otherwise resolves `{ success, data }` or `{ success: false, notFound }`.
+ * 404 -> not found page (404); anything else -> generic error page (500).
+ */
 export const handleGetFuelRecordPage = async (request, h) => {
   const { fuelId } = request.params
 
   try {
     const fuelRecord = await getFuelRecord(fuelId)
 
-    if (!fuelRecord?.success) {
+    if (!fuelRecord.success) {
+      if (fuelRecord.notFound) {
+        logger.warn(`[fuelRecord] Fuel record not found: ${fuelId}`)
+        return renderNotFound(h)
+      }
       logger.error(
-        `[fuelRecord] Failed to load fuel record for ${fuelId}: ${fuelRecord?.message}`
+        `[fuelRecord] Failed to load fuel record for ${fuelId}: ${fuelRecord.message}`
       )
-      return renderError(h)
+      return renderServiceError(h)
     }
 
     return h.view(
       'fuel-record/index',
-      buildFuelRecordViewModel(fuelId, fuelRecord.data)
+      buildFuelRecordViewModel(fuelRecord.data)
     )
   } catch (error) {
+    if (error.status === statusCodes.notFound) {
+      logger.warn(`[fuelRecord] Fuel record not found: ${fuelId}`)
+      return renderNotFound(h)
+    }
     logger.error(
-      `[fuelRecord] Failed to load fuel record for ${fuelId}: ${error.message}`
+      `[fuelRecord] Failed to load fuel record for ${fuelId} (status ${error.status ?? 'n/a'}): ${error.message}`
     )
-    return renderError(h, error.status)
+    return renderServiceError(h)
   }
 }
 

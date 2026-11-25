@@ -168,6 +168,19 @@ describe('#fuelRecord controller', () => {
     expect(result).toContain('Fuel record not found')
   })
 
+  test('renders the not found page when the backend resolves notFound', async () => {
+    getFuelRecordMock.mockResolvedValue({
+      success: false,
+      message: 'Fuel not found',
+      notFound: true
+    })
+
+    const { result, statusCode } = await get()
+
+    expect(statusCode).toBe(statusCodes.notFound)
+    expect(result).toContain('Fuel record not found')
+  })
+
   test('renders the generic error page when the backend fails', async () => {
     getFuelRecordMock.mockRejectedValue(new Error('boom'))
 

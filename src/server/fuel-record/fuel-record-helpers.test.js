@@ -3,7 +3,9 @@ import {
   buildActions,
   buildCertificationTableRows,
   buildDetailsRows,
-  buildFuelRecordViewModel
+  buildFuelRecordViewModel,
+  buildSubPageBreadcrumbs,
+  normalizeFuelStatus
 } from './fuel-record-helpers.js'
 
 const certifications = {
@@ -77,7 +79,8 @@ describe('#fuel-record-helpers', () => {
   })
 
   test('builds breadcrumbs, title and fallback name', () => {
-    const viewModel = buildFuelRecordViewModel('F-1', {
+    const viewModel = buildFuelRecordViewModel({
+      id: 'F-1',
       name: '',
       status: 'pending',
       certifications
@@ -91,5 +94,40 @@ describe('#fuel-record-helpers', () => {
     ])
     expect(viewModel.statusDisplay.label).toBe('Pending government approval')
     expect(viewModel.publicListing.showLink).toBe(false)
+  })
+
+  test('falls back to pending for an unknown fuel status', () => {
+    const viewModel = buildFuelRecordViewModel({
+      id: 'F-1',
+      name: 'Fuel',
+      status: 'unexpected',
+      certifications
+    })
+
+    expect(normalizeFuelStatus('unexpected')).toBe('pending')
+    expect(normalizeFuelStatus('live')).toBe('live')
+    expect(viewModel.fuel.status).toBe('pending')
+    expect(viewModel.statusDisplay.label).toBe('Pending government approval')
+  })
+
+  test('falls back to the uncertified tag for an unknown certification status', () => {
+    const rows = buildCertificationTableRows('F-1', {
+      ...certifications,
+      england: { status: 'unexpected', firstCertifiedAt: null }
+    })
+
+    expect(rows[0][1].html).toContain('Uncertified')
+    expect(rows[0][1].html).toContain('govuk-tag--grey')
+  })
+
+  test('buildSubPageBreadcrumbs returns breadcrumbs and return link text', () => {
+    expect(buildSubPageBreadcrumbs('Fuel', '/fuel-record/F-1')).toEqual({
+      breadcrumbs: [
+        { text: 'Home', href: '/manage-certification' },
+        { text: 'Fuel records', href: '/fuel-records' },
+        { text: 'Fuel', href: '/fuel-record/F-1' }
+      ],
+      returnToRecord: 'Return to record'
+    })
   })
 })

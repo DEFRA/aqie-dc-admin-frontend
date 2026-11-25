@@ -97,7 +97,8 @@ export const fuelRecordContent = {
       home: 'Home',
       homeHref: '/manage-certification',
       fuelRecords: 'Fuel records',
-      fuelRecordsHref: '/fuel-records'
+      fuelRecordsHref: '/fuel-records',
+      returnToRecord: 'Return to record'
     },
 
     errors: {
