@@ -26,11 +26,18 @@
 {% endblock %}
 
 {% block header %}
+{% set headerNavigation = [] %}
+{% if user %}
+{% set headerNavigation = [{ text: "Sign out", href: "/auth/logout"}] %}
+{% endif %}
+
 {{ govukHeader({
     homepageUrl: "https://www.gov.uk/",
     classes: "app-header",
     containerClasses: "govuk-width-container",
-    useTudorCrown: true
+    useTudorCrown: true,
+    navigation: headerNavigation,
+    navigationClasses: "govuk-header__navigation--end"
   }) }}
 {% endblock %}
 
@@ -44,6 +51,7 @@
       items: breadcrumbs
     }) }}
 {% endif %}
+
 
 {% if backLink %}
 {{ govukBackLink({

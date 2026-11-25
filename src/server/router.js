@@ -48,6 +48,7 @@ import { fuelComposition } from './fuel-composition/index.js'
 import { sulphurContent } from './sulphur-content/index.js'
 import { manufacturingProcess } from './manufacturing-process/index.js'
 import { qualityControl } from './quality-control/index.js'
+import { fuelRecords } from './fuel-records/index.js'
 
 export const router = {
   plugin: {
@@ -105,7 +106,8 @@ export const router = {
         fuelComposition,
         sulphurContent,
         manufacturingProcess,
-        qualityControl
+        qualityControl,
+        fuelRecords
       ])
 
       // Static assets
