@@ -14,7 +14,7 @@ const content = appliancesApplicationContent.en
  * Maps each linked appliance to the row shown in the appliances table,
  * including its status tag and review action link.
  */
-function buildApplianceRows(linkedItems) {
+function buildApplianceRows(linkedItems, applicationId) {
   return linkedItems.map((appliance) => {
     const status = appliance.technicalReview?.status ?? 'new'
     const tag = content.statusTags[status]
@@ -23,7 +23,7 @@ function buildApplianceRows(linkedItems) {
       modelName: appliance.modelName,
       id: appliance.id,
       tag,
-      actionHref: `/review-appliance/${appliance.id}`,
+      actionHref: `/review-appliance-application/${applicationId}/review-appliance/${appliance.id}`,
       actionText: tag.text
     }
   })
@@ -35,7 +35,7 @@ function buildViewModel(application, applicationId) {
     heading: content.heading,
     applicationId,
     application,
-    appliances: buildApplianceRows(application.linkedItems),
+    appliances: buildApplianceRows(application.linkedItems, applicationId),
     companyAddress: application.fullAddress,
     finishReviewLink: content.finishReviewLink(applicationId),
     breadcrumbs: [

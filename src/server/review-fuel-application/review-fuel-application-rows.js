@@ -136,6 +136,6 @@ export function buildFuelApplicationViewModel(application) {
       text: content.navigation.back
     },
     returnHref: '/fuel-applications',
-    continueReviewHref: `/finish-application-review/${applicationId}`
+    continueReviewHref: `/review-appliance-application/${applicationId}/finish-application-review`
   }
 }

@@ -27,7 +27,7 @@ function buildViewModel(appliance) {
     content,
     appliance,
     applicationHref,
-    applianceHref: appliancePath(appliance.id),
+    applianceHref: appliancePath(appliance.applicationId, appliance.id),
     backLink: { href: applicationHref },
     documentationTasks: buildDocumentationTasks(
       appliance.technicalReview,
@@ -57,7 +57,7 @@ async function handleApplianceReviewRequest(request, h) {
 }
 
 async function handleApplianceDecisionRequest(request, h) {
-  const { applianceId } = request.params
+  const { applicationId, applianceId } = request.params
   const status = decisionStatus[request.payload.decision]
   const user = request.auth?.credentials?.user
 
@@ -84,7 +84,7 @@ async function handleApplianceDecisionRequest(request, h) {
         `[reviewAppliance] accept refused for ${applianceId}: checks outstanding`
       )
 
-      return h.redirect(incompleteReviewPath(applianceId))
+      return h.redirect(incompleteReviewPath(applicationId, applianceId))
     }
 
     logger.error(
@@ -101,12 +101,37 @@ const applianceReviewController = {
   handler: handleApplianceReviewRequest
 }
 
+// Legacy URL still linked from the review sub-pages; send users to the nested route
+async function handleLegacyApplianceRedirect(request, h) {
+  const { applianceId } = request.params
+
+  try {
+    const { data: appliance } = await getApplianceReview(applianceId)
+
+    return h.redirect(appliancePath(appliance.applicationId, appliance.id))
+  } catch (error) {
+    logger.error(
+      `[reviewAppliance] failed to resolve application for ${applianceId}: ${error.message}`
+    )
+
+    return h
+      .view('error/index', { message: content.errors.generic })
+      .code(statusCodes.internalServerError)
+  }
+}
+
 const applianceDecisionController = {
   handler: handleApplianceDecisionRequest
 }
 
+const legacyApplianceRedirectController = {
+  handler: handleLegacyApplianceRedirect
+}
+
 export {
   handleApplianceReviewRequest,
+  handleLegacyApplianceRedirect,
+  legacyApplianceRedirectController,
   handleApplianceDecisionRequest,
   applianceReviewController,
   applianceDecisionController
