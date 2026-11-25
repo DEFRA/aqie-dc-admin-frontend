@@ -10,7 +10,7 @@
 const MAX_UNTRUNCATED_PAGES = 5
 
 /**
- * Builds windowed GOV.UK pagination items with ellipses when totalPages > 5.
+ * Builds windowed GOV.UK pagination items with ellipses when totalPages. > 5.
  *
  * @param {number} currentPageNumber - Active 1-based page number
  * @param {number} totalPagesCount - Total number of pages (at least 1)
