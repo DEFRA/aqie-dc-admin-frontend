@@ -31,7 +31,7 @@
     </p>
 
     {% if not containsBoth %}
-    <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate
+    <form method="post" action="/review-appliance-application/{{ applicationId }}/finish-application-review" novalidate
       class="govuk-!-margin-bottom-0">
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({
@@ -64,7 +64,7 @@
       {{ content.approvalIntro }}
     </p>
 
-    <form method="post" action="/finish-application-review/{{ applicationId }}" novalidate
+    <form method="post" action="/review-appliance-application/{{ applicationId }}/finish-application-review" novalidate
       class="govuk-!-margin-bottom-0">
       <div class="govuk-button-group govuk-!-margin-top-7">
         {{ govukButton({

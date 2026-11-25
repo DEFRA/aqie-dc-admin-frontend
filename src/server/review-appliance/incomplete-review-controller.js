@@ -9,7 +9,7 @@ const content = applianceReviewContent.en
 const { incompleteReview } = content
 
 function buildViewModel(appliance) {
-  const applianceHref = appliancePath(appliance.id)
+  const applianceHref = appliancePath(appliance.applicationId, appliance.id)
 
   return {
     pageTitle: incompleteReview.heading,

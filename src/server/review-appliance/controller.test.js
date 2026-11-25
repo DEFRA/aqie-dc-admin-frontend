@@ -46,7 +46,10 @@ describe('#handleApplianceReviewRequest', () => {
     getApplianceReviewMock.mockResolvedValue({ data: baseAppliance })
     const h = toolkit()
 
-    await handleApplianceReviewRequest({ params: { applianceId: 'APP-1' } }, h)
+    await handleApplianceReviewRequest(
+      { params: { applicationId: '1084', applianceId: 'APP-1' } },
+      h
+    )
 
     expect(h.view).toHaveBeenCalledWith(
       'review-appliance/index',
@@ -68,12 +71,15 @@ describe('#handleApplianceReviewRequest', () => {
     getApplianceReviewMock.mockResolvedValue({ data: baseAppliance })
     const h = toolkit()
 
-    await handleApplianceReviewRequest({ params: { applianceId: 'APP-1' } }, h)
+    await handleApplianceReviewRequest(
+      { params: { applicationId: '1084', applianceId: 'APP-1' } },
+      h
+    )
 
     const [, viewModel] = h.view.mock.calls[0]
 
     expect(viewModel.breadcrumbs).toEqual([
-      { text: 'Home', href: '/manage-certifications' },
+      { text: 'Home', href: '/manage-certification' },
       { text: 'Appliance applications', href: '/appliance-applications' },
       {
         text: 'Review appliance application 1084',
@@ -87,7 +93,10 @@ describe('#handleApplianceReviewRequest', () => {
     getApplianceReviewMock.mockRejectedValue(new Error('backend down'))
     const h = toolkit()
 
-    await handleApplianceReviewRequest({ params: { applianceId: 'APP-1' } }, h)
+    await handleApplianceReviewRequest(
+      { params: { applicationId: '1084', applianceId: 'APP-1' } },
+      h
+    )
 
     expect(h.view).toHaveBeenCalledWith('error/index', {
       message: 'Sorry, there is a problem with the service'
@@ -108,7 +117,10 @@ describe('#handleApplianceDecisionRequest', () => {
     const h = toolkit()
 
     await handleApplianceDecisionRequest(
-      { params: { applianceId: 'APP-1' }, payload: { decision: 'accept' } },
+      {
+        params: { applicationId: '1084', applianceId: 'APP-1' },
+        payload: { decision: 'accept' }
+      },
       h
     )
 
@@ -127,7 +139,10 @@ describe('#handleApplianceDecisionRequest', () => {
     const h = toolkit()
 
     await handleApplianceDecisionRequest(
-      { params: { applianceId: 'APP-1' }, payload: { decision: 'reject' } },
+      {
+        params: { applicationId: '1084', applianceId: 'APP-1' },
+        payload: { decision: 'reject' }
+      },
       h
     )
 
@@ -144,7 +159,7 @@ describe('#handleApplianceDecisionRequest', () => {
 
     await handleApplianceDecisionRequest(
       {
-        params: { applianceId: 'APP-1' },
+        params: { applicationId: '1084', applianceId: 'APP-1' },
         payload: { decision: 'accept' },
         auth: {
           credentials: {
@@ -168,12 +183,15 @@ describe('#handleApplianceDecisionRequest', () => {
     const h = toolkit()
 
     await handleApplianceDecisionRequest(
-      { params: { applianceId: 'APP-1' }, payload: { decision: 'accept' } },
+      {
+        params: { applicationId: '1084', applianceId: 'APP-1' },
+        payload: { decision: 'accept' }
+      },
       h
     )
 
     expect(h.redirect).toHaveBeenCalledWith(
-      '/review-appliance/APP-1/incomplete-review'
+      '/review-appliance-application/1084/review-appliance/APP-1/incomplete-review'
     )
     expect(h.view).not.toHaveBeenCalled()
   })
@@ -183,7 +201,10 @@ describe('#handleApplianceDecisionRequest', () => {
     const h = toolkit()
 
     await handleApplianceDecisionRequest(
-      { params: { applianceId: 'APP-1' }, payload: { decision: 'accept' } },
+      {
+        params: { applicationId: '1084', applianceId: 'APP-1' },
+        payload: { decision: 'accept' }
+      },
       h
     )
 
