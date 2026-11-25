@@ -6,11 +6,20 @@ const content = applianceReviewContent.en
 export const applicationPath = (applicationId) =>
   `/review-appliance-application/${encodeURIComponent(applicationId)}`
 
-export const appliancePath = (applianceId) =>
-  `/review-appliance/${encodeURIComponent(applianceId)}`
+export const appliancePath = (applicationId, applianceId) =>
+  `${applicationPath(applicationId)}/review-appliance/${encodeURIComponent(applianceId)}`
 
-export const incompleteReviewPath = (applianceId) =>
-  `${appliancePath(applianceId)}/incomplete-review`
+export const appliancePagePath = (applicationId, applianceId, page) =>
+  `${appliancePath(applicationId, applianceId)}/${page}`
+
+export const applianceDetailsPath = (applicationId, applianceId) =>
+  appliancePagePath(applicationId, applianceId, 'appliance-details')
+
+export const applianceDetailsFieldPath = (applicationId, applianceId, field) =>
+  `${applianceDetailsPath(applicationId, applianceId)}/${field}`
+
+export const incompleteReviewPath = (applicationId, applianceId) =>
+  appliancePagePath(applicationId, applianceId, 'incomplete-review')
 
 /**
  * Breadcrumb trail shared by the appliance review page and its incomplete-review
@@ -22,7 +31,7 @@ export function buildApplianceBreadcrumbs(
   { linkAppliance = false } = {}
 ) {
   return [
-    { text: 'Home', href: '/manage-certifications' },
+    { text: 'Home', href: '/manage-certification' },
     { text: content.applicationsHeading, href: '/appliance-applications' },
     {
       text: `Review appliance application ${formatApplicationId(appliance.applicationId)}`,
@@ -30,7 +39,9 @@ export function buildApplianceBreadcrumbs(
     },
     {
       text: content.heading(appliance.modelName),
-      ...(linkAppliance && { href: appliancePath(appliance.id) })
+      ...(linkAppliance && {
+        href: appliancePath(appliance.applicationId, appliance.id)
+      })
     }
   ]
 }

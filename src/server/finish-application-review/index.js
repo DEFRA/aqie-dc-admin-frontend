@@ -27,7 +27,7 @@ export const finishApplicationReview = {
       server.route([
         {
           method: 'GET',
-          path: '/finish-application-review/{applicationId}',
+          path: '/review-appliance-application/{applicationId}/finish-application-review',
           options: {
             validate: routeValidation
           },
@@ -35,7 +35,7 @@ export const finishApplicationReview = {
         },
         {
           method: 'POST',
-          path: '/finish-application-review/{applicationId}',
+          path: '/review-appliance-application/{applicationId}/finish-application-review',
           options: {
             validate: routeValidation
           },

@@ -105,7 +105,7 @@ describe('applianceRecord controller - Legacy Records', () => {
         '/appliance-record/APP-LEGACY-123/appliance-details'
       )
       expect(detailRows[1].actions.items[0].href).toBe(
-        '/appliance-record/APP-LEGACY-123/test-reports'
+        '/appliance-record/APP-LEGACY-123/test-results'
       )
       expect(detailRows[2].actions.items[0].href).toBe(
         '/appliance-record/APP-LEGACY-123/instruction-manual'
