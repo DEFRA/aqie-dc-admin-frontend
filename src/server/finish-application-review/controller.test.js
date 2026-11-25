@@ -57,7 +57,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -74,12 +74,12 @@ describe('#Complete application appliances Controller', () => {
 
     const { statusCode, headers } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(302)
     expect(headers.location).toBe(
-      '/incomplete-application-review/app-1?type=appliance'
+      '/review-appliance-application/app-1/incomplete-application-review?type=appliance'
     )
   })
 
@@ -90,7 +90,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)
@@ -106,7 +106,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)
@@ -125,7 +125,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -150,7 +150,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -175,7 +175,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -201,7 +201,7 @@ describe('#Complete application appliances Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/finish-application-review/app-1'
+      url: '/review-appliance-application/app-1/finish-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -234,7 +234,7 @@ describe('#handleFinishApplicationReviewRequest (unit)', () => {
     )
 
     expect(redirect).toHaveBeenCalledWith(
-      '/incomplete-application-review/app-1?type=appliance'
+      '/review-appliance-application/app-1/incomplete-application-review?type=appliance'
     )
     expect(h.view).not.toHaveBeenCalled()
     expect(result).toBe('redirected')
@@ -370,7 +370,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
       email: 'a@defra.gov.uk'
     })
     expect(h.redirect).toHaveBeenCalledWith(
-      '/application-review-complete/app-1'
+      '/review-appliance-application/app-1/application-review-complete'
     )
   })
 
@@ -388,7 +388,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
       email: 'unknown-reviewer@unknown.gov.uk'
     })
     expect(h.redirect).toHaveBeenCalledWith(
-      '/application-review-complete/app-1'
+      '/review-appliance-application/app-1/application-review-complete'
     )
   })
 
@@ -411,7 +411,7 @@ describe('#handleFinishApplicationReviewSubmitRequest (unit)', () => {
     )
 
     expect(h.redirect).toHaveBeenCalledWith(
-      '/incomplete-application-review/app-1'
+      '/review-appliance-application/app-1/incomplete-application-review'
     )
     expect(h.view).not.toHaveBeenCalled()
   })

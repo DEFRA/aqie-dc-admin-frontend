@@ -26,7 +26,7 @@ async function handleFinishApplicationReviewRequest(request, h) {
     // If review not complete, redirect to incomplete application page
     if (!application.applicationReviewComplete) {
       return h.redirect(
-        `/incomplete-application-review/${applicationId}?type=${encodeURIComponent(application.type)}`
+        `/review-appliance-application/${applicationId}/incomplete-application-review?type=${encodeURIComponent(application.type)}`
       )
     }
 
@@ -82,13 +82,17 @@ async function handleFinishApplicationReviewSubmitRequest(request, h) {
   try {
     await completeApplication(applicationId, reviewedBy)
 
-    return h.redirect(`/application-review-complete/${applicationId}`)
+    return h.redirect(
+      `/review-appliance-application/${applicationId}/application-review-complete`
+    )
   } catch (error) {
     if (error.status === statusCodes.conflict) {
       logger.warn(
         `[finish-application-review.POST] complete refused for ${applicationId}: review incomplete`
       )
-      return h.redirect(`/incomplete-application-review/${applicationId}`)
+      return h.redirect(
+        `/review-appliance-application/${applicationId}/incomplete-application-review`
+      )
     }
 
     logger.error(

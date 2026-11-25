@@ -17,16 +17,20 @@ const baseAppliance = {
 describe('#path builders', () => {
   test('builds the application, appliance and incomplete review paths', () => {
     expect(applicationPath('1084')).toBe('/review-appliance-application/1084')
-    expect(appliancePath('APP-1')).toBe('/review-appliance/APP-1')
-    expect(incompleteReviewPath('APP-1')).toBe(
-      '/review-appliance/APP-1/incomplete-review'
+    expect(appliancePath('1084', 'APP-1')).toBe(
+      '/review-appliance-application/1084/review-appliance/APP-1'
+    )
+    expect(incompleteReviewPath('1084', 'APP-1')).toBe(
+      '/review-appliance-application/1084/review-appliance/APP-1/incomplete-review'
     )
   })
 
   test('escapes ids that contain path characters', () => {
-    expect(appliancePath('APP/1')).toBe('/review-appliance/APP%2F1')
-    expect(incompleteReviewPath('APP/1')).toBe(
-      '/review-appliance/APP%2F1/incomplete-review'
+    expect(appliancePath('1084', 'APP/1')).toBe(
+      '/review-appliance-application/1084/review-appliance/APP%2F1'
+    )
+    expect(incompleteReviewPath('1084', 'APP/1')).toBe(
+      '/review-appliance-application/1084/review-appliance/APP%2F1/incomplete-review'
     )
     expect(applicationPath('10/84')).toBe(
       '/review-appliance-application/10%2F84'
@@ -37,7 +41,7 @@ describe('#path builders', () => {
 describe('#buildApplianceBreadcrumbs', () => {
   test('final crumb has no href by default', () => {
     expect(buildApplianceBreadcrumbs(baseAppliance)).toEqual([
-      { text: 'Home', href: '/manage-certifications' },
+      { text: 'Home', href: '/manage-certification' },
       { text: 'Appliance applications', href: '/appliance-applications' },
       {
         text: 'Review appliance application 1084',
@@ -54,7 +58,7 @@ describe('#buildApplianceBreadcrumbs', () => {
 
     expect(crumbs.at(-1)).toEqual({
       text: 'Review Twin Heat M20i',
-      href: '/review-appliance/APP-1'
+      href: '/review-appliance-application/1084/review-appliance/APP-1'
     })
   })
 

@@ -31,6 +31,6 @@ export const appliancesApplicationContent = {
     },
 
     finishReviewLink: (applicationId) =>
-      `/finish-application-review/${applicationId}`
+      `/review-appliance-application/${applicationId}/finish-application-review`
   }
 }

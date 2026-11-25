@@ -17,7 +17,7 @@ export const applianceRecordTestReports = {
       server.route([
         {
           method: 'GET',
-          path: '/appliance-record/{applianceId}/test-reports',
+          path: '/appliance-record/{applianceId}/test-results',
           ...applianceRecordTestReportsController,
           options: {
             validate: { params: paramsSchema }
