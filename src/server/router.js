@@ -26,6 +26,7 @@ import { otherApplianceType } from './other-appliance-type/index.js'
 import { variantAppliance } from './variant-appliance/index.js'
 import { approvalStatus } from './approval-status/index.js'
 import { applianceRecord } from './appliance-record/index.js'
+import { fuelRecord } from './fuel-record/index.js'
 import { changeDisplayStatus } from './change-display-status/index.js'
 import { serveStaticFiles } from './common/helpers/serve-static-files.js'
 import { azureAuth } from './plugins/azure-auth.js'
@@ -87,6 +88,7 @@ export const router = {
         technicalDrawings,
         additionalConditions,
         applianceRecord,
+        fuelRecord,
         changeDisplayStatus,
         instructionManual,
         testReports,
