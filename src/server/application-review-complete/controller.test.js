@@ -38,7 +38,7 @@ describe('#Application review complete Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/application-review-complete/app-1'
+      url: '/review-appliance-application/app-1/application-review-complete'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -63,7 +63,7 @@ describe('#Application review complete Controller', () => {
 
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/application-review-complete/app-1'
+      url: '/review-appliance-application/app-1/application-review-complete'
     })
 
     expect(statusCode).toBe(statusCodes.ok)

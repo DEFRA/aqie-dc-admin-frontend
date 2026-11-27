@@ -30,7 +30,7 @@ describe('#Incomplete application review Controller', () => {
   test('renders the incomplete appliance application page', async () => {
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1?type=appliance'
+      url: '/review-appliance-application/app-1/incomplete-application-review?type=appliance'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -46,7 +46,7 @@ describe('#Incomplete application review Controller', () => {
   test('renders the incomplete fuel application page', async () => {
     const { result, statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1?type=fuel'
+      url: '/review-appliance-application/app-1/incomplete-application-review?type=fuel'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -66,7 +66,7 @@ describe('#Incomplete application review Controller', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1'
+      url: '/review-appliance-application/app-1/incomplete-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.ok)
@@ -80,7 +80,7 @@ describe('#Incomplete application review Controller', () => {
 
     const { statusCode } = await server.inject({
       method: 'GET',
-      url: '/incomplete-application-review/app-1'
+      url: '/review-appliance-application/app-1/incomplete-application-review'
     })
 
     expect(statusCode).toBe(statusCodes.internalServerError)

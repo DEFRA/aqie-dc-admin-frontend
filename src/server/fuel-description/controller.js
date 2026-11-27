@@ -33,6 +33,12 @@ function buildOriginalFuelRows(fuel) {
 const errorMessageId = (key) => `${key}-error`
 
 function buildDescriptionRow(key, label, value, href, errorMessage) {
+  const hasValue = value != null && value !== ''
+  const actionText = hasValue ? content.actions.change : content.actions.add
+  const actions = {
+    items: [{ href, text: actionText, visuallyHiddenText: label }]
+  }
+
   if (errorMessage) {
     return {
       key: { text: label },
@@ -40,13 +46,13 @@ function buildDescriptionRow(key, label, value, href, errorMessage) {
         // Mirrors govukErrorMessage markup; errorMessage is static content.js text.
         html: `<p id="${errorMessageId(key)}" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> ${errorMessage}</p>`
       },
-      actions: { items: [{ href, text: content.actions.add }] }
+      actions
     }
   }
   return {
     key: { text: label },
-    value: { text: value ?? '' },
-    actions: { items: [{ href, text: content.actions.add }] }
+    value: { text: hasValue ? value : '' },
+    actions
   }
 }
 

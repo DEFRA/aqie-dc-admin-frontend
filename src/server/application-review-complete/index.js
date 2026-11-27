@@ -24,7 +24,7 @@ export const applicationReviewComplete = {
       server.route([
         {
           method: 'GET',
-          path: '/application-review-complete/{applicationId}',
+          path: '/review-appliance-application/{applicationId}/application-review-complete',
           options: {
             validate: routeValidation
           },

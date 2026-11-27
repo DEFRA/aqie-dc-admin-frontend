@@ -78,7 +78,9 @@ describe('#reviewApplicationAppliancesController', () => {
     })
 
     expect(statusCode).toBe(statusCodes.ok)
-    expect(result).toContain('href="/finish-application-review/app-1"')
+    expect(result).toContain(
+      'href="/review-appliance-application/app-1/finish-application-review"'
+    )
   })
 
   test('renders error view when getApplianceApplication throws error', async () => {
@@ -163,7 +165,8 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
             expect.objectContaining({
               modelName: 'Boiler 1',
               tag: { text: actionText, label, colour },
-              actionHref: '/review-appliance/appliance-1',
+              actionHref:
+                '/review-appliance-application/app-1/review-appliance/appliance-1',
               actionText
             })
           ]
@@ -206,7 +209,8 @@ describe('#handleAppliancesApplicationRequest (unit)', () => {
               label: 'Not started',
               colour: 'govuk-tag--grey'
             },
-            actionHref: '/review-appliance/appliance-1',
+            actionHref:
+              '/review-appliance-application/app-1/review-appliance/appliance-1',
             actionText: 'Start review'
           })
         ]

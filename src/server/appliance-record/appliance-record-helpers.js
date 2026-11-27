@@ -230,7 +230,7 @@ export const buildApplianceRecordData = (applianceId, data = {}) => {
     },
     {
       label: content.detailsItems.testResults,
-      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/test-reports`
+      viewUrl: `/appliance-record/${encodeURIComponent(applianceId)}/test-results`
     },
     {
       label: content.detailsItems.instructionManual,
