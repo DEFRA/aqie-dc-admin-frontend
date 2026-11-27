@@ -15,6 +15,15 @@ const statusOptions = [
   { value: 'rejected', label: 'Rejected' }
 ]
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 function parseFilters(filters) {
   if (!filters) {
     return []
@@ -43,27 +52,27 @@ function buildPageUrl({ keywords, filters, page }) {
 }
 
 function buildApplianceRows(rawData, contentLabels) {
-  return (rawData || []).map((item) => {
+  return rawData.map((item) => {
     const status = String(item.status || 'pending').toLowerCase()
-    const applianceId = item.applianceId || item.id || 'Unknown appliance ID'
-    const name = item.name || item.modelName || 'Unknown appliance'
+    const applianceId = item.id
+    const name = item.name
     const statusLabel = contentLabels.statusLabels[status] || status
     const statusClass = contentLabels.statusClasses[status] || 'govuk-tag--grey'
-    const href = `/appliance-record/${encodeURIComponent(item.id || applianceId)}`
+    const href = `/appliance-record/${encodeURIComponent(applianceId)}`
 
     return [
       { text: formatId(applianceId) },
       { text: name },
       {
-        html: `<strong class="govuk-tag ${statusClass}">
-                ${statusLabel}
+        html: `<strong class="govuk-tag ${escapeHtml(statusClass)}">
+                ${escapeHtml(statusLabel)}
                </strong>`
       },
       {
-        html: `<a href="${href}">
+        html: `<a href="${escapeHtml(href)}">
                  View
                  <span class="govuk-visually-hidden">
-                   details of ${name}
+                   details of ${escapeHtml(name)}
                  </span>
                </a>`
       }
@@ -78,7 +87,8 @@ async function handleApplianceRecordsRequest(request, h) {
         ? request.payload
         : request.query || {}
 
-    const page = Number(query.page || 1)
+    const parsedPage = Number.parseInt(query.page, 10)
+    const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage
     const keywords = String(query.keywords || query.q || '').trim()
     const selectedFilters = parseFilters(query.filters)
 
@@ -89,14 +99,15 @@ async function handleApplianceRecordsRequest(request, h) {
       limit: 10
     })
 
-    const applianceRows = buildApplianceRows(response?.data, content)
-
-    const pagination = response?.pagination || {
-      page,
-      limit: 10,
-      total: 0,
-      totalPages: 0
+    if (
+      !Array.isArray(response?.data) ||
+      typeof response?.pagination?.totalPages !== 'number'
+    ) {
+      throw new Error('Invalid backend response')
     }
+
+    const applianceRows = buildApplianceRows(response.data, content)
+    const { pagination } = response
 
     // Build pagination config using reusable helper
     const paginationConfig = buildPaginationConfig({

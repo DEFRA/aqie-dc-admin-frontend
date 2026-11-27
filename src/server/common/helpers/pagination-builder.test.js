@@ -86,10 +86,58 @@ describe('pagination-builder', () => {
       expect(result.end).toBe(95)
     })
 
-    it('handles total zero correctly', () => {
+    it('clamps page numbers exceeding totalPages to the last available page', () => {
       const result = buildPaginationConfig({
         paginationData: {
-          page: 1,
+          page: 99,
+          limit: 10,
+          total: 25,
+          totalPages: 3
+        },
+        buildPageUrl: mockBuildPageUrl
+      })
+
+      expect(result.currentPage).toBe(3)
+      expect(result.totalPages).toBe(3)
+      expect(result.start).toBe(21)
+      expect(result.end).toBe(25)
+      expect(result.previous).toEqual({
+        href: '/items?page=2',
+        text: 'Previous'
+      })
+      expect(result.next).toBeNull()
+      expect(result.items).toEqual([
+        { number: 1, href: '/items?page=1', current: false },
+        { number: 2, href: '/items?page=2', current: false },
+        { number: 3, href: '/items?page=3', current: true }
+      ])
+    })
+
+    it('clamps page numbers below 1 to page 1', () => {
+      const result = buildPaginationConfig({
+        paginationData: {
+          page: 0,
+          limit: 10,
+          total: 25,
+          totalPages: 3
+        },
+        buildPageUrl: mockBuildPageUrl
+      })
+
+      expect(result.currentPage).toBe(1)
+      expect(result.start).toBe(1)
+      expect(result.end).toBe(10)
+      expect(result.previous).toBeNull()
+      expect(result.next).toEqual({
+        href: '/items?page=2',
+        text: 'Next'
+      })
+    })
+
+    it('handles total zero correctly even when requested page is greater than 1', () => {
+      const result = buildPaginationConfig({
+        paginationData: {
+          page: 5,
           limit: 10,
           total: 0,
           totalPages: 0
@@ -97,9 +145,14 @@ describe('pagination-builder', () => {
         buildPageUrl: mockBuildPageUrl
       })
 
+      expect(result.currentPage).toBe(1)
+      expect(result.totalPages).toBe(1)
       expect(result.start).toBe(0)
       expect(result.end).toBe(0)
       expect(result.total).toBe(0)
+      expect(result.previous).toBeNull()
+      expect(result.next).toBeNull()
+      expect(result.hasPagination).toBe(false)
     })
 
     it('returns previous link only on page > 1', () => {
@@ -223,7 +276,7 @@ describe('pagination-builder', () => {
       ])
     })
 
-    it('supports custom currentPage override', () => {
+    it('supports custom currentPage override and clamps it within valid bounds', () => {
       const result = buildPaginationConfig({
         paginationData: {
           page: 1,
@@ -247,6 +300,21 @@ describe('pagination-builder', () => {
         { ellipsis: true },
         { number: 10, href: '/items?page=10', current: false }
       ])
+
+      const clampedOverride = buildPaginationConfig({
+        paginationData: {
+          page: 1,
+          limit: 10,
+          total: 30,
+          totalPages: 3
+        },
+        currentPage: 15,
+        buildPageUrl: mockBuildPageUrl
+      })
+
+      expect(clampedOverride.currentPage).toBe(3)
+      expect(clampedOverride.start).toBe(21)
+      expect(clampedOverride.end).toBe(30)
     })
 
     it('handles pagination with filters and keywords via buildPageUrl', () => {

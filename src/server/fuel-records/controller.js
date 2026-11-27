@@ -15,6 +15,15 @@ const statusOptions = [
   { value: 'rejected', label: 'Rejected' }
 ]
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 function parseFilters(filters) {
   if (!filters) {
     return []
@@ -43,24 +52,24 @@ function buildPageUrl({ keywords, filters, page }) {
 }
 
 function buildFuelRows(rawData, contentLabels) {
-  return (rawData || []).map((item) => {
+  return rawData.map((item) => {
     const status = String(item.status || 'pending').toLowerCase()
-    const fuelId = item.fuelId || item.id || 'Unknown fuel ID'
-    const brandName = item.brandName || item.name || 'Unknown fuel'
+    const fuelId = item.id
+    const brandName = item.brandName
     const statusLabel = contentLabels.statusLabels[status] || status
     const statusClass = contentLabels.statusClasses[status] || 'govuk-tag--grey'
-    const href = `/fuel-record/${encodeURIComponent(item.id || fuelId)}`
+    const href = `/fuel-record/${encodeURIComponent(fuelId)}`
 
     return [
       { text: formatId(fuelId) },
       { text: brandName },
       {
-        html: `<strong class="govuk-tag ${statusClass}">
-                ${statusLabel}
+        html: `<strong class="govuk-tag ${escapeHtml(statusClass)}">
+                ${escapeHtml(statusLabel)}
                </strong>`
       },
       {
-        html: `<a class="govuk-link" href="${href}">${contentLabels.viewLabel}<span class="govuk-visually-hidden"> detail of ${brandName}</span></a>`
+        html: `<a class="govuk-link" href="${escapeHtml(href)}">${escapeHtml(contentLabels.viewLabel)}<span class="govuk-visually-hidden"> detail of ${escapeHtml(brandName)}</span></a>`
       }
     ]
   })
@@ -85,14 +94,15 @@ async function handleFuelRecordsRequest(request, h) {
       limit: 10
     })
 
-    const fuelRows = buildFuelRows(response?.data, content)
-
-    const pagination = response?.pagination || {
-      page,
-      limit: 10,
-      total: 0,
-      totalPages: 0
+    if (
+      !Array.isArray(response?.data) ||
+      typeof response?.pagination?.totalPages !== 'number'
+    ) {
+      throw new Error('Invalid backend response')
     }
+
+    const fuelRows = buildFuelRows(response.data, content)
+    const { pagination } = response
 
     const paginationConfig = buildPaginationConfig({
       paginationData: pagination,

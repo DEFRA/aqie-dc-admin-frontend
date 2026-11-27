@@ -39,43 +39,29 @@ describe('fuel-records-data', () => {
     )
   })
 
-  it('short-circuits and returns empty results without calling fetchJson when keywords exceed 50 characters', async () => {
-    const longKeyword = 'a'.repeat(51)
+  it('forwards accented and punctuated keywords to fetchJson instead of filtering client-side', async () => {
+    fetchJson.mockResolvedValue({ data: [], pagination: {} })
 
-    const result = await getFuelRecords({
-      keywords: longKeyword,
-      page: 3,
-      limit: 15
-    })
-
-    expect(fetchJson).not.toHaveBeenCalled()
-    expect(result).toEqual({
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 15,
-        total: 0,
-        totalPages: 0
-      }
-    })
-  })
-
-  it('short-circuits and returns empty results without calling fetchJson when keywords contain unsafe characters', async () => {
-    const result = await getFuelRecords({
-      keywords: '<script>alert(1)</script>',
+    await getFuelRecords({
+      keywords: 'Café Stove (Type)',
       page: 1,
       limit: 10
     })
 
-    expect(fetchJson).not.toHaveBeenCalled()
-    expect(result).toEqual({
-      data: [],
-      pagination: {
+    expect(fetchJson).toHaveBeenCalledWith(
+      '/admin/fuels?page=1&limit=10&q=Caf%C3%A9+Stove+%28Type%29'
+    )
+  })
+
+  it('propagates errors from fetchJson when the backend rejects a request', async () => {
+    fetchJson.mockRejectedValue(new Error('400 Bad Request'))
+
+    await expect(
+      getFuelRecords({
+        keywords: '<script>alert(1)</script>',
         page: 1,
-        limit: 10,
-        total: 0,
-        totalPages: 0
-      }
-    })
+        limit: 10
+      })
+    ).rejects.toThrow('400 Bad Request')
   })
 })
