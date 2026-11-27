@@ -1,21 +1,21 @@
 /**
- * Pagination Builder Helper
+- Pagination Builder Helper
  *
- * A reusable utility for constructing pagination metadata from API responses.
- * Used across multiple pages that display paginated data with filters/search.
+- A reusable utility for constructing pagination metadata from API responses.
+- Used across multiple pages that display paginated data with filters/search.
  *
- * @module pagination-builder
+- @module pagination-builder
  */
 
 const MAX_UNTRUNCATED_PAGES = 5
 
 /**
- * Builds windowed GOV.UK pagination items with ellipses when totalPages. > 5.
+- Builds windowed GOV.UK pagination items with ellipses when totalPages. > 5.
  *
- * @param {number} currentPageNumber - Active 1-based page number
- * @param {number} totalPagesCount - Total number of pages (at least 1)
- * @param {Function} buildPageUrl - Function to build page URLs
- * @returns {Array<Object>} GOV.UK pagination `items` array
+- @param {number} currentPageNumber - Active 1-based page number
+- @param {number} totalPagesCount - Total number of pages (at least 1)
+- @param {Function} buildPageUrl - Function to build page URLs
+- @returns {Array<Object>} GOV.UK pagination `items` array
  */
 function buildPaginationItems(
   currentPageNumber,
@@ -71,18 +71,18 @@ function buildPaginationItems(
 }
 
 /**
- * Builds pagination configuration for GOV.UK pagination component
+- Builds pagination configuration for GOV.UK pagination component
  *
- * @param {Object} options - Configuration options
- * @param {Object} options.paginationData - Pagination data from API response
- * @param {number} options.paginationData.page - Current page number
- * @param {number} options.paginationData.limit - Items per page
- * @param {number} options.paginationData.total - Total number of items
- * @param {number} options.paginationData.totalPages - Total number of pages
- * @param {number} [options.currentPage] - Override current page (optional)
- * @param {Function} options.buildPageUrl - Function to build page URLs with params
- *                                          Signature: (page: number) => string
- * @returns {Object} Pagination configuration object with GOV.UK component data
+- @param {Object} options - Configuration options
+- @param {Object} options.paginationData - Pagination data from API response
+- @param {number} options.paginationData.page - Current page number
+- @param {number} options.paginationData.limit - Items per page
+- @param {number} options.paginationData.total - Total number of items
+- @param {number} options.paginationData.totalPages - Total number of pages
+- @param {number} [options.currentPage] - Override current page (optional)
+- @param {Function} options.buildPageUrl - Function to build page URLs with params
+-                                          Signature: (page: number) => string
+- @returns {Object} Pagination configuration object with GOV.UK component data
  */
 export function buildPaginationConfig({
   paginationData = {},
@@ -95,8 +95,9 @@ export function buildPaginationConfig({
 
   const { page = 1, limit = 10, total = 0, totalPages = 0 } = paginationData
 
-  const currentPageNumber = currentPage ?? page
   const totalPagesCount = Math.max(totalPages || 1, 1)
+  const rawPage = currentPage ?? page
+  const currentPageNumber = Math.min(Math.max(rawPage, 1), totalPagesCount)
 
   // Calculate display range
   const start = total === 0 ? 0 : (currentPageNumber - 1) * limit + 1
@@ -121,7 +122,7 @@ export function buildPaginationConfig({
 
   // Build next link
   const nextLink =
-    currentPageNumber < (totalPages || 1)
+    currentPageNumber < totalPagesCount
       ? {
           href: buildPageUrl(currentPageNumber + 1),
           text: 'Next'
@@ -134,7 +135,7 @@ export function buildPaginationConfig({
     end,
     total,
     currentPage: currentPageNumber,
-    totalPages: totalPages || 1,
+    totalPages: totalPagesCount,
     limit,
 
     // Display text components
