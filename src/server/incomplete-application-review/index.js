@@ -13,7 +13,7 @@ export const incompleteApplicationReview = {
       server.route([
         {
           method: 'GET',
-          path: '/incomplete-application-review/{applicationId}',
+          path: '/review-appliance-application/{applicationId}/incomplete-application-review',
           options: {
             validate: {
               params: Joi.object({

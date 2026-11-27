@@ -44,8 +44,11 @@ describe('#handleIncompleteReviewRequest', () => {
         intro:
           'You cannot accept Twin Heat M20i for government approval until:',
         returnLinkText: 'Return to Twin Heat M20i review',
-        applianceHref: '/review-appliance/APP-1',
-        backLink: { href: '/review-appliance/APP-1' }
+        applianceHref:
+          '/review-appliance-application/1084/review-appliance/APP-1',
+        backLink: {
+          href: '/review-appliance-application/1084/review-appliance/APP-1'
+        }
       })
     )
   })
@@ -60,7 +63,7 @@ describe('#handleIncompleteReviewRequest', () => {
 
     expect(breadcrumbs.at(-1)).toEqual({
       text: 'Review Twin Heat M20i',
-      href: '/review-appliance/APP-1'
+      href: '/review-appliance-application/1084/review-appliance/APP-1'
     })
   })
 

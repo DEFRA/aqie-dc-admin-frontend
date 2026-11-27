@@ -106,26 +106,49 @@ describe('#handleFuelDescriptionRequest', () => {
     expect(viewModel.descriptionRows).toHaveLength(5)
   })
 
-  test('description rows show existing values when present', async () => {
+  test('description rows show existing values and Change action when present', async () => {
     getFuelDescriptionMock.mockResolvedValue({ data: baseFuel })
     const h = toolkit()
 
     await handleFuelDescriptionRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
 
     const [, viewModel] = h.view.mock.calls[0]
-    const valueFor = (label) =>
-      viewModel.descriptionRows.find((r) => r.key.text === label).value.text
+    const rowFor = (label) =>
+      viewModel.descriptionRows.find((r) => r.key.text === label)
 
-    expect(valueFor('Fuel appearance')).toBe('Small charcoal pieces')
-    expect(valueFor('Fuel weight')).toBe('1 kg')
-    expect(valueFor('Fuel composition')).toBe('White quebracho wood')
-    expect(valueFor('Sulphur content')).toBe(0.05)
-    expect(valueFor('Manufacturing process')).toBe(
+    expect(rowFor('Fuel appearance').value.text).toBe('Small charcoal pieces')
+    expect(rowFor('Fuel weight').value.text).toBe('1 kg')
+    expect(rowFor('Fuel composition').value.text).toBe('White quebracho wood')
+    expect(rowFor('Sulphur content').value.text).toBe(0.05)
+    expect(rowFor('Manufacturing process').value.text).toBe(
       'Traditional charcoal production'
     )
+
+    viewModel.descriptionRows.forEach((row) => {
+      expect(row.actions.items[0].text).toBe('Change')
+    })
   })
 
-  test('renders 5 empty rows on first visit when nothing has been added', async () => {
+  test('shows Change action when sulphurContent is 0', async () => {
+    getFuelDescriptionMock.mockResolvedValue({
+      data: {
+        ...newRebrandFuel,
+        fuelDescription: { sulphurContent: 0 }
+      }
+    })
+    const h = toolkit()
+
+    await handleFuelDescriptionRequest({ params: { fuelId: 'fuel-uuid-2' } }, h)
+
+    const [, viewModel] = h.view.mock.calls[0]
+    const sulphurRow = viewModel.descriptionRows.find(
+      (r) => r.key.text === 'Sulphur content'
+    )
+    expect(sulphurRow.value.text).toBe(0)
+    expect(sulphurRow.actions.items[0].text).toBe('Change')
+  })
+
+  test('renders 5 empty rows with Add action on first visit when nothing has been added', async () => {
     getFuelDescriptionMock.mockResolvedValue({ data: newRebrandFuel })
     const h = toolkit()
 
@@ -135,6 +158,7 @@ describe('#handleFuelDescriptionRequest', () => {
     expect(viewModel.descriptionRows).toHaveLength(5)
     viewModel.descriptionRows.forEach((row) => {
       expect(row.value.text).toBe('')
+      expect(row.actions.items[0].text).toBe('Add')
     })
   })
 
@@ -347,6 +371,7 @@ describe('#handleFuelDescriptionMarkCompleteRequest', () => {
     expect(weightRow.value.html).toBe(
       '<p id="weight-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Add fuel weight</p>'
     )
+    expect(weightRow.actions.items[0].text).toBe('Add')
     expect(weightRow.actions.items[0].href).toBe(
       '/review-fuel/fuel-uuid-2/fuel-weight'
     )

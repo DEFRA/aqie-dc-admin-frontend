@@ -14,6 +14,7 @@ export const fuelDescriptionContent = {
     },
     actions: {
       add: 'Add',
+      change: 'Change',
       markAsCompleted: 'Mark as completed',
       cancel: 'Cancel'
     },

@@ -97,7 +97,7 @@ const mockApplianceRecord = {
       },
       {
         label: 'Test results',
-        viewUrl: '/appliance-record/APP-123/test-reports'
+        viewUrl: '/appliance-record/APP-123/test-results'
       },
       {
         label: 'Instruction manual',
